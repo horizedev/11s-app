@@ -41,6 +41,18 @@
 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 : Supabase publishable key. Legacy anon keys can also be used with this variable name during migration.
 
+`NEXT_PUBLIC_SITE_URL`
+: Canonical app URL used for metadata and production deploys. Set this to your Vercel production domain or custom domain.
+
+## Deployment
+
+Deployment is documented in [docs/deployment.md](docs/deployment.md). The short version is:
+
+1. Provision a Supabase project and apply the SQL migrations in `supabase/migrations/`.
+2. Set the Supabase Auth Site URL and redirect URLs to match your Vercel environments.
+3. Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `NEXT_PUBLIC_SITE_URL` in Vercel.
+4. Deploy with the default Next.js Vercel settings and run the post-deploy smoke test.
+
 ## Verification
 
 ```bash
