@@ -39,6 +39,12 @@ export type MeetingNotesBundle = {
   decisions: Decision[];
 };
 
+export type RelationshipNoteHistory = {
+  shareableNotes: string[];
+  decisions: string[];
+  privateNotes: string[];
+};
+
 export async function getMeetingNotesBundle(params: {
   meetingId: string;
   relationshipId: string;
@@ -180,4 +186,40 @@ export async function createDecision(params: {
     createdAt: data.created_at,
     updatedAt: data.updated_at,
   } satisfies Decision;
+}
+
+export async function listRelationshipNoteHistory(params: {
+  relationshipId: string;
+  supabase: SupabaseServerClient;
+  userId: string;
+}) {
+  const { data, error } = await params.supabase
+    .from("meeting_notes")
+    .select("note_type, body, created_at")
+    .eq("relationship_id", params.relationshipId)
+    .eq("user_id", params.userId)
+    .in("note_type", ["shareable", "private", "decision"])
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error("Failed to load relationship note history.");
+  }
+
+  const notes = (data ?? []) as Array<{
+    note_type: "shareable" | "private" | "decision";
+    body: string;
+    created_at: string;
+  }>;
+
+  return {
+    shareableNotes: notes
+      .filter((note) => note.note_type === "shareable")
+      .map((note) => note.body),
+    decisions: notes
+      .filter((note) => note.note_type === "decision")
+      .map((note) => note.body),
+    privateNotes: notes
+      .filter((note) => note.note_type === "private")
+      .map((note) => note.body),
+  } satisfies RelationshipNoteHistory;
 }

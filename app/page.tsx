@@ -1,4 +1,5 @@
 import { AuthButton } from "@/components/auth-button";
+import { PlanComparison } from "@/components/plan-comparison";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -55,19 +56,27 @@ export default function Home() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <p className="text-sm uppercase tracking-[0.24em] text-white/70">
-                  MVP foundation
+                  Pro continuity
                 </p>
                 <h2 className="text-2xl font-semibold">
-                  Built for the first complete workflow
+                  Free to start, Pro when 1:1s become a habit
                 </h2>
               </div>
               <ul className="space-y-4 text-sm leading-7 text-white/80">
-                <li>Protected app route with Supabase SSR auth.</li>
-                <li>Empty-state dashboard for a new user&apos;s first 1:1.</li>
-                <li>Environment scaffolding for local and Vercel setup.</li>
+                <li>Free: 1 relationship, 3 meetings, 5 AI generations/month.</li>
+                <li>Pro: unlimited relationships and meetings.</li>
+                <li>Pro: 100 AI generations/month plus follow-up summaries.</li>
               </ul>
             </div>
           </div>
+        </section>
+
+        <section className="pb-16">
+          <div className="mb-6 space-y-2 text-center">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">Pricing</p>
+            <h2 className="text-3xl font-semibold tracking-tight">Start with one relationship. Upgrade when you need continuity at scale.</h2>
+          </div>
+          <PlanComparison isPro={false} />
         </section>
       </div>
     </main>

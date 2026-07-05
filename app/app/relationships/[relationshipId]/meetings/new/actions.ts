@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 
 import { createMeeting } from "@/lib/meetings/repository";
 import { trackProductEvent } from "@/lib/analytics/repository";
+import { getUpgradeMessage } from "@/lib/billing/entitlements";
+import { getBillingUsage } from "@/lib/billing/repository";
+import { rethrowIfRedirectError } from "@/lib/navigation/redirect-error";
 import {
   getEmptyMeetingFormState,
   toMeetingFormValues,
@@ -46,6 +49,16 @@ export async function createMeetingAction(
     redirect("/app");
   }
 
+  const usage = await getBillingUsage({ supabase, userId: user.id });
+
+  if (!usage.canCreateMeeting) {
+    return {
+      ...getEmptyMeetingFormState(),
+      formError: getUpgradeMessage("meeting"),
+      values: toMeetingFormValues(validation.data),
+    };
+  }
+
   try {
     const meeting = await createMeeting({
       input: validation.data,
@@ -65,7 +78,9 @@ export async function createMeetingAction(
     redirect(
       `/app/relationships/${relationshipId}/meetings/${meeting.id}`,
     );
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyMeetingFormState(),
       formError:

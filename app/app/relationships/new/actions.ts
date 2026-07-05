@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 
 import { createRelationship } from "@/lib/relationships/repository";
 import { trackProductEvent } from "@/lib/analytics/repository";
+import { getBillingUsage } from "@/lib/billing/repository";
+import { getUpgradeMessage } from "@/lib/billing/entitlements";
+import { rethrowIfRedirectError } from "@/lib/navigation/redirect-error";
 import {
   getEmptyRelationshipFormState,
   toRelationshipFormValues,
@@ -37,6 +40,16 @@ export async function createRelationshipAction(
     redirect("/auth/login?next=%2Fapp%2Frelationships%2Fnew");
   }
 
+  const usage = await getBillingUsage({ supabase, userId: user.id });
+
+  if (!usage.canCreateRelationship) {
+    return {
+      ...getEmptyRelationshipFormState(),
+      formError: getUpgradeMessage("relationship"),
+      values: toRelationshipFormValues(validation.data),
+    };
+  }
+
   try {
     const relationship = await createRelationship({
       input: validation.data,
@@ -53,7 +66,9 @@ export async function createRelationshipAction(
     });
 
     redirect(`/app/relationships/${relationship.id}`);
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyRelationshipFormState(),
       formError:

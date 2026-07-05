@@ -116,9 +116,9 @@ export function AgendaItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="title">Agenda item</Label>
+          <Label htmlFor="agenda-title">Agenda item</Label>
           <Input
-            id="title"
+            id="agenda-title"
             name="title"
             defaultValue={state.values.title}
             placeholder="Discuss launch blockers"
@@ -133,9 +133,9 @@ export function AgendaItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="description">Details</Label>
+          <Label htmlFor="agenda-description">Details</Label>
           <textarea
-            id="description"
+            id="agenda-description"
             name="description"
             defaultValue={state.values.description}
             rows={4}
@@ -145,9 +145,9 @@ export function AgendaItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="category">Category</Label>
+          <Label htmlFor="agenda-category">Category</Label>
           <select
-            id="category"
+            id="agenda-category"
             name="category"
             defaultValue={state.values.category}
             aria-invalid={Boolean(state.fieldErrors.category)}

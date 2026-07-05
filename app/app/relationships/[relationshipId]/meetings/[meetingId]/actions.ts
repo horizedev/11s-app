@@ -10,12 +10,16 @@ import {
   validateAgendaItemInput,
 } from "@/lib/agenda/validation";
 import { buildAgendaIdeas, buildFollowUpSummary } from "@/lib/ai/generation";
+import { createPrepBrief } from "@/lib/ai/prep-brief-repository";
+import { generatePrepBrief } from "@/lib/ai/prep-brief";
 import {
   getEmptyAgendaIdeasState,
   getEmptyFollowUpSummaryState,
+  getEmptyPrepBriefState,
   type AgendaIdeasState,
   type FollowUpSummaryState,
   type FollowUpSummaryTone,
+  type PrepBriefState,
 } from "@/lib/ai/state";
 import { trackProductEvent } from "@/lib/analytics/repository";
 import { createActionItem, listActionItemsForMeeting, listOpenActionItemsByRelationship } from "@/lib/action-items/repository";
@@ -28,6 +32,7 @@ import {
 import {
   createDecision,
   getMeetingNotesBundle,
+  listRelationshipNoteHistory,
   saveMeetingNotes,
 } from "@/lib/meeting-notes/repository";
 import {
@@ -41,6 +46,9 @@ import {
   validateMeetingNotesInput,
 } from "@/lib/meeting-notes/validation";
 import { getMeetingById, completeMeeting } from "@/lib/meetings/repository";
+import { getUpgradeMessage } from "@/lib/billing/entitlements";
+import { getBillingUsage } from "@/lib/billing/repository";
+import { rethrowIfRedirectError } from "@/lib/navigation/redirect-error";
 import { getRelationshipById } from "@/lib/relationships/repository";
 import { createClient } from "@/lib/supabase/server";
 
@@ -101,7 +109,9 @@ export async function createAgendaItemAction(
     });
 
     redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyAgendaItemFormState(),
       formError:
@@ -168,7 +178,9 @@ export async function createActionItemAction(
     });
 
     redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyActionItemFormState(),
       formError:
@@ -225,7 +237,9 @@ export async function saveMeetingNotesAction(
     });
 
     redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyMeetingNotesFormState(),
       formError:
@@ -281,7 +295,9 @@ export async function createDecisionAction(
     });
 
     redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
-  } catch {
+  } catch (error) {
+    rethrowIfRedirectError(error);
+
     return {
       ...getEmptyDecisionFormState(),
       formError:
@@ -333,6 +349,15 @@ export async function generateAgendaIdeasAction(
       return {
         ...getEmptyAgendaIdeasState(),
         formError: "We couldn't find that meeting. Go back to the relationship and try again.",
+      };
+    }
+
+    const usage = await getBillingUsage({ supabase, userId: user.id });
+
+    if (!usage.canGenerateAi) {
+      return {
+        ...getEmptyAgendaIdeasState(),
+        formError: getUpgradeMessage("ai"),
       };
     }
 
@@ -408,6 +433,16 @@ export async function generateFollowUpSummaryAction(
       };
     }
 
+    const usage = await getBillingUsage({ supabase, userId: user.id });
+
+    if (!usage.canGenerateAi) {
+      return {
+        ...getEmptyFollowUpSummaryState(),
+        values: { tone },
+        formError: getUpgradeMessage("ai"),
+      };
+    }
+
     const summary = buildFollowUpSummary({
       relationshipName: relationship.personName,
       meetingPurpose: meeting.purpose,
@@ -442,6 +477,131 @@ export async function generateFollowUpSummaryAction(
       summary: null,
       formError: "We couldn't generate a summary right now. Your notes and action items are still saved and can be copied manually.",
       values: { tone },
+    };
+  }
+}
+
+export async function generatePrepBriefAction(
+  relationshipId: string,
+  meetingId: string,
+  previousState: PrepBriefState,
+  formData: FormData,
+): Promise<PrepBriefState> {
+  const includePrivateNotes = formData.get("includePrivateNotes") === "on";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(
+      `/auth/login?next=%2Fapp%2Frelationships%2F${relationshipId}%2Fmeetings%2F${meetingId}`,
+    );
+  }
+
+  try {
+    const [relationship, meeting] = await Promise.all([
+      getRelationshipById({ relationshipId, supabase, userId: user.id }),
+      getMeetingById({ meetingId, relationshipId, supabase, userId: user.id }),
+    ]);
+
+    if (!relationship || !meeting) {
+      return {
+        ...previousState,
+        formError: "We couldn't find that meeting. Go back to the relationship and try again.",
+        values: { includePrivateNotes: false },
+      };
+    }
+
+    const usage = await getBillingUsage({ supabase, userId: user.id });
+
+    if (usage.plan !== "pro") {
+      return {
+        ...previousState,
+        formError:
+          "AI Prep Brief is a Pro feature. Upgrade to turn your relationship history, notes, and open actions into a focused 1:1 prep plan.",
+        values: { includePrivateNotes: false },
+      };
+    }
+
+    if (!usage.canGenerateAi) {
+      return {
+        ...previousState,
+        formError: getUpgradeMessage("ai"),
+        values: { includePrivateNotes: false },
+      };
+    }
+
+    const [agendaItems, openActionItems, meetingNotes, noteHistory] = await Promise.all([
+      listAgendaItemsForMeeting({
+        meetingId,
+        relationshipId,
+        supabase,
+        userId: user.id,
+      }),
+      listOpenActionItemsByRelationship({ relationshipId, supabase, userId: user.id }),
+      getMeetingNotesBundle({ meetingId, relationshipId, supabase, userId: user.id }),
+      listRelationshipNoteHistory({ relationshipId, supabase, userId: user.id }),
+    ]);
+
+    const result = await generatePrepBrief({
+      relationship,
+      meeting,
+      agendaItems,
+      priorShareableNotes: noteHistory.shareableNotes,
+      priorDecisions: noteHistory.decisions,
+      openActionItems,
+      privateNotes: meetingNotes.privateNotes ? [meetingNotes.privateNotes] : [],
+      includePrivateNotes,
+    });
+
+    if (!result.ok) {
+      return {
+        ...previousState,
+        formError: result.message,
+        values: { includePrivateNotes: false },
+      };
+    }
+
+    const brief = await createPrepBrief({
+      meetingId,
+      relationshipId,
+      userId: user.id,
+      contentMarkdown: result.content,
+      includedPrivateNotes: result.inputSnapshot.includedPrivateNotes,
+      model: result.model,
+      inputSnapshot: result.inputSnapshot,
+      supabase,
+    });
+
+    await supabase.from("ai_generations").insert({
+      user_id: user.id,
+      relationship_id: relationshipId,
+      meeting_id: meetingId,
+      generation_type: "prep_brief",
+      input_context_summary: `agenda:${agendaItems.length}; notes:${noteHistory.shareableNotes.length}; decisions:${noteHistory.decisions.length}; actions:${openActionItems.length}; private:${includePrivateNotes ? 1 : 0}`,
+      output_text: result.content,
+      status: "succeeded",
+    });
+    await trackProductEvent({
+      supabase,
+      userId: user.id,
+      eventName: "ai_prep_brief_generated",
+      entityType: "meeting",
+      entityId: meetingId,
+      metadata: {
+        includedPrivateNotes: result.inputSnapshot.includedPrivateNotes,
+        model: result.model,
+      },
+    });
+
+    return getEmptyPrepBriefState(brief);
+  } catch {
+    return {
+      ...previousState,
+      formError:
+        "We couldn't generate the prep brief right now. Your meeting data is saved, so try again in a moment.",
+      values: { includePrivateNotes: false },
     };
   }
 }
@@ -488,6 +648,26 @@ export async function summaryCopiedAction(relationshipId: string, meetingId: str
     supabase,
     userId: user.id,
     eventName: "summary_copied",
+    entityType: "meeting",
+    entityId: meetingId,
+    metadata: { relationshipId },
+  });
+}
+
+export async function prepBriefCopiedAction(relationshipId: string, meetingId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return;
+  }
+
+  await trackProductEvent({
+    supabase,
+    userId: user.id,
+    eventName: "ai_prep_brief_copied",
     entityType: "meeting",
     entityId: meetingId,
     metadata: { relationshipId },
