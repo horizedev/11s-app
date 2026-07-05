@@ -36,8 +36,17 @@ Set these environment variables in Vercel for Production, Preview, and Developme
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_SITE_URL`
+- `DEEPSEEK_API_KEY`
+- `DEEPSEEK_BASE_URL`
+- `DEEPSEEK_MODEL`
 
 `NEXT_PUBLIC_SITE_URL` should point at the canonical production domain. If you later add a custom domain, update this value and the matching Supabase Auth Site URL together.
+
+DeepSeek notes:
+
+- `DEEPSEEK_API_KEY` must be set only in secure environment management, never in source control.
+- `DEEPSEEK_BASE_URL` should remain `https://api.deepseek.com` unless ops has approved another exact value.
+- `DEEPSEEK_MODEL` must match the exact production model identifier from secure credentials/config. Do not normalize or alias it in code.
 
 ## 3. Deploy
 

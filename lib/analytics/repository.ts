@@ -13,6 +13,9 @@ export const PRODUCT_EVENT_NAMES = [
   "action_item_completed",
   "followup_summary_generated",
   "summary_copied",
+  "ai_prep_brief_generated",
+  "ai_prep_brief_copied",
+  "ai_prep_brief_upgrade_clicked",
 ] as const;
 
 export type ProductEventName = (typeof PRODUCT_EVENT_NAMES)[number];

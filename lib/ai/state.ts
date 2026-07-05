@@ -15,6 +15,23 @@ export type FollowUpSummaryState = {
   };
 };
 
+export type PrepBrief = {
+  id: string;
+  contentMarkdown: string;
+  includedPrivateNotes: boolean;
+  model: string | null;
+  inputSnapshot: Record<string, unknown>;
+  createdAt: string;
+};
+
+export type PrepBriefState = {
+  brief: PrepBrief | null;
+  formError: string | null;
+  values: {
+    includePrivateNotes: boolean;
+  };
+};
+
 export function getEmptyAgendaIdeasState(): AgendaIdeasState {
   return {
     ideas: [],
@@ -28,6 +45,16 @@ export function getEmptyFollowUpSummaryState(): FollowUpSummaryState {
     formError: null,
     values: {
       tone: "professional",
+    },
+  };
+}
+
+export function getEmptyPrepBriefState(brief: PrepBrief | null = null): PrepBriefState {
+  return {
+    brief,
+    formError: null,
+    values: {
+      includePrivateNotes: false,
     },
   };
 }

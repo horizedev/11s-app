@@ -101,9 +101,9 @@ export function ActionItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="title">Action item</Label>
+          <Label htmlFor="action-item-title">Action item</Label>
           <textarea
-            id="title"
+            id="action-item-title"
             name="title"
             defaultValue={state.values.title}
             rows={3}
@@ -120,9 +120,9 @@ export function ActionItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="owner">Owner</Label>
+          <Label htmlFor="action-item-owner">Owner</Label>
           <select
-            id="owner"
+            id="action-item-owner"
             name="owner"
             defaultValue={state.values.owner}
             aria-invalid={Boolean(state.fieldErrors.owner)}
@@ -143,9 +143,9 @@ export function ActionItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="dueDate">Due date</Label>
+          <Label htmlFor="action-item-dueDate">Due date</Label>
           <input
-            id="dueDate"
+            id="action-item-dueDate"
             name="dueDate"
             type="date"
             defaultValue={state.values.dueDate}
@@ -161,9 +161,9 @@ export function ActionItemsPanel({
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="action-item-notes">Notes</Label>
           <textarea
-            id="notes"
+            id="action-item-notes"
             name="notes"
             defaultValue={state.values.notes}
             rows={4}
