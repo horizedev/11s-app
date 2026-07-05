@@ -37,6 +37,8 @@ export async function createRelationshipAction(
     redirect("/auth/login?next=%2Fapp%2Frelationships%2Fnew");
   }
 
+  let relationshipId: string;
+
   try {
     const relationship = await createRelationship({
       input: validation.data,
@@ -51,8 +53,7 @@ export async function createRelationshipAction(
       entityType: "relationship",
       entityId: relationship.id,
     });
-
-    redirect(`/app/relationships/${relationship.id}`);
+    relationshipId = relationship.id;
   } catch {
     return {
       ...getEmptyRelationshipFormState(),
@@ -61,4 +62,6 @@ export async function createRelationshipAction(
       values: toRelationshipFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}`);
 }

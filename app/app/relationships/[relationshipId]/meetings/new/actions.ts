@@ -46,6 +46,8 @@ export async function createMeetingAction(
     redirect("/app");
   }
 
+  let meetingId: string;
+
   try {
     const meeting = await createMeeting({
       input: validation.data,
@@ -61,10 +63,7 @@ export async function createMeetingAction(
       entityType: "meeting",
       entityId: meeting.id,
     });
-
-    redirect(
-      `/app/relationships/${relationshipId}/meetings/${meeting.id}`,
-    );
+    meetingId = meeting.id;
   } catch {
     return {
       ...getEmptyMeetingFormState(),
@@ -73,4 +72,6 @@ export async function createMeetingAction(
       values: toMeetingFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }

@@ -99,8 +99,6 @@ export async function createAgendaItemAction(
       entityId: meetingId,
       metadata: { source: formData.get("source") === "ai" ? "ai" : "manual" },
     });
-
-    redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
   } catch {
     return {
       ...getEmptyAgendaItemFormState(),
@@ -109,6 +107,8 @@ export async function createAgendaItemAction(
       values: toAgendaItemFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }
 
 export async function createActionItemAction(
@@ -166,8 +166,6 @@ export async function createActionItemAction(
       entityType: "meeting",
       entityId: meetingId,
     });
-
-    redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
   } catch {
     return {
       ...getEmptyActionItemFormState(),
@@ -176,6 +174,8 @@ export async function createActionItemAction(
       values: toActionItemFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }
 
 export async function saveMeetingNotesAction(
@@ -223,8 +223,6 @@ export async function saveMeetingNotesAction(
       supabase,
       userId: user.id,
     });
-
-    redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
   } catch {
     return {
       ...getEmptyMeetingNotesFormState(),
@@ -233,6 +231,8 @@ export async function saveMeetingNotesAction(
       values: toMeetingNotesFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }
 
 export async function createDecisionAction(
@@ -279,8 +279,6 @@ export async function createDecisionAction(
       supabase,
       userId: user.id,
     });
-
-    redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
   } catch {
     return {
       ...getEmptyDecisionFormState(),
@@ -289,6 +287,8 @@ export async function createDecisionAction(
       values: toDecisionFormValues(validation.data),
     };
   }
+
+  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }
 
 export async function addAgendaSuggestionAction(
