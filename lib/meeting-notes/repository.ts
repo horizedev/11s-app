@@ -39,10 +39,9 @@ export type MeetingNotesBundle = {
   decisions: Decision[];
 };
 
-export type RelationshipNoteHistory = {
-  shareableNotes: string[];
-  decisions: string[];
-  privateNotes: string[];
+type HistoricalMeetingNoteRecord = {
+  body: string;
+  note_type: "shareable" | "decision";
 };
 
 export async function getMeetingNotesBundle(params: {
@@ -188,38 +187,34 @@ export async function createDecision(params: {
   } satisfies Decision;
 }
 
-export async function listRelationshipNoteHistory(params: {
+export async function getPriorMeetingContextByRelationship(params: {
+  meetingId: string;
   relationshipId: string;
   supabase: SupabaseServerClient;
   userId: string;
 }) {
   const { data, error } = await params.supabase
     .from("meeting_notes")
-    .select("note_type, body, created_at")
+    .select("body, note_type")
     .eq("relationship_id", params.relationshipId)
     .eq("user_id", params.userId)
-    .in("note_type", ["shareable", "private", "decision"])
-    .order("created_at", { ascending: false });
+    .neq("meeting_id", params.meetingId)
+    .in("note_type", ["shareable", "decision"])
+    .order("updated_at", { ascending: false })
+    .limit(20);
 
   if (error) {
-    throw new Error("Failed to load relationship note history.");
+    throw new Error("Failed to load prior meeting context.");
   }
 
-  const notes = (data ?? []) as Array<{
-    note_type: "shareable" | "private" | "decision";
-    body: string;
-    created_at: string;
-  }>;
+  const notes = (data ?? []) as HistoricalMeetingNoteRecord[];
 
   return {
-    shareableNotes: notes
+    priorShareableNotes: notes
       .filter((note) => note.note_type === "shareable")
       .map((note) => note.body),
-    decisions: notes
+    priorDecisions: notes
       .filter((note) => note.note_type === "decision")
       .map((note) => note.body),
-    privateNotes: notes
-      .filter((note) => note.note_type === "private")
-      .map((note) => note.body),
-  } satisfies RelationshipNoteHistory;
+  };
 }

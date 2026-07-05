@@ -1,5 +1,4 @@
 import type { AgendaIdea } from "@/lib/ai/generation";
-import type { PrepBrief } from "@/lib/ai/prep-brief-repository";
 
 export type AgendaIdeasState = {
   ideas: AgendaIdea[];
@@ -14,6 +13,15 @@ export type FollowUpSummaryState = {
   values: {
     tone: FollowUpSummaryTone;
   };
+};
+
+export type PrepBrief = {
+  id: string;
+  contentMarkdown: string;
+  includedPrivateNotes: boolean;
+  model: string | null;
+  inputSnapshot: Record<string, unknown>;
+  createdAt: string;
 };
 
 export type PrepBriefState = {

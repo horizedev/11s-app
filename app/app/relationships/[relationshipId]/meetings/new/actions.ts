@@ -80,6 +80,7 @@ export async function createMeetingAction(
     );
   } catch (error) {
     rethrowIfRedirectError(error);
+
     return {
       ...getEmptyMeetingFormState(),
       formError:

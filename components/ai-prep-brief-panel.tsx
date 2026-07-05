@@ -1,24 +1,29 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import type { PrepBriefState } from "@/lib/ai/state";
 
 type AiPrepBriefPanelProps = {
+  generateAction: (
+    state: PrepBriefState,
+    payload: FormData,
+  ) => Promise<PrepBriefState>;
   copyEventAction: () => Promise<void>;
-  generateAction: (state: PrepBriefState, payload: FormData) => Promise<PrepBriefState>;
+  upgradeAction: () => Promise<void>;
   initialState: PrepBriefState;
-  isPro: boolean;
+  showUpgradeCta: boolean;
 };
 
 export function AiPrepBriefPanel({
-  copyEventAction,
   generateAction,
+  copyEventAction,
+  upgradeAction,
   initialState,
-  isPro,
+  showUpgradeCta,
 }: AiPrepBriefPanelProps) {
   const [state, formAction] = useActionState(generateAction, initialState);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
@@ -50,36 +55,37 @@ export function AiPrepBriefPanel({
         </p>
       </div>
 
-      {isPro ? (
-        <form action={formAction} className="mt-5 space-y-4">
-          <label className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background/80 p-4">
-            <input
-              type="checkbox"
-              name="includePrivateNotes"
-              defaultChecked={state.values.includePrivateNotes}
-              className="mt-1 h-4 w-4 rounded border-input"
-            />
-            <span className="space-y-1">
-              <span className="block text-sm font-medium text-foreground">
-                Include my private notes for this generation
-              </span>
-              <span className="block text-sm leading-6 text-muted-foreground">
-                Private notes stay opt-in and should not be suggested for sharing verbatim.
-              </span>
-            </span>
-          </label>
-          <GeneratePrepBriefButton hasBrief={Boolean(brief)} />
-        </form>
-      ) : (
-        <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/5 p-4">
-          <p className="text-sm leading-6 text-foreground">
+      {showUpgradeCta ? (
+        <div className="mt-5 space-y-4 rounded-2xl border border-border/70 bg-background p-4">
+          <p className="text-sm leading-6 text-muted-foreground">
             AI Prep Brief is a Pro feature. Upgrade to turn your relationship history,
             notes, and open actions into a focused 1:1 prep plan.
           </p>
-          <Button asChild className="mt-4" variant="outline">
-            <Link href="/app/billing">Upgrade to Pro</Link>
-          </Button>
+          <form action={upgradeAction}>
+            <Button type="submit" variant="outline">Upgrade to Pro</Button>
+          </form>
         </div>
+      ) : (
+        <form action={formAction} className="mt-5 space-y-4">
+          <div className="flex items-start gap-3 rounded-2xl border border-border/70 bg-background p-4">
+            <input
+              id="includePrivateNotes"
+              name="includePrivateNotes"
+              type="checkbox"
+              defaultChecked={state.values.includePrivateNotes}
+              className="mt-1 h-4 w-4 rounded border border-input"
+            />
+            <div className="space-y-1">
+              <Label htmlFor="includePrivateNotes">
+                Include my private notes for this generation
+              </Label>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Private notes are excluded by default and only used for this one brief.
+              </p>
+            </div>
+          </div>
+          <GeneratePrepBriefButton hasBrief={Boolean(brief)} />
+        </form>
       )}
 
       {state.formError ? (
@@ -101,14 +107,14 @@ export function AiPrepBriefPanel({
             ) : null}
             <div className="flex flex-wrap items-center gap-3">
               <Button type="button" variant="outline" onClick={copyBrief}>
-                Copy prep brief
+                Copy brief
               </Button>
               {copyStatus === "copied" ? (
-                <p className="text-sm text-muted-foreground">Copied markdown prep brief.</p>
+                <p className="text-sm text-muted-foreground">Copied markdown brief.</p>
               ) : null}
               {copyStatus === "failed" ? (
                 <p className="text-sm text-destructive">
-                  Copy failed. Select the markdown and copy it manually.
+                  Copy failed. Select the text and copy manually.
                 </p>
               ) : null}
             </div>
@@ -117,8 +123,8 @@ export function AiPrepBriefPanel({
           <div className="rounded-2xl border border-dashed border-border/70 bg-card/60 p-5">
             <p className="text-sm font-medium text-foreground">No prep brief generated yet.</p>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Generate a brief to pull together relationship context, open loops, and
-              suggested questions before the meeting.
+              Generate a brief to pull the relationship context, open loops, and smart
+              questions into one place.
             </p>
           </div>
         )}

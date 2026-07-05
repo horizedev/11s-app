@@ -1,42 +1,36 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { requestDeepSeekMarkdown } from "@/lib/ai/deepseek";
+const originalEnv = { ...process.env };
+
+afterEach(() => {
+  process.env = { ...originalEnv };
+  vi.resetModules();
+  vi.unstubAllGlobals();
+});
+
+async function loadModule() {
+  return await import("@/lib/ai/deepseek");
+}
 
 describe("DeepSeek client", () => {
-  const originalFetch = global.fetch;
+  it("returns null when required config is missing", async () => {
+    delete process.env.DEEPSEEK_API_KEY;
+    delete process.env.DEEPSEEK_MODEL;
+    delete process.env.DEEPSEEK_BASE_URL;
 
-  beforeEach(() => {
-    vi.unstubAllEnvs();
+    const { getDeepSeekConfig } = await loadModule();
+
+    expect(getDeepSeekConfig()).toBeNull();
   });
 
-  afterEach(() => {
-    global.fetch = originalFetch;
-    vi.restoreAllMocks();
-  });
+  it("preserves the exact configured model string in API requests", async () => {
+    process.env.DEEPSEEK_API_KEY = "deepseek_test_key";
+    process.env.DEEPSEEK_MODEL = "DeepSeek-V4-Pro";
+    process.env.DEEPSEEK_BASE_URL = "https://api.deepseek.test";
 
-  it("returns a config error without calling the API when env vars are missing", async () => {
-    vi.stubEnv("DEEPSEEK_API_KEY", "");
-    vi.stubEnv("DEEPSEEK_BASE_URL", "");
-    vi.stubEnv("DEEPSEEK_MODEL", "");
-    global.fetch = vi.fn() as typeof fetch;
-
-    await expect(
-      requestDeepSeekMarkdown({ prompt: "Generate a prep brief." }),
-    ).resolves.toMatchObject({
-      ok: false,
-      kind: "config_error",
-    });
-
-    expect(global.fetch).not.toHaveBeenCalled();
-  });
-
-  it("sends the exact configured model string to chat completions", async () => {
-    vi.stubEnv("DEEPSEEK_API_KEY", "test-key");
-    vi.stubEnv("DEEPSEEK_BASE_URL", "https://api.deepseek.com");
-    vi.stubEnv("DEEPSEEK_MODEL", "DeepSeek-V4-Pro");
-    global.fetch = vi.fn().mockResolvedValue({
+    const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({
+      json: vi.fn().mockResolvedValue({
         choices: [
           {
             message: {
@@ -45,21 +39,35 @@ describe("DeepSeek client", () => {
           },
         ],
       }),
-    }) as typeof fetch;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { requestDeepSeekCompletion } = await loadModule();
 
     await expect(
-      requestDeepSeekMarkdown({ prompt: "Generate a prep brief." }),
-    ).resolves.toMatchObject({
-      ok: true,
-      content: "## Situation snapshot\n- Ready",
-      model: "DeepSeek-V4-Pro",
-    });
+      requestDeepSeekCompletion({
+        systemPrompt: "system prompt",
+        userPrompt: "user prompt",
+      }),
+    ).resolves.toBe("## Situation snapshot\n- Ready");
 
-    expect(global.fetch).toHaveBeenCalledWith(
-      "https://api.deepseek.com/chat/completions",
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://api.deepseek.test/chat/completions",
       expect.objectContaining({
         method: "POST",
-        body: expect.stringContaining('"model":"DeepSeek-V4-Pro"'),
+        headers: expect.objectContaining({
+          Authorization: "Bearer deepseek_test_key",
+          "Content-Type": "application/json",
+        }),
+        body: JSON.stringify({
+          model: "DeepSeek-V4-Pro",
+          messages: [
+            { role: "system", content: "system prompt" },
+            { role: "user", content: "user prompt" },
+          ],
+          stream: false,
+        }),
+        signal: expect.any(AbortSignal),
       }),
     );
   });

@@ -6,6 +6,7 @@ type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 type PrepBriefRecord = {
   id: string;
+  user_id: string;
   relationship_id: string;
   meeting_id: string;
   content_markdown: string;
@@ -17,6 +18,7 @@ type PrepBriefRecord = {
 
 export type PrepBrief = {
   id: string;
+  userId: string;
   relationshipId: string;
   meetingId: string;
   contentMarkdown: string;
@@ -27,19 +29,19 @@ export type PrepBrief = {
 };
 
 export async function getLatestPrepBriefForMeeting(params: {
-  meetingId: string;
-  relationshipId: string;
   supabase: SupabaseServerClient;
   userId: string;
+  relationshipId: string;
+  meetingId: string;
 }) {
   const { data, error } = await params.supabase
     .from("ai_prep_briefs")
     .select(
-      "id, relationship_id, meeting_id, content_markdown, included_private_notes, model, input_snapshot, created_at",
+      "id, user_id, relationship_id, meeting_id, content_markdown, included_private_notes, model, input_snapshot, created_at",
     )
-    .eq("meeting_id", params.meetingId)
-    .eq("relationship_id", params.relationshipId)
     .eq("user_id", params.userId)
+    .eq("relationship_id", params.relationshipId)
+    .eq("meeting_id", params.meetingId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -52,14 +54,14 @@ export async function getLatestPrepBriefForMeeting(params: {
 }
 
 export async function createPrepBrief(params: {
-  meetingId: string;
-  relationshipId: string;
+  supabase: SupabaseServerClient;
   userId: string;
+  relationshipId: string;
+  meetingId: string;
   contentMarkdown: string;
   includedPrivateNotes: boolean;
-  model: string | null;
+  model: string;
   inputSnapshot: Record<string, unknown>;
-  supabase: SupabaseServerClient;
 }) {
   const { data, error } = await params.supabase
     .from("ai_prep_briefs")
@@ -73,7 +75,7 @@ export async function createPrepBrief(params: {
       input_snapshot: params.inputSnapshot,
     })
     .select(
-      "id, relationship_id, meeting_id, content_markdown, included_private_notes, model, input_snapshot, created_at",
+      "id, user_id, relationship_id, meeting_id, content_markdown, included_private_notes, model, input_snapshot, created_at",
     )
     .single();
 
@@ -87,6 +89,7 @@ export async function createPrepBrief(params: {
 function mapPrepBriefRecord(record: PrepBriefRecord): PrepBrief {
   return {
     id: record.id,
+    userId: record.user_id,
     relationshipId: record.relationship_id,
     meetingId: record.meeting_id,
     contentMarkdown: record.content_markdown,

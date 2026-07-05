@@ -68,6 +68,7 @@ export async function createRelationshipAction(
     redirect(`/app/relationships/${relationship.id}`);
   } catch (error) {
     rethrowIfRedirectError(error);
+
     return {
       ...getEmptyRelationshipFormState(),
       formError:

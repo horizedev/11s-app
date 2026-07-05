@@ -8,7 +8,9 @@ const {
   createAgendaItem,
   trackProductEvent,
 } = vi.hoisted(() => ({
-  redirectError: new Error("NEXT_REDIRECT"),
+  redirectError: Object.assign(new Error("NEXT_REDIRECT"), {
+    digest: "NEXT_REDIRECT;replace;/app/relationships/rel-1/meetings/meeting-1;307;",
+  }),
   redirect: vi.fn(),
   createClient: vi.fn(),
   getMeetingById: vi.fn(),

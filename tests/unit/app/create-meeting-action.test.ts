@@ -6,13 +6,17 @@ const {
   createClient,
   getRelationshipById,
   createMeeting,
+  getBillingUsage,
   trackProductEvent,
 } = vi.hoisted(() => ({
-  redirectError: new Error("NEXT_REDIRECT"),
+  redirectError: Object.assign(new Error("NEXT_REDIRECT"), {
+    digest: "NEXT_REDIRECT;replace;/app/relationships/rel-1/meetings/meeting-1;307;",
+  }),
   redirect: vi.fn(),
   createClient: vi.fn(),
   getRelationshipById: vi.fn(),
   createMeeting: vi.fn(),
+  getBillingUsage: vi.fn(),
   trackProductEvent: vi.fn(),
 }));
 
@@ -40,6 +44,10 @@ vi.mock("@/lib/analytics/repository", () => ({
   trackProductEvent,
 }));
 
+vi.mock("@/lib/billing/repository", () => ({
+  getBillingUsage,
+}));
+
 import { createMeetingAction } from "@/app/app/relationships/[relationshipId]/meetings/new/actions";
 
 describe("createMeetingAction", () => {
@@ -48,6 +56,7 @@ describe("createMeetingAction", () => {
     createClient.mockReset();
     getRelationshipById.mockReset();
     createMeeting.mockReset();
+    getBillingUsage.mockReset();
     trackProductEvent.mockReset();
 
     createClient.mockResolvedValue({
@@ -56,9 +65,15 @@ describe("createMeetingAction", () => {
           data: { user: { id: "user-1" } },
         }),
       },
+      from: vi.fn(),
     });
     getRelationshipById.mockResolvedValue({ id: "rel-1", personName: "Alex" });
     createMeeting.mockResolvedValue({ id: "meeting-1" });
+    getBillingUsage.mockResolvedValue({
+      plan: "pro",
+      canCreateMeeting: true,
+      canGenerateAi: true,
+    });
     trackProductEvent.mockResolvedValue(undefined);
   });
 

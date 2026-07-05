@@ -5,8 +5,8 @@ import { Suspense } from "react";
 
 import { AgendaItemsPanel } from "@/components/agenda-items-panel";
 import { AgendaIdeasPanel } from "@/components/agenda-ideas-panel";
-import { AiPrepBriefPanel } from "@/components/ai-prep-brief-panel";
 import { ActionItemsPanel } from "@/components/action-items-panel";
+import { AiPrepBriefPanel } from "@/components/ai-prep-brief-panel";
 import { DecisionsPanel } from "@/components/decisions-panel";
 import { FollowUpSummaryPanel } from "@/components/follow-up-summary-panel";
 import { MeetingNotesPanel } from "@/components/meeting-notes-panel";
@@ -19,8 +19,9 @@ import {
   completeMeetingAction,
   generateAgendaIdeasAction,
   generatePrepBriefAction,
-  generateFollowUpSummaryAction,
   prepBriefCopiedAction,
+  prepBriefUpgradeClickedAction,
+  generateFollowUpSummaryAction,
   saveMeetingNotesAction,
   summaryCopiedAction,
 } from "@/app/app/relationships/[relationshipId]/meetings/[meetingId]/actions";
@@ -28,12 +29,12 @@ import { listAgendaItemsForMeeting } from "@/lib/agenda/repository";
 import { getEmptyAgendaItemFormState } from "@/lib/agenda/validation";
 import {
   getEmptyAgendaIdeasState,
-  getEmptyFollowUpSummaryState,
   getEmptyPrepBriefState,
+  getEmptyFollowUpSummaryState,
 } from "@/lib/ai/state";
-import { getLatestPrepBriefForMeeting } from "@/lib/ai/prep-brief-repository";
 import { getEmptyActionItemFormState } from "@/lib/action-items/validation";
 import { listActionItemsForMeeting } from "@/lib/action-items/repository";
+import { getLatestPrepBriefForMeeting } from "@/lib/ai/prep-brief-repository";
 import { getBillingUsage } from "@/lib/billing/repository";
 import { getMeetingNotesBundle } from "@/lib/meeting-notes/repository";
 import {
@@ -62,8 +63,7 @@ async function MeetingDetailContent({ params }: MeetingDetailPageProps) {
     notFound();
   }
 
-  const [relationship, meeting, agendaItems, meetingNotes, actionItems, usage, prepBrief] =
-    await Promise.all([
+  const [relationship, meeting, agendaItems, meetingNotes, actionItems, usage, latestPrepBrief] = await Promise.all([
     getRelationshipById({
       relationshipId,
       supabase,
@@ -93,14 +93,17 @@ async function MeetingDetailContent({ params }: MeetingDetailPageProps) {
       supabase,
       userId: user.id,
     }),
-      getBillingUsage({ supabase, userId: user.id }),
-      getLatestPrepBriefForMeeting({
-        meetingId,
-        relationshipId,
-        supabase,
-        userId: user.id,
-      }),
-    ]);
+    getBillingUsage({
+      supabase,
+      userId: user.id,
+    }),
+    getLatestPrepBriefForMeeting({
+      meetingId,
+      relationshipId,
+      supabase,
+      userId: user.id,
+    }),
+  ]);
 
   if (!relationship || !meeting) {
     notFound();
@@ -169,10 +172,22 @@ async function MeetingDetailContent({ params }: MeetingDetailPageProps) {
       />
 
       <AiPrepBriefPanel
-        copyEventAction={prepBriefCopiedAction.bind(null, relationshipId, meetingId)}
         generateAction={generatePrepBriefAction.bind(null, relationshipId, meetingId)}
-        initialState={getEmptyPrepBriefState(prepBrief)}
-        isPro={usage.plan === "pro"}
+        copyEventAction={prepBriefCopiedAction.bind(null, relationshipId, meetingId)}
+        upgradeAction={prepBriefUpgradeClickedAction.bind(null, relationshipId, meetingId)}
+        initialState={getEmptyPrepBriefState(
+          latestPrepBrief
+            ? {
+                id: latestPrepBrief.id,
+                contentMarkdown: latestPrepBrief.contentMarkdown,
+                includedPrivateNotes: latestPrepBrief.includedPrivateNotes,
+                model: latestPrepBrief.model,
+                inputSnapshot: latestPrepBrief.inputSnapshot,
+                createdAt: latestPrepBrief.createdAt,
+              }
+            : null,
+        )}
+        showUpgradeCta={usage.plan !== "pro"}
       />
 
       <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">

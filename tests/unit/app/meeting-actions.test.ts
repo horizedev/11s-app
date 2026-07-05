@@ -17,11 +17,10 @@ const mocks = vi.hoisted(() => {
     getBillingUsage: vi.fn(),
     getLatestPrepBriefForMeeting: vi.fn(),
     getMeetingNotesBundle: vi.fn(),
+    getPriorMeetingContextByRelationship: vi.fn(),
     getRelationshipById: vi.fn(),
-    listActionItemsForMeeting: vi.fn(),
     listAgendaItemsForMeeting: vi.fn(),
     listOpenActionItemsByRelationship: vi.fn(),
-    listRelationshipNoteHistory: vi.fn(),
     trackProductEvent: vi.fn(),
     redirect,
   };
@@ -60,14 +59,14 @@ vi.mock("@/lib/billing/repository", () => ({
 
 vi.mock("@/lib/action-items/repository", () => ({
   createActionItem: vi.fn(),
-  listActionItemsForMeeting: mocks.listActionItemsForMeeting,
+  listActionItemsForMeeting: vi.fn(),
   listOpenActionItemsByRelationship: mocks.listOpenActionItemsByRelationship,
 }));
 
 vi.mock("@/lib/meeting-notes/repository", () => ({
   createDecision: vi.fn(),
   getMeetingNotesBundle: mocks.getMeetingNotesBundle,
-  listRelationshipNoteHistory: mocks.listRelationshipNoteHistory,
+  getPriorMeetingContextByRelationship: mocks.getPriorMeetingContextByRelationship,
   saveMeetingNotes: vi.fn(),
 }));
 
@@ -107,6 +106,9 @@ describe("meeting server actions", () => {
     });
     mocks.getMeetingById.mockResolvedValue({
       id: "meeting-1",
+      purpose: "Career growth sync",
+      scheduledAt: "2026-07-12T15:00:00.000Z",
+      status: "draft",
     });
     mocks.createMeeting.mockResolvedValue({
       id: "meeting-1",
@@ -117,35 +119,40 @@ describe("meeting server actions", () => {
       canGenerateAi: true,
     });
     mocks.createAgendaItem.mockResolvedValue(undefined);
+    mocks.listAgendaItemsForMeeting.mockResolvedValue([
+      { title: "Promotion prep", description: "Review draft" },
+    ]);
+    mocks.listOpenActionItemsByRelationship.mockResolvedValue([
+      {
+        title: "Send promotion packet draft",
+        ownerLabel: "Me",
+        dueDate: "2026-07-10",
+        status: "open",
+      },
+    ]);
+    mocks.getMeetingNotesBundle.mockResolvedValue({
+      shareableNotes: "We aligned on the timeline.",
+      privateNotes: "Maya seemed stressed about budget politics.",
+      decisions: [{ body: "Draft the packet by Friday" }],
+    });
+    mocks.getPriorMeetingContextByRelationship.mockResolvedValue({
+      priorShareableNotes: ["Last meeting focused on sponsorship."],
+      priorDecisions: ["Prepare examples for the packet."],
+    });
+    mocks.getLatestPrepBriefForMeeting.mockResolvedValue(null);
+    mocks.generatePrepBrief.mockResolvedValue({
+      status: "success",
+      contentMarkdown: "## Situation snapshot\n- Ready",
+      model: "DeepSeek-V4-Pro",
+      inputSnapshot: { includedPrivateNotes: false },
+    });
     mocks.createPrepBrief.mockResolvedValue({
       id: "brief-1",
-      meetingId: "meeting-1",
-      relationshipId: "relationship-1",
       contentMarkdown: "## Situation snapshot\n- Ready",
       includedPrivateNotes: false,
       model: "DeepSeek-V4-Pro",
       inputSnapshot: { includedPrivateNotes: false },
-      createdAt: "2026-07-05T00:00:00.000Z",
-    });
-    mocks.generatePrepBrief.mockResolvedValue({
-      ok: true,
-      content: "## Situation snapshot\n- Ready",
-      inputSnapshot: { includedPrivateNotes: false },
-      model: "DeepSeek-V4-Pro",
-    });
-    mocks.getLatestPrepBriefForMeeting.mockResolvedValue(null);
-    mocks.listAgendaItemsForMeeting.mockResolvedValue([]);
-    mocks.listActionItemsForMeeting.mockResolvedValue([]);
-    mocks.listOpenActionItemsByRelationship.mockResolvedValue([]);
-    mocks.getMeetingNotesBundle.mockResolvedValue({
-      shareableNotes: null,
-      privateNotes: null,
-      decisions: [],
-    });
-    mocks.listRelationshipNoteHistory.mockResolvedValue({
-      shareableNotes: [],
-      decisions: [],
-      privateNotes: [],
+      createdAt: "2026-07-05T10:00:00.000Z",
     });
     mocks.trackProductEvent.mockResolvedValue(undefined);
   });
@@ -204,7 +211,7 @@ describe("meeting server actions", () => {
     );
   });
 
-  it("blocks free users from generating a prep brief before any DeepSeek call", async () => {
+  it("blocks free users from generating a prep brief before any AI call", async () => {
     mocks.getBillingUsage.mockResolvedValue({
       plan: "free",
       canCreateMeeting: true,
@@ -222,21 +229,63 @@ describe("meeting server actions", () => {
         {
           brief: null,
           formError: null,
-          values: {
-            includePrivateNotes: false,
-          },
+          values: { includePrivateNotes: false },
         },
         new FormData(),
       ),
     ).resolves.toMatchObject({
-      formError: expect.stringContaining("Pro feature"),
+      formError:
+        "AI Prep Brief is a Pro feature. Upgrade to turn your relationship history, notes, and open actions into a focused 1:1 prep plan.",
     });
 
     expect(mocks.generatePrepBrief).not.toHaveBeenCalled();
-    expect(mocks.createPrepBrief).not.toHaveBeenCalled();
   });
 
-  it("persists a successful prep brief and records usage", async () => {
+  it("blocks Pro users at their AI usage limit before calling DeepSeek", async () => {
+    mocks.getBillingUsage.mockResolvedValue({
+      plan: "pro",
+      canCreateMeeting: true,
+      canGenerateAi: false,
+    });
+
+    const { generatePrepBriefAction } = await import(
+      "@/app/app/relationships/[relationshipId]/meetings/[meetingId]/actions"
+    );
+
+    await expect(
+      generatePrepBriefAction(
+        "relationship-1",
+        "meeting-1",
+        {
+          brief: null,
+          formError: null,
+          values: { includePrivateNotes: false },
+        },
+        new FormData(),
+      ),
+    ).resolves.toMatchObject({
+      formError: expect.stringContaining("AI generation allowance"),
+    });
+
+    expect(mocks.generatePrepBrief).not.toHaveBeenCalled();
+  });
+
+  it("persists a successful prep brief and records usage and analytics", async () => {
+    mocks.generatePrepBrief.mockResolvedValue({
+      status: "success",
+      contentMarkdown: "## Situation snapshot\n- Ready",
+      model: "DeepSeek-V4-Pro",
+      inputSnapshot: { includedPrivateNotes: true },
+    });
+    mocks.createPrepBrief.mockResolvedValue({
+      id: "brief-1",
+      contentMarkdown: "## Situation snapshot\n- Ready",
+      includedPrivateNotes: true,
+      model: "DeepSeek-V4-Pro",
+      inputSnapshot: { includedPrivateNotes: true },
+      createdAt: "2026-07-05T10:00:00.000Z",
+    });
+
     const { generatePrepBriefAction } = await import(
       "@/app/app/relationships/[relationshipId]/meetings/[meetingId]/actions"
     );
@@ -250,30 +299,28 @@ describe("meeting server actions", () => {
         {
           brief: null,
           formError: null,
-          values: {
-            includePrivateNotes: false,
-          },
+          values: { includePrivateNotes: false },
         },
         formData,
       ),
     ).resolves.toMatchObject({
       brief: expect.objectContaining({
+        id: "brief-1",
         contentMarkdown: "## Situation snapshot\n- Ready",
       }),
       formError: null,
-      values: {
-        includePrivateNotes: false,
-      },
+      values: { includePrivateNotes: false },
     });
 
-    expect(mocks.generatePrepBrief).toHaveBeenCalled();
+    expect(mocks.generatePrepBrief).toHaveBeenCalledWith(
+      expect.objectContaining({
+        includePrivateNotes: true,
+      }),
+    );
     expect(mocks.createPrepBrief).toHaveBeenCalledWith(
       expect.objectContaining({
-        meetingId: "meeting-1",
-        relationshipId: "relationship-1",
-        userId: "user-1",
         contentMarkdown: "## Situation snapshot\n- Ready",
-        model: "DeepSeek-V4-Pro",
+        includedPrivateNotes: true,
       }),
     );
     expect(mocks.trackProductEvent).toHaveBeenCalledWith(
