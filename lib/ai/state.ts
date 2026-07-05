@@ -1,4 +1,5 @@
 import type { AgendaIdea } from "@/lib/ai/generation";
+import type { PrepBrief } from "@/lib/ai/prep-brief-repository";
 
 export type AgendaIdeasState = {
   ideas: AgendaIdea[];
@@ -15,6 +16,14 @@ export type FollowUpSummaryState = {
   };
 };
 
+export type PrepBriefState = {
+  brief: PrepBrief | null;
+  formError: string | null;
+  values: {
+    includePrivateNotes: boolean;
+  };
+};
+
 export function getEmptyAgendaIdeasState(): AgendaIdeasState {
   return {
     ideas: [],
@@ -28,6 +37,16 @@ export function getEmptyFollowUpSummaryState(): FollowUpSummaryState {
     formError: null,
     values: {
       tone: "professional",
+    },
+  };
+}
+
+export function getEmptyPrepBriefState(brief: PrepBrief | null = null): PrepBriefState {
+  return {
+    brief,
+    formError: null,
+    values: {
+      includePrivateNotes: false,
     },
   };
 }

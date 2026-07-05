@@ -1,12 +1,14 @@
-import { completeActionItemAction } from "@/app/app/actions";
-import { DashboardOpenActionItems } from "@/components/dashboard-open-action-items";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
+import { completeActionItemAction } from "@/app/app/actions";
+import { BillingStatusCard } from "@/components/billing-status-card";
+import { DashboardOpenActionItems } from "@/components/dashboard-open-action-items";
 import { DashboardEmptyState } from "@/components/dashboard-empty-state";
 import { DashboardRelationshipsList } from "@/components/dashboard-relationships-list";
 import { listOpenActionItems } from "@/lib/action-items/repository";
 import { getProtectedRouteRedirect } from "@/lib/auth/access";
+import { getBillingUsage } from "@/lib/billing/repository";
 import { listActiveRelationships } from "@/lib/relationships/repository";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,14 +31,20 @@ async function DashboardContent() {
     redirect("/auth/login?next=%2Fapp");
   }
 
-  const relationships = await listActiveRelationships({
-    supabase,
-    userId: user.id,
-  });
-  const openActionItems = await listOpenActionItems({
-    supabase,
-    userId: user.id,
-  });
+  const [relationships, openActionItems, usage] = await Promise.all([
+    listActiveRelationships({
+      supabase,
+      userId: user.id,
+    }),
+    listOpenActionItems({
+      supabase,
+      userId: user.id,
+    }),
+    getBillingUsage({
+      supabase,
+      userId: user.id,
+    }),
+  ]);
   const relationshipNames = new Map(
     relationships.map((relationship) => [relationship.id, relationship.personName]),
   );
@@ -80,6 +88,7 @@ async function DashboardContent() {
           the context that should follow you from one meeting to the next.
         </p>
       </div>
+      <BillingStatusCard usage={usage} />
       {relationships.length > 0 ? (
         <>
           <DashboardOpenActionItems

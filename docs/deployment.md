@@ -36,8 +36,17 @@ Set these environment variables in Vercel for Production, Preview, and Developme
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 - `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_PRO_PRICE_ID`
+- `DEEPSEEK_API_KEY`
+- `DEEPSEEK_BASE_URL`
+- `DEEPSEEK_MODEL`
 
 `NEXT_PUBLIC_SITE_URL` should point at the canonical production domain. If you later add a custom domain, update this value and the matching Supabase Auth Site URL together.
+
+For AI Prep Brief, set `DEEPSEEK_MODEL` to the exact approved production model name from secure credentials/config. Do not normalize or alias the model string in code or deployment settings.
 
 ## 3. Deploy
 
@@ -59,3 +68,6 @@ After the deployment finishes, verify:
 - Sign-up and sign-in complete successfully.
 - A new user can reach the empty dashboard state.
 - Supabase confirmation and password-reset links return to the deployed app.
+- A Free user sees the AI Prep Brief gate and upgrade CTA in a meeting workspace.
+- A Pro user can generate and copy an AI Prep Brief.
+- Refreshing the meeting page preserves the latest AI Prep Brief.

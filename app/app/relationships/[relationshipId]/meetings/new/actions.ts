@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 
 import { createMeeting } from "@/lib/meetings/repository";
 import { trackProductEvent } from "@/lib/analytics/repository";
+import { getUpgradeMessage } from "@/lib/billing/entitlements";
+import { getBillingUsage } from "@/lib/billing/repository";
+import { rethrowIfRedirectError } from "@/lib/navigation/redirect-error";
 import {
   getEmptyMeetingFormState,
   toMeetingFormValues,
@@ -46,7 +49,15 @@ export async function createMeetingAction(
     redirect("/app");
   }
 
-  let meetingId: string;
+  const usage = await getBillingUsage({ supabase, userId: user.id });
+
+  if (!usage.canCreateMeeting) {
+    return {
+      ...getEmptyMeetingFormState(),
+      formError: getUpgradeMessage("meeting"),
+      values: toMeetingFormValues(validation.data),
+    };
+  }
 
   try {
     const meeting = await createMeeting({
@@ -63,8 +74,12 @@ export async function createMeetingAction(
       entityType: "meeting",
       entityId: meeting.id,
     });
-    meetingId = meeting.id;
-  } catch {
+
+    redirect(
+      `/app/relationships/${relationshipId}/meetings/${meeting.id}`,
+    );
+  } catch (error) {
+    rethrowIfRedirectError(error);
     return {
       ...getEmptyMeetingFormState(),
       formError:
@@ -72,6 +87,4 @@ export async function createMeetingAction(
       values: toMeetingFormValues(validation.data),
     };
   }
-
-  redirect(`/app/relationships/${relationshipId}/meetings/${meetingId}`);
 }

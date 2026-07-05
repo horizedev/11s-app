@@ -4,7 +4,9 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { DashboardOpenActionItems } from "@/components/dashboard-open-action-items";
+import { getBillingUsage } from "@/lib/billing/repository";
 import { listOpenActionItemsByRelationship } from "@/lib/action-items/repository";
 import { createClient } from "@/lib/supabase/server";
 import { getRelationshipById } from "@/lib/relationships/repository";
@@ -43,6 +45,7 @@ async function RelationshipDetailContent({
     supabase,
     userId: user.id,
   });
+  const usage = await getBillingUsage({ supabase, userId: user.id });
 
   return (
     <>
@@ -86,6 +89,32 @@ async function RelationshipDetailContent({
               Prepare next 1:1
             </Link>
           </Button>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-primary/20 bg-primary/5 p-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                Continuity prep
+              </p>
+              <Badge variant={usage.plan === "pro" ? "default" : "secondary"}>
+                {usage.plan === "pro" ? "Pro" : "Free preview"}
+              </Badge>
+            </div>
+            <h2 className="text-xl font-semibold tracking-tight">
+              Prior context, open actions, and agenda generation in one workflow
+            </h2>
+            <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+              Pro expands this relationship continuity workflow across unlimited relationships and meetings with a larger monthly AI allowance.
+            </p>
+          </div>
+          {usage.plan === "free" ? (
+            <Button asChild variant="outline">
+              <Link href="/app/billing">Upgrade to Pro</Link>
+            </Button>
+          ) : null}
         </div>
       </section>
 

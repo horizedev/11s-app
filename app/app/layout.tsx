@@ -16,7 +16,12 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               Relationship-first prep and follow-through for recurring 1:1s.
             </p>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-3">
+            <Link href="/app/billing" className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+              Billing
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-6 py-10">
