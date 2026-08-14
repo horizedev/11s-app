@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Geist, Noto_Sans_TC } from "next/font/google";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
             {children}
           </LocaleProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

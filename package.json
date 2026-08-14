@@ -12,6 +12,7 @@
     "@ai-sdk/deepseek": "^3.0.26",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
+    "@vercel/analytics": "^2.0.1",
     "ai": "^7.0.48",
     "lucide-react": "^1.28.0",
     "next": "16.2.12",
