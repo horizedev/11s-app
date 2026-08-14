@@ -1,13 +1,85 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #fdfcfb;
-  --foreground: #292524;
+  color-scheme: light;
+  --background: #faf8f5;
+  --foreground: #28231f;
+  --surface: #fffefa;
+  --surface-raised: #ffffff;
+  --surface-muted: #f3f0eb;
+  --sidebar: #f0ede7;
+  --border: #e1dcd4;
+  --border-strong: #cbc3b9;
+  --muted: #706962;
+  --muted-subtle: #786f67;
+  --accent: #a45135;
+  --accent-hover: #8f432c;
+  --accent-soft: #f5e3da;
+  --accent-foreground: #fffaf7;
+  --secondary: #6d6095;
+  --secondary-soft: #ece8f5;
+  --success: #3d7865;
+  --success-soft: #e4f0eb;
+  --danger: #b0443f;
+  --danger-soft: #f9e6e3;
+  --focus: #7566a3;
+  --selection: #ddd7f2;
+  --scrollbar: #c9c2ba;
+  --shadow-color: 42 34 28;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: #11100f;
+  --foreground: #f7f4f1;
+  --surface: #1b1917;
+  --surface-raised: #211e1b;
+  --surface-muted: #171513;
+  --sidebar: #151412;
+  --border: #39342f;
+  --border-strong: #514a43;
+  --muted: #b2aaa2;
+  --muted-subtle: #8e857d;
+  --accent: #e3a088;
+  --accent-hover: #efb49f;
+  --accent-soft: #3b261f;
+  --accent-foreground: #251713;
+  --secondary: #ad9bd7;
+  --secondary-soft: #2d2740;
+  --success: #79b8a1;
+  --success-soft: #1d332b;
+  --danger: #f08b84;
+  --danger-soft: #3a2221;
+  --focus: #ad9bd7;
+  --selection: #4c456c;
+  --scrollbar: #5b544e;
+  --shadow-color: 0 0 0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-muted: var(--surface-muted);
+  --color-sidebar: var(--sidebar);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-muted-subtle: var(--muted-subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
   --font-sans: var(--font-geist-sans), var(--font-noto-sans-tc);
 }
 
@@ -17,6 +89,7 @@
 
 html {
   background: var(--background);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -26,6 +99,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), var(--font-noto-sans-tc), "Noto Sans TC",
     "PingFang TC", "Microsoft JhengHei", Arial, Helvetica, sans-serif;
+  font-feature-settings: "kern", "liga", "calt";
   text-rendering: optimizeLegibility;
 }
 
@@ -35,6 +109,10 @@ input[type="datetime-local"] {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 textarea,
 input,
 select,
@@ -42,14 +120,38 @@ button {
   font: inherit;
 }
 
+:where(a, button, input, textarea, select, summary) {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  touch-action: manipulation;
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+:where(input, textarea, select) {
+  caret-color: var(--accent);
+}
+
+:where(input, textarea)::placeholder {
+  color: var(--muted-subtle);
+}
+
+select,
+option {
+  background-color: var(--surface-raised);
+  color: var(--foreground);
+}
+
 ::selection {
-  background: #d9d5f0;
-  color: #292524;
+  background: var(--selection);
+  color: var(--foreground);
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #d6d3d1 transparent;
+  scrollbar-color: var(--scrollbar) transparent;
 }
 
 *::-webkit-scrollbar {
@@ -64,8 +166,129 @@ button {
 *::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: #d6d3d1;
+  background: var(--scrollbar);
   background-clip: padding-box;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  translate: 0 -5rem;
+  border-radius: 0.75rem;
+  background: var(--foreground);
+  color: var(--background);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 12px 32px rgb(var(--shadow-color) / 0.2);
+  transition: translate 160ms ease;
+}
+
+.skip-link:focus-visible {
+  translate: 0;
+}
+
+/*
+ * Legacy utility bridge: the original interface used literal light palette
+ * classes. These selectors keep those surfaces readable while components
+ * migrate toward the semantic colors above.
+ */
+.dark :where(.bg-white, [class~="bg-white/70"], [class~="bg-white/80"], [class~="bg-white/90"], [class~="bg-white/95"]) {
+  background-color: color-mix(in srgb, var(--surface-raised) 92%, transparent);
+}
+
+.dark :where(.bg-stone-50, .bg-stone-100, [class~="bg-stone-50/80"]) {
+  background-color: var(--surface-muted);
+}
+
+.dark .bg-stone-200 {
+  background-color: var(--border);
+}
+
+.dark :where(
+    [class~="bg-[#fdfcfb]"],
+    [class~="bg-[#fdfcfb]/90"],
+    [class~="bg-[#fdfcfb]/95"],
+    [class~="bg-[#f8f7f3]"]
+  ) {
+  background-color: var(--background);
+}
+
+.dark :where(
+    [class~="bg-[#f7f6f2]"],
+    [class~="bg-[#f6f5f1]"],
+    [class~="bg-[#f2f0ec]"],
+    [class~="bg-[#f8f7f4]"],
+    [class~="bg-[#f1ede8]"],
+    [class~="bg-[#fff9f5]"],
+    [class~="bg-[#fffaf7]"]
+  ) {
+  background-color: var(--surface-muted);
+}
+
+.dark :where(.text-stone-950, .text-stone-900, .text-stone-800) {
+  color: var(--foreground);
+}
+
+.dark :where(.text-stone-700, .text-stone-600) {
+  color: #ded9d4;
+}
+
+.dark :where(.text-stone-500, .text-stone-400) {
+  color: var(--muted);
+}
+
+.dark .text-stone-300 {
+  color: #d7d1cb;
+}
+
+.dark :where(
+    .border-stone-100,
+    .border-stone-200,
+    .border-stone-300,
+    [class~="border-stone-100/80"],
+    [class~="border-stone-200/70"],
+    [class~="border-stone-200/80"],
+    [class~="border-stone-200/90"],
+    [class~="border-stone-300/80"]
+  ) {
+  border-color: var(--border);
+}
+
+.dark :where([class~="hover:bg-white"], [class~="hover:bg-white/60"], [class~="hover:bg-white/70"]):hover,
+.dark [class~="focus:bg-white"]:focus {
+  background-color: var(--surface-raised);
+}
+
+.dark :where([class~="hover:bg-stone-50"], [class~="hover:bg-stone-100"]):hover {
+  background-color: var(--surface-raised);
+}
+
+.dark .bg-red-50,
+.dark [class~="hover:bg-red-50"]:hover {
+  background-color: var(--danger-soft);
+}
+
+.dark :where(.text-red-600, .text-red-500) {
+  color: var(--danger);
+}
+
+.dark :where(.border-red-100, .border-red-200) {
+  border-color: color-mix(in srgb, var(--danger) 30%, var(--border));
+}
+
+.dark :where(.bg-emerald-50, .bg-emerald-100) {
+  background-color: var(--success-soft);
+}
+
+.dark :where(.text-emerald-600, .text-emerald-700) {
+  color: var(--success);
+}
+
+.dark :where(.border-emerald-100, .border-emerald-200) {
+  border-color: color-mix(in srgb, var(--success) 30%, var(--border));
 }
 
 @media (prefers-reduced-motion: reduce) {

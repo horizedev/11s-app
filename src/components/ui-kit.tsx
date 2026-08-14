@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   Heart,
   HandHeart,
+  MessageCircle,
   RotateCcw,
   TrendingUp,
 } from "lucide-react";
@@ -17,16 +18,24 @@ export function Avatar({
   name,
   color,
   size = "md",
+  emoji,
 }: {
   name: string;
   color: string;
   size?: "sm" | "md" | "lg" | "xl";
+  emoji?: string | null;
 }) {
   const sizes = {
-    sm: "size-8 text-[10px]",
-    md: "size-10 text-xs",
-    lg: "size-12 text-sm",
-    xl: "size-16 text-lg",
+    sm: "size-8 text-[13px]",
+    md: "size-10 text-[17px]",
+    lg: "size-12 text-[22px]",
+    xl: "size-16 text-[30px]",
+  };
+  const initialSizes = {
+    sm: "text-[10px]",
+    md: "text-xs",
+    lg: "text-sm",
+    xl: "text-lg",
   };
 
   return (
@@ -37,11 +46,21 @@ export function Avatar({
         sizes[size],
       )}
       style={{
-        background: `linear-gradient(145deg, ${color} 0%, color-mix(in srgb, ${color} 72%, #111827) 100%)`,
+        background: emoji
+          ? `linear-gradient(145deg, color-mix(in srgb, ${color} 28%, #fff) 0%, color-mix(in srgb, ${color} 55%, #f5f5f4) 100%)`
+          : `linear-gradient(145deg, ${color} 0%, color-mix(in srgb, ${color} 72%, #111827) 100%)`,
       }}
     >
-      <span className="relative z-10">{getInitials(name)}</span>
-      <span className="absolute -right-2 -top-2 size-7 rounded-full bg-white/10" />
+      {emoji ? (
+        <span className="relative z-10 leading-none">{emoji}</span>
+      ) : (
+        <>
+          <span className={cn("relative z-10", initialSizes[size])}>
+            {getInitials(name)}
+          </span>
+          <span className="absolute -right-2 -top-2 size-7 rounded-full bg-white/10" />
+        </>
+      )}
     </span>
   );
 }
@@ -55,11 +74,15 @@ export function RelationshipPill({
 }) {
   const { t } = useLocale();
   const styles: Record<Relationship, string> = {
-    manager: "bg-violet-50 text-violet-700 ring-violet-600/10",
-    "direct-report": "bg-orange-50 text-orange-700 ring-orange-600/10",
-    peer: "bg-teal-50 text-teal-700 ring-teal-600/10",
-    mentor: "bg-rose-50 text-rose-700 ring-rose-600/10",
-    friend: "bg-blue-50 text-blue-700 ring-blue-600/10",
+    manager:
+      "bg-violet-50 text-violet-700 ring-violet-600/10 dark:bg-violet-400/10 dark:text-violet-300 dark:ring-violet-400/20",
+    "direct-report":
+      "bg-orange-50 text-orange-700 ring-orange-600/10 dark:bg-orange-400/10 dark:text-orange-300 dark:ring-orange-400/20",
+    peer: "bg-teal-50 text-teal-700 ring-teal-600/10 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-400/20",
+    mentor:
+      "bg-rose-50 text-rose-700 ring-rose-600/10 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20",
+    friend:
+      "bg-blue-50 text-blue-700 ring-blue-600/10 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/20",
   };
 
   return (
@@ -81,23 +104,33 @@ const categoryMeta: Record<
 > = {
   "Follow up": {
     icon: RotateCcw,
-    className: "bg-blue-50 text-blue-700 ring-blue-600/10",
+    className:
+      "bg-blue-50 text-blue-700 ring-blue-600/10 dark:bg-blue-400/10 dark:text-blue-300 dark:ring-blue-400/20",
   },
   Growth: {
     icon: TrendingUp,
-    className: "bg-violet-50 text-violet-700 ring-violet-600/10",
+    className:
+      "bg-violet-50 text-violet-700 ring-violet-600/10 dark:bg-violet-400/10 dark:text-violet-300 dark:ring-violet-400/20",
   },
   Support: {
     icon: HandHeart,
-    className: "bg-orange-50 text-orange-700 ring-orange-600/10",
+    className:
+      "bg-orange-50 text-orange-700 ring-orange-600/10 dark:bg-orange-400/10 dark:text-orange-300 dark:ring-orange-400/20",
   },
   Alignment: {
     icon: AlignLeft,
-    className: "bg-teal-50 text-teal-700 ring-teal-600/10",
+    className:
+      "bg-teal-50 text-teal-700 ring-teal-600/10 dark:bg-teal-400/10 dark:text-teal-300 dark:ring-teal-400/20",
   },
   Personal: {
     icon: Heart,
-    className: "bg-rose-50 text-rose-700 ring-rose-600/10",
+    className:
+      "bg-rose-50 text-rose-700 ring-rose-600/10 dark:bg-rose-400/10 dark:text-rose-300 dark:ring-rose-400/20",
+  },
+  "Small talk": {
+    icon: MessageCircle,
+    className:
+      "bg-amber-50 text-amber-700 ring-amber-600/10 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20",
   },
 };
 
@@ -113,7 +146,7 @@ export function CategoryPill({ category }: { category: PrepCategory }) {
         meta.className,
       )}
     >
-      <Icon className="size-3" strokeWidth={2} />
+      <Icon aria-hidden="true" className="size-3" strokeWidth={2} />
       {t.category[category]}
     </span>
   );
@@ -121,8 +154,8 @@ export function CategoryPill({ category }: { category: PrepCategory }) {
 
 export function TinyArrow() {
   return (
-    <span className="inline-flex size-7 items-center justify-center rounded-full bg-stone-100 text-stone-500 transition group-hover:bg-stone-900 group-hover:text-white">
-      <ArrowUpRight className="size-3.5" />
+    <span className="inline-flex size-7 items-center justify-center rounded-full bg-surface-muted text-muted transition-[background-color,color] group-hover:bg-foreground group-hover:text-background">
+      <ArrowUpRight aria-hidden="true" className="size-3.5" />
     </span>
   );
 }

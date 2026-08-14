@@ -21,7 +21,7 @@ export function LanguageToggle({
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border border-stone-200 bg-white/80 p-0.5 shadow-sm",
+        "inline-flex shrink-0 items-center rounded-full border border-border bg-surface/90 p-0.5 shadow-[0_1px_2px_rgb(var(--shadow-color)/0.06)]",
         className,
       )}
       role="group"
@@ -33,10 +33,11 @@ export function LanguageToggle({
           type="button"
           onClick={() => setLocale(option.id)}
           className={cn(
-            "rounded-full px-2.5 py-1 text-[10px] font-semibold transition",
+            "whitespace-nowrap rounded-full py-1 text-[10px] font-semibold transition-[background-color,color,box-shadow]",
+            compact ? "px-2" : "px-2.5",
             locale === option.id
-              ? "bg-stone-900 text-white"
-              : "text-stone-500 hover:text-stone-800",
+              ? "bg-foreground text-background shadow-sm"
+              : "text-muted hover:bg-surface-muted hover:text-foreground",
           )}
           aria-pressed={locale === option.id}
         >

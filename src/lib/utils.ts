@@ -1,4 +1,4 @@
-import type { Cadence, Relationship } from "@/lib/types";
+import type { Relationship } from "@/lib/types";
 import type { Dictionary, Locale } from "@/lib/i18n/types";
 
 export const relationshipMeta: Record<
@@ -21,10 +21,6 @@ export function relationshipLabel(
     return t.relationship["direct-report-short"];
   }
   return t.relationship[relationship];
-}
-
-export function cadenceLabel(cadence: Cadence, t: Dictionary): string {
-  return t.cadence[cadence];
 }
 
 export function cn(
@@ -75,45 +71,37 @@ function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-export function getMeetingTiming(
-  value: string,
+export function getLastMeetingTiming(
+  value: string | undefined,
   t: Dictionary,
   locale: Locale = "en",
   now = new Date(),
-): { label: string; tone: "today" | "soon" | "later" | "overdue" } {
+): { label: string; tone: "recent" | "earlier" | "none" } {
+  if (!value) {
+    return { label: t.timing.noConversationYet, tone: "none" };
+  }
+
   const meeting = startOfDay(new Date(value));
   const today = startOfDay(now);
   const days = Math.round(
-    (meeting.getTime() - today.getTime()) / (24 * 60 * 60 * 1000),
+    (today.getTime() - meeting.getTime()) / (24 * 60 * 60 * 1000),
   );
 
-  if (days < 0) {
-    return {
-      label: t.timing.overdue(Math.abs(days)),
-      tone: "overdue",
-    };
-  }
-
-  if (days === 0) {
-    return { label: t.timing.today, tone: "today" };
+  if (days <= 0) {
+    return { label: t.timing.today, tone: "recent" };
   }
 
   if (days === 1) {
-    return { label: t.timing.tomorrow, tone: "soon" };
+    return { label: t.timing.yesterday, tone: "recent" };
   }
 
-  if (days <= 7) {
-    return { label: t.timing.inDays(days), tone: "soon" };
+  if (days <= 14) {
+    return { label: t.timing.daysAgo(days), tone: "recent" };
   }
 
   return {
-    label: formatHistoryDate(value, locale).replace(
-      locale === "zh-TW"
-        ? `${meeting.getFullYear()}年`
-        : `, ${meeting.getFullYear()}`,
-      "",
-    ),
-    tone: "later",
+    label: formatHistoryDate(value, locale),
+    tone: "earlier",
   };
 }
 
@@ -124,32 +112,15 @@ export function countNoteLines(notes: string): number {
     .filter(Boolean).length;
 }
 
-export function addCadence(value: string, cadence: Cadence): string {
-  const next = new Date(value);
-
-  switch (cadence) {
-    case "Weekly":
-      next.setDate(next.getDate() + 7);
-      break;
-    case "Every 2 weeks":
-      next.setDate(next.getDate() + 14);
-      break;
-    case "Monthly":
-      next.setMonth(next.getMonth() + 1);
-      break;
-    case "Quarterly":
-      next.setMonth(next.getMonth() + 3);
-      break;
-    case "Flexible":
-      next.setMonth(next.getMonth() + 1);
-      break;
-  }
-
-  return next.toISOString();
-}
-
 export function toDateTimeLocal(value: string): string {
   const date = new Date(value);
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
   return local.toISOString().slice(0, 16);
+}
+
+export function sortByLastMeetingThenName(a: { lastMeetingAt: string; name: string }, b: { lastMeetingAt: string; name: string }) {
+  const aTime = a.lastMeetingAt ? new Date(a.lastMeetingAt).getTime() : 0;
+  const bTime = b.lastMeetingAt ? new Date(b.lastMeetingAt).getTime() : 0;
+  if (aTime !== bTime) return bTime - aTime;
+  return a.name.localeCompare(b.name);
 }

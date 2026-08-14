@@ -15,6 +15,7 @@ export type Dictionary = {
     brand: string;
     brandTagline: string;
     overview: string;
+    smallTalk: string;
     people: string;
     work: string;
     personal: string;
@@ -23,7 +24,6 @@ export type Dictionary = {
     cancel: string;
     done: string;
     closeDialog: string;
-    openSettings: string;
     saved: string;
     saving: string;
     note: string;
@@ -31,8 +31,15 @@ export type Dictionary = {
     ideas: string;
     followUps: string;
     language: string;
+    theme: string;
+    toggleTheme: string;
     english: string;
     traditionalChinese: string;
+    loadingWorkspace: string;
+    workspaceLoadFailed: string;
+    tryAgain: string;
+    moreInfo: string;
+    career: string;
   };
   relationship: {
     manager: string;
@@ -41,13 +48,6 @@ export type Dictionary = {
     peer: string;
     mentor: string;
     friend: string;
-  };
-  cadence: {
-    Weekly: string;
-    "Every 2 weeks": string;
-    Monthly: string;
-    Quarterly: string;
-    Flexible: string;
   };
   mood: {
     energized: string;
@@ -61,21 +61,29 @@ export type Dictionary = {
     Support: string;
     Alignment: string;
     Personal: string;
+    "Small talk": string;
   };
   timing: {
     today: string;
     tomorrow: string;
+    yesterday: string;
     overdue: (days: number) => string;
     inDays: (days: number) => string;
+    daysAgo: (days: number) => string;
+    noConversationYet: string;
   };
   landing: {
     homeAria: string;
     navAria: string;
     navWhy: string;
     navHow: string;
+    navUseCases: string;
     navPrivacy: string;
+    navPricing: string;
     openWorkspace: string;
     eyebrow: string;
+    platformLabel: string;
+    platformTitle: string;
     heroLead: string;
     heroAccent: string;
     heroBody: string;
@@ -115,6 +123,10 @@ export type Dictionary = {
     finalBody: string;
     openBetween: string;
     footerTagline: string;
+    footerNavAria: string;
+    footerTerms: string;
+    footerPrivacy: string;
+    footerPricing: string;
     goToWorkspace: string;
     previewConversations: string;
     previewPeople: string;
@@ -136,6 +148,20 @@ export type Dictionary = {
     previewFloatLeft: string;
     previewFloatRight: string;
     previewManager: string;
+    previewCareerNav: string;
+    previewIntentCareer: string;
+    previewLeadLabel: string;
+    previewSupportLabel: string;
+    useCasesEyebrow: string;
+    useCasesTitle: string;
+    useCasesBody: string;
+    useCases: Array<{
+      id: string;
+      title: string;
+      audience: string;
+      description: string;
+      example: string;
+    }>;
   };
   sidebar: {
     searchAria: string;
@@ -145,6 +171,8 @@ export type Dictionary = {
     goToOverview: string;
     noMatch: string;
     localWorkspace: string;
+    collapse: string;
+    expand: string;
   };
   overview: {
     emptyTitle: string;
@@ -152,14 +180,39 @@ export type Dictionary = {
     emptyCta: string;
     ariaStats: string;
     nextUp: string;
-    scheduled: string;
+    focusPerson: string;
     prepared: string;
     openPreparation: string;
-    upcoming: string;
-    sortedByNext: string;
+    peopleList: string;
+    sortedByRecent: string;
     recent: string;
     notesReady: (count: number) => string;
     preparedLine: (notes: number, ideas: number) => string;
+    toolkitEyebrow: string;
+    toolkitTitle: string;
+    toolkitBody: string;
+    contextBankTitle: string;
+    contextBankBody: string;
+    contextBankPlaceholder: string;
+    contextTopics: string[];
+    contextSlotsLabel: string;
+    contextSlots: Record<
+      "Job" | "Energy" | "Learning" | "Career" | "Personal",
+      { label: string; example: string }
+    >;
+    contextFreshnessHint: string;
+    contextPrivate: string;
+    smallTalkTitle: string;
+    smallTalkBody: string;
+    smallTalkTeaserBody: string;
+    smallTalkTeaserEmpty: string;
+    smallTalkMore: (count: number) => string;
+    openSmallTalk: string;
+    generateSmallTalk: string;
+    refreshSmallTalk: string;
+    smallTalkEmptyTitle: string;
+    smallTalkEmptyBody: string;
+    smallTalkOpening: string;
     filters: Record<
       "all" | "work" | "personal",
       { eyebrow: string; title: string; description: string }
@@ -176,8 +229,29 @@ export type Dictionary = {
       ofConversations: (total: number) => string;
     };
   };
+  smallTalk: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    backToOverview: string;
+    newsTitle: string;
+    newsBody: string;
+    newsActive: (count: number) => string;
+    emptyWithNews: string;
+    newsAreas: Record<
+      | "technology"
+      | "business"
+      | "culture"
+      | "science"
+      | "sports"
+      | "world",
+      string
+    >;
+  };
   person: {
     logMeeting: string;
+    editPerson: string;
+    editConversation: string;
     prepare: string;
     history: (count: number) => string;
     detailSections: string;
@@ -189,7 +263,9 @@ export type Dictionary = {
     generateIdeas: string;
     savedNotes: (count: number) => string;
     pastDiscussions: (count: number) => string;
-    cadenceLabel: (cadence: string) => string;
+    relationshipChip: string;
+    aiIdeation: string;
+    aiIdeationHint: string;
     suggested: string;
     suggestedHint: string;
     aiGenerated: string;
@@ -201,8 +277,7 @@ export type Dictionary = {
     generatePrep: string;
     lastConversation: string;
     viewHistory: string;
-    nextOneOnOne: string;
-    reschedule: string;
+    noLastConversation: string;
     notesForNext: string;
     notesHint: string;
     notesPlaceholder: string;
@@ -216,10 +291,53 @@ export type Dictionary = {
     addConversation: string;
     noHistoryTitle: string;
     noHistoryBody: string;
+    clearNotes: string;
+    archiveNotes: string;
+    lastNotesTitle: string;
+    lastNotesEmpty: string;
+    restoreLastNote: string;
+    changePhoto: string;
+    removePhoto: string;
+    photoHint: string;
+    chooseEmoji: string;
+    emojiHint: string;
+    prepQuota: (remaining: number, limit: number) => string;
+    prepQuotaUnlimited: string;
+    prepWorkspaceTitle: string;
+    prepWorkspaceBody: string;
+    intentLabel: string;
+    intentHint: string;
+    intents: Record<
+      "career" | "catch-up" | "hard-talk" | "repair" | "just-warm",
+      string
+    >;
+    leadQuestion: string;
+    supportingThreads: string;
+    stallCards: string;
+    stallIfNeeded: string;
+    contextPreviewTitle: string;
+    contextPreviewBody: string;
+    contextPreviewContinue: string;
+    copyAgenda: string;
+    agendaCopied: string;
+    refineLabel: string;
+    refineWarmer: string;
+    refineShorter: string;
+    refineMoreCareer: string;
+    glanceMode: string;
+    fullPrepMode: string;
+    glanceEmpty: string;
+    closeQuickTitle: string;
   };
   dialogs: {
     addTitle: string;
     addDescription: string;
+    editTitle: string;
+    editDescription: string;
+    savePerson: string;
+    deletePerson: string;
+    deletePersonConfirm: (name: string) => string;
+    deletePersonBody: string;
     name: string;
     namePlaceholder: string;
     relationship: string;
@@ -229,12 +347,17 @@ export type Dictionary = {
     organization: string;
     orgPlaceholderWork: string;
     orgPlaceholderFriend: string;
-    cadence: string;
-    nextConversation: string;
+    linkedinUrl: string;
+    linkedinUrlPlaceholder: string;
+    background: string;
+    backgroundPlaceholder: string;
+    backgroundHint: string;
     notesForNext: string;
     notesPlaceholder: string;
     logTitle: (firstName: string) => string;
     logDescription: string;
+    editLogTitle: (firstName: string) => string;
+    editLogDescription: string;
     conversationTitle: string;
     conversationPlaceholder: string;
     dateAndTime: string;
@@ -245,16 +368,26 @@ export type Dictionary = {
     topicsPlaceholder: string;
     followUps: string;
     followUpsPlaceholder: string;
-    nextAdvances: string;
     saveConversation: string;
-    settingsTitle: string;
-    settingsDescription: string;
+    updateConversation: string;
     aiPrepTitle: string;
-    aiPrepBodyBefore: string;
-    aiPrepBodyAfter: string;
+    aiPrepBody: string;
     localStorageTitle: string;
     localStorageBody: string;
-    resetDemo: string;
+    accountTitle: string;
+    signedInAs: (email: string) => string;
+    signOut: string;
+    planFreeName: string;
+    planProName: string;
+    closeQuickTitle: (firstName: string) => string;
+    closeQuickDescription: string;
+    closeQuickSummaryLabel: string;
+    closeQuickSummaryPlaceholder: string;
+    closeQuickFollowUpsLabel: string;
+    closeQuickSuggested: string;
+    useSuggestedFollowUp: string;
+    saveCloseQuick: string;
+    logFullDetails: string;
   };
   toast: {
     aiReady: string;
@@ -263,11 +396,151 @@ export type Dictionary = {
     alreadyInNotes: string;
     addedToNotes: string;
     personAdded: (name: string) => string;
+    personUpdated: (name: string) => string;
+    personRemoved: (name: string) => string;
     conversationSaved: string;
-    sampleRestored: string;
+    conversationUpdated: string;
+    saveFailed: string;
+    upgradePeople: string;
+    upgradePrep: string;
+    upgraded: string;
+    billingUnavailable: string;
+    notesCleared: string;
+    notesArchived: string;
+    photoUpdated: string;
+    photoRemoved: string;
+    photoFailed: string;
+    agendaCopied: string;
+    refined: string;
+    prepCreditEarned: string;
+    careerSaved: string;
+    needAdded: string;
+  };
+  career: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    directionTitle: string;
+    directionBody: string;
+    leverageFromDirection: string;
+    targetRole: string;
+    targetRolePlaceholder: string;
+    timeline: string;
+    timelinePlaceholder: string;
+    directionNotes: string;
+    directionNotesPlaceholder: string;
+    bragTitle: string;
+    bragBody: string;
+    bragPlaceholder: string;
+    needsTitle: string;
+    needsBody: string;
+    needsPlaceholder: string;
+    addNeed: string;
+    needOpen: string;
+    needRouted: string;
+    needDone: string;
+    markDone: string;
+    deleteNeed: string;
+    routeNeed: string;
+    whoToAskTitle: string;
+    whoToAskBody: string;
+    whoToAskPlaceholder: string;
+    whoToAskRun: string;
+    whoToAskEmpty: string;
+    whyThem: string;
+    suggestedAsk: string;
+    prepareWith: string;
+    addAskToNotes: string;
+    shortcutsTitle: string;
+    prepManager: string;
+    prepMentor: string;
+    noManager: string;
+    noMentor: string;
+    saved: string;
+    routing: string;
+    routeFailed: string;
   };
   mobile: {
     overview: string;
     people: string;
+    smallTalk: string;
+    add: string;
+    career: string;
+    account: string;
+  };
+  pricing: {
+    eyebrow: string;
+    title: string;
+    titleAccent: string;
+    body: string;
+    monthly: string;
+    yearly: string;
+    yearlyBadge: string;
+    perMonth: string;
+    perYear: string;
+    freeName: string;
+    freePrice: string;
+    freeBody: string;
+    freeFeatures: string[];
+    freeCta: string;
+    proName: string;
+    proBody: string;
+    proFeatures: string[];
+    proCta: string;
+    proBadge: string;
+    currentPlan: string;
+    manageCta: string;
+    loginCta: string;
+    checkoutFailed: string;
+    footnote: string;
+  };
+  account: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    currentPlan: string;
+    statusLabel: string;
+    status: {
+      none: string;
+      active: string;
+      trialing: string;
+      past_due: string;
+      canceled: string;
+    };
+    renews: string;
+    ends: string;
+    noRenewal: string;
+    peopleUsage: (used: number, limit: number | null) => string;
+    prepUsage: (used: number, limit: number | null) => string;
+    unlimited: string;
+    upgradeCta: string;
+    manageCta: string;
+    backToWorkspace: string;
+    viewPricing: string;
+    preferencesEyebrow: string;
+    preferencesTitle: string;
+    profileTitle: string;
+    contactLabel: string;
+    aboutEyebrow: string;
+    aboutTitle: string;
+    referral: {
+      eyebrow: string;
+      title: string;
+      body: (quotaPerCredit: number) => string;
+      linkLabel: string;
+      copy: string;
+      copied: string;
+      referredLabel: string;
+      referredValue: (count: number) => string;
+      quotaLabel: string;
+      redeemedLabel: string;
+      redeemedValue: (count: number) => string;
+      redeemCta: (quotaPerCredit: number) => string;
+      progress: (needed: number) => string;
+      readyToRedeem: string;
+      alreadyPro: string;
+      redeemSuccess: string;
+      redeemFailed: string;
+    };
   };
 };
