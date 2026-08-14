@@ -91,7 +91,7 @@ const EMPTY_CAREER: CareerProfile = {
   needs: [],
 };
 
-type OpenDialog = "add" | "edit" | "log" | "quick-close" | null;
+type OpenDialog = "add" | "edit" | "log" | null;
 
 type Toast = { message: string; href?: string };
 
@@ -706,7 +706,6 @@ export function OneOnOneApp({
   async function logDiscussion(
     person: Person,
     input: NewDiscussionInput,
-    options?: { quickClose?: boolean },
   ) {
     try {
       const discussion = await createDiscussion(
@@ -732,10 +731,6 @@ export function OneOnOneApp({
           used: Math.max(0, current.used - 1),
         }));
         showToast(t.toast.prepCreditEarned);
-      }
-
-      if (options?.quickClose && person.notes.trim()) {
-        await archiveNotes(person);
       }
     } catch {
       showToast(t.toast.saveFailed);
@@ -770,11 +765,6 @@ export function OneOnOneApp({
   function openLogMeeting() {
     setEditingDiscussionId(null);
     setDialog("log");
-  }
-
-  function openQuickClose() {
-    setEditingDiscussionId(null);
-    setDialog("quick-close");
   }
 
   function openEditMeeting(discussionId: string) {
@@ -921,7 +911,6 @@ export function OneOnOneApp({
             key={selectedPerson.id}
             person={selectedPerson}
             prepMeta={prepMeta[selectedPerson.id]}
-            prepQuota={prepQuota}
             isGenerating={generatingPersonId === selectedPerson.id}
             isRefining={refiningPersonId === selectedPerson.id}
             intent={meetingIntent}
@@ -941,7 +930,6 @@ export function OneOnOneApp({
               void removePrepIdea(selectedPerson, ideaId)
             }
             onLogMeeting={openLogMeeting}
-            onQuickClose={openQuickClose}
             onEditMeeting={openEditMeeting}
             onAgendaCopied={() => showToast(t.toast.agendaCopied)}
           />
@@ -1078,29 +1066,6 @@ export function OneOnOneApp({
               return;
             }
             void logDiscussion(selectedPerson, discussion);
-          }}
-        />
-      ) : null}
-      {dialog === "quick-close" && selectedPerson ? (
-        <LogMeetingDialog
-          personName={selectedPerson.name}
-          mode="quick"
-          suggestedFollowUps={[
-            ...selectedPerson.notes
-              .split("\n")
-              .map((line) => line.trim())
-              .filter(Boolean),
-            ...selectedPerson.prepIdeas.map((idea) => idea.title),
-          ].slice(0, 5)}
-          onClose={() => {
-            setEditingDiscussionId(null);
-            setDialog(null);
-          }}
-          onRequestFull={() => setDialog("log")}
-          onSubmit={(discussion) => {
-            void logDiscussion(selectedPerson, discussion, {
-              quickClose: true,
-            });
           }}
         />
       ) : null}

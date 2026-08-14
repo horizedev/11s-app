@@ -78,10 +78,6 @@ export const en: Dictionary = {
     navPrivacy: "Privacy",
     navPricing: "Pricing",
     openWorkspace: "Open workspace",
-    eyebrow: "Better 1:1s. Clearer career moves.",
-    platformLabel: "1-to-1 conversation workspace",
-    platformTitle:
-      "Built for people who want better conversations—and faster career advancement—through the 1:1s they already have.",
     heroLead: "Show up ready.",
     heroAccent: "Advance with intent.",
     heroBody:
@@ -130,7 +126,7 @@ export const en: Dictionary = {
       {
         step: "Continue",
         title: "Close the loop",
-        copy: "Quick-close after the meeting, carry follow-ups forward, and keep career asks moving across your network.",
+        copy: "Log what mattered after the meeting, carry follow-ups forward, and keep career asks moving across your network.",
       },
     ],
     aiEyebrow: "Context-aware conversation coach",
@@ -191,7 +187,7 @@ export const en: Dictionary = {
     goToWorkspace: "Go to workspace",
     previewConversations: "Better 1:1s",
     previewPeople: "People",
-    previewLog: "Quick close",
+    previewLog: "Log a 1:1",
     previewPrepare: "Prepare",
     previewHistory: "History · 2",
     previewCoach: "Conversation coach",
@@ -224,6 +220,32 @@ export const en: Dictionary = {
     previewFloatLeft: "Career context in the room",
     previewFloatRight: "1 lead · 2 supports ready",
     previewManager: "Manager",
+    assistEyebrow: "Beyond the 1:1",
+    assistTitle: "Find the right person. Break the ice.",
+    assistBody:
+      "Two more ways 11s turns your private context into momentum—career asks routed to the people most able to help, and openers for any chat.",
+    assistWhoTitle: "Who to ask",
+    assistWhoBody:
+      "Describe a career need. 11s routes it to the person in your circle most able to help—and drafts a natural way to ask.",
+    assistWhoNeed: "I need sponsorship for a director-track conversation…",
+    assistWhoWhyLabel: "Why Maya:",
+    assistWhoWhyText:
+      "She has sponsored your work and knows the director rubric.",
+    assistWhoAskText:
+      "Could you sponsor me when the director-track conversation opens next cycle?",
+    assistTalkTitle: "Small talk, powered by your context",
+    assistTalkBody:
+      "Your context bank turns awkward silences into warm openings—even with no specific person in mind.",
+    assistTalkContextLabel: "From your context bank",
+    assistTalkContext: [
+      "Job · Leading a product launch",
+      "Interest · Trail running & coffee",
+    ],
+    assistTalkIdeasLabel: "Openers it sparks",
+    assistTalkIdeas: [
+      "I just got into trail running—any routes worth waking up early for?",
+      "We ship our launch next week—how does your team celebrate a big release?",
+    ],
     previewCareerNav: "Career",
     previewIntentCareer: "Career growth",
     previewLeadLabel: "Lead question",
@@ -302,25 +324,14 @@ export const en: Dictionary = {
     notesReady: (count) =>
       count === 1 ? "1 note ready" : `${count} notes ready`,
     preparedLine: (notes, ideas) => `${notes} notes · ${ideas} ideas`,
-    toolkitEyebrow: "Your conversation toolkit",
     toolkitTitle: "Give every conversation more to work with.",
     toolkitBody:
       "Keep reusable context about your own world, then turn it into natural openings for any 1:1—or an easy chat with no one specific in mind.",
     contextBankTitle: "Your context bank",
     contextBankBody:
-      "Add one thought per line. 11s can draw from these details when it prepares ideas for any person.",
+      "Add one thought per line. 11s can draw from these details when it prepares ideas for any person—fresher details make warmer, more specific openings.",
     contextBankPlaceholder:
       "Job: Leading a product launch\nInterest: Trail running and coffee\nLearning: Conversational Japanese\nGoal: Move into a director role\nTravel: Planning a trip to Kyoto…",
-    contextTopics: [
-      "Job",
-      "Interests",
-      "Study",
-      "Goals",
-      "Travel",
-      "Career",
-      "Anything",
-    ],
-    contextSlotsLabel: "Suggested slots",
     contextSlots: {
       Job: { label: "Job", example: "Leading a product launch" },
       Energy: { label: "Energy", example: "Trail running and weekend coffee" },
@@ -328,8 +339,6 @@ export const en: Dictionary = {
       Career: { label: "Career", example: "Moving toward a director role" },
       Personal: { label: "Personal", example: "Planning a trip to Kyoto" },
     },
-    contextFreshnessHint:
-      "Fresher details make warmer, more specific openings.",
     contextPrivate: "Private to your account and used only for preparation",
     smallTalkTitle: "Small-talk ideas",
     smallTalkBody:
@@ -349,19 +358,16 @@ export const en: Dictionary = {
     smallTalkOpening: "A natural way in",
     filters: {
       all: {
-        eyebrow: "Your relationship workspace",
         title: "Make your next conversation count.",
         description:
           "Keep context close, remember what matters, and show up with a better question.",
       },
       work: {
-        eyebrow: "Work relationships",
         title: "Lead every 1:1 with context.",
         description:
           "Stay ahead of commitments, growth conversations, and the details that build trust.",
       },
       personal: {
-        eyebrow: "Personal relationships",
         title: "Remember more than the last update.",
         description:
           "Keep the small details and meaningful follow-ups close for the people you care about.",
@@ -380,7 +386,6 @@ export const en: Dictionary = {
     },
   },
   smallTalk: {
-    eyebrow: "Under overview",
     title: "Small talk that stays useful.",
     body: "Keep longer idea lists here, pull from your context bank, and optionally tap recent news areas for fresher talking angles.",
     backToOverview: "Back to overview",
@@ -408,7 +413,6 @@ export const en: Dictionary = {
     history: (count) => `History · ${count}`,
     detailSections: "Person detail sections",
     coach: "AI conversation coach",
-    coachTitle: "Prepare with the context you kept.",
     coachBody:
       "Turn your context bank, next-meeting notes, complete discussion history, and relationship context into thoughtful prompts.",
     thinking: "Thinking…",
@@ -498,7 +502,6 @@ export const en: Dictionary = {
     fullPrepMode: "Full prep",
     glanceEmpty:
       "Generate preparation to see a quick glance of your lead question and threads.",
-    closeQuickTitle: "Quick close",
   },
   dialogs: {
     addTitle: "Add someone",
@@ -559,16 +562,6 @@ export const en: Dictionary = {
     signOut: "Sign out",
     planFreeName: "Free",
     planProName: "Pro",
-    closeQuickTitle: (firstName) => `Quick close with ${firstName}`,
-    closeQuickDescription:
-      "Capture the essentials in a minute so follow-ups stay ready for next time.",
-    closeQuickSummaryLabel: "What happened",
-    closeQuickSummaryPlaceholder: "One or two sentences on what mattered…",
-    closeQuickFollowUpsLabel: "Follow-ups",
-    closeQuickSuggested: "Suggested follow-ups",
-    useSuggestedFollowUp: "Use suggestion",
-    saveCloseQuick: "Save and close",
-    logFullDetails: "Log full details",
   },
   toast: {
     aiReady: "Fresh AI preparation is ready",
@@ -600,7 +593,6 @@ export const en: Dictionary = {
     needAdded: "Need added",
   },
   career: {
-    eyebrow: "Career workspace",
     title: "Make your next career move visible.",
     body: "Keep direction, wins, and open needs in one place—then route the right ask to the right person.",
     directionTitle: "Direction",

@@ -77,18 +77,13 @@ export function Overview({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-8 sm:px-8 lg:px-10 lg:pb-16 lg:pt-11">
-        <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-subtle">
-              {copy.eyebrow}
-            </p>
-            <h1 className="mt-3 text-balance text-[2.15rem] font-semibold leading-[1.08] tracking-[-0.045em] text-foreground sm:text-[2.75rem]">
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-16 lg:pt-8">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex max-w-2xl items-center gap-2">
+            <h1 className="text-balance text-2xl font-semibold leading-[1.15] tracking-[-0.04em] text-foreground sm:text-3xl">
               {copy.title}
             </h1>
-            <p className="mt-3 max-w-xl text-pretty text-sm leading-6 text-muted sm:text-[15px]">
-              {copy.description}
-            </p>
+            <Hint label={t.common.moreInfo}>{copy.description}</Hint>
           </div>
           <button
             type="button"
@@ -100,16 +95,10 @@ export function Overview({
           </button>
         </header>
 
-        <section className="mt-10">
+        <section className="mt-8">
           <div className="max-w-2xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a75f44] dark:text-[#e0a48e]">
-              <span aria-hidden="true" className="mr-1.5">
-                🧰
-              </span>
-              {t.overview.toolkitEyebrow}
-            </p>
-            <div className="mt-2 flex items-center gap-1.5">
-              <h2 className="text-balance text-2xl font-semibold tracking-[-0.035em] text-foreground sm:text-3xl">
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-balance text-xl font-semibold tracking-[-0.03em] text-foreground sm:text-2xl">
                 {t.overview.toolkitTitle}
               </h2>
               <Hint label={t.common.moreInfo}>{t.overview.toolkitBody}</Hint>
@@ -143,9 +132,6 @@ export function Overview({
               </div>
 
               <div className="mt-4 flex flex-wrap gap-1.5">
-                <p className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                  {t.overview.contextSlotsLabel}
-                </p>
                 {(
                   Object.keys(t.overview.contextSlots) as Array<
                     keyof typeof t.overview.contextSlots
@@ -168,9 +154,6 @@ export function Overview({
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-[10px] text-muted-subtle">
-                {t.overview.contextFreshnessHint}
-              </p>
 
               <textarea
                 name="context-bank"
@@ -461,10 +444,7 @@ export function Overview({
             <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent">
               <UsersRound className="size-6" />
             </span>
-            <p aria-hidden="true" className="mt-4 text-2xl">
-              👋
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-foreground">
+            <h2 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-foreground">
               {t.overview.emptyTitle}
             </h2>
             <p className="mx-auto mt-2 max-w-md text-pretty text-sm leading-6 text-muted">

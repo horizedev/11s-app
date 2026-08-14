@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CheckCircle2,
   MessageSquareText,
   Pencil,
   Save,
@@ -586,28 +585,18 @@ export function EditPersonDialog({
 export function LogMeetingDialog({
   personName,
   discussion,
-  mode = "full",
-  suggestedFollowUps = [],
   onClose,
   onSubmit,
-  onRequestFull,
 }: {
   personName: string;
   discussion?: Discussion;
-  mode?: "full" | "quick";
-  suggestedFollowUps?: string[];
   onClose: () => void;
   onSubmit: (discussion: NewDiscussionInput) => void;
-  onRequestFull?: () => void;
 }) {
   const { t } = useLocale();
   const isEditing = Boolean(discussion);
-  const isQuick = mode === "quick" && !isEditing;
   const [mood, setMood] = useState<DiscussionMood>(
     discussion?.mood ?? "positive",
-  );
-  const [followUps, setFollowUps] = useState(
-    () => discussion?.followUps.join("\n") ?? "",
   );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -619,19 +608,6 @@ export function LogMeetingDialog({
         .map((item) => item.trim())
         .filter(Boolean);
 
-    if (isQuick) {
-      const summary = String(formData.get("summary")).trim();
-      onSubmit({
-        title: `1:1 with ${personName.split(" ")[0]}`,
-        date: new Date().toISOString(),
-        summary,
-        topics: [],
-        followUps: splitList(followUps),
-        mood,
-      });
-      return;
-    }
-
     onSubmit({
       title: String(formData.get("title")).trim(),
       date: new Date(String(formData.get("date"))).toISOString(),
@@ -642,32 +618,17 @@ export function LogMeetingDialog({
     });
   }
 
-  function addSuggested(item: string) {
-    setFollowUps((current) => {
-      const lines = current
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean);
-      if (lines.includes(item)) return current;
-      return [...lines, item].join("\n");
-    });
-  }
-
   return (
     <DialogFrame
       title={
-        isQuick
-          ? t.dialogs.closeQuickTitle(personName.split(" ")[0])
-          : isEditing
-            ? t.dialogs.editLogTitle(personName.split(" ")[0])
-            : t.dialogs.logTitle(personName.split(" ")[0])
+        isEditing
+          ? t.dialogs.editLogTitle(personName.split(" ")[0])
+          : t.dialogs.logTitle(personName.split(" ")[0])
       }
       description={
-        isQuick
-          ? t.dialogs.closeQuickDescription
-          : isEditing
-            ? t.dialogs.editLogDescription
-            : t.dialogs.logDescription
+        isEditing
+          ? t.dialogs.editLogDescription
+          : t.dialogs.logDescription
       }
       icon={
         isEditing ? (
@@ -679,179 +640,98 @@ export function LogMeetingDialog({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit}>
-        {isQuick ? (
-          <div className="grid gap-4 px-5 py-5 sm:px-6">
-            <label className={labelClassName}>
-              {t.dialogs.howDidItFeel}
-              <select
-                name="mood"
-                value={mood}
-                onChange={(event) =>
-                  setMood(event.target.value as DiscussionMood)
-                }
-                className={fieldClassName}
-              >
-                <option value="energized">{t.mood.energized}</option>
-                <option value="positive">{t.mood.positive}</option>
-                <option value="neutral">{t.mood.neutral}</option>
-                <option value="tough">{t.mood.tough}</option>
-              </select>
-            </label>
-            <label className={labelClassName}>
-              {t.dialogs.closeQuickSummaryLabel}
-              <textarea
-                name="summary"
-                required
-                rows={3}
-                placeholder={t.dialogs.closeQuickSummaryPlaceholder}
-                className={textareaClassName}
-              />
-            </label>
-            <div>
-              <label className={labelClassName}>
-                {t.dialogs.closeQuickFollowUpsLabel}
-                <textarea
-                  name="followUps"
-                  rows={3}
-                  value={followUps}
-                  onChange={(event) => setFollowUps(event.target.value)}
-                  placeholder={t.dialogs.followUpsPlaceholder}
-                  className={textareaClassName}
-                />
-              </label>
-              {suggestedFollowUps.length > 0 ? (
-                <div className="mt-2">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                    {t.dialogs.closeQuickSuggested}
-                  </p>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {suggestedFollowUps.map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => addSuggested(item)}
-                        className="rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[10px] font-semibold text-muted"
-                      >
-                        {t.dialogs.useSuggestedFollowUp}: {item.slice(0, 42)}
-                        {item.length > 42 ? "…" : ""}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-4 px-5 py-5 sm:grid-cols-2 sm:px-6">
-            <label className={`${labelClassName} sm:col-span-2`}>
-              {t.dialogs.conversationTitle}
-              <input
-                name="title"
-                required
-                defaultValue={discussion?.title}
-                placeholder={t.dialogs.conversationPlaceholder}
-                className={fieldClassName}
-              />
-            </label>
-            <label className={labelClassName}>
-              {t.dialogs.dateAndTime}
-              <input
-                name="date"
-                type="datetime-local"
-                required
-                defaultValue={toDateTimeLocal(
-                  discussion?.date ?? new Date().toISOString(),
-                )}
-                className={fieldClassName}
-              />
-            </label>
-            <label className={labelClassName}>
-              {t.dialogs.howDidItFeel}
-              <select
-                name="mood"
-                value={mood}
-                onChange={(event) =>
-                  setMood(event.target.value as DiscussionMood)
-                }
-                className={fieldClassName}
-              >
-                <option value="energized">{t.mood.energized}</option>
-                <option value="positive">{t.mood.positive}</option>
-                <option value="neutral">{t.mood.neutral}</option>
-                <option value="tough">{t.mood.tough}</option>
-              </select>
-            </label>
-            <label className={`${labelClassName} sm:col-span-2`}>
-              {t.dialogs.summary}
-              <textarea
-                name="summary"
-                required
-                rows={4}
-                defaultValue={discussion?.summary}
-                placeholder={t.dialogs.summaryPlaceholder}
-                className={textareaClassName}
-              />
-            </label>
-            <label className={labelClassName}>
-              {t.dialogs.topics}
-              <textarea
-                name="topics"
-                rows={3}
-                defaultValue={discussion?.topics.join("\n")}
-                placeholder={t.dialogs.topicsPlaceholder}
-                className={textareaClassName}
-              />
-            </label>
-            <label className={labelClassName}>
-              {t.dialogs.followUps}
-              <textarea
-                name="followUps"
-                rows={3}
-                defaultValue={discussion?.followUps.join("\n")}
-                placeholder={t.dialogs.followUpsPlaceholder}
-                className={textareaClassName}
-              />
-            </label>
-          </div>
-        )}
-        <div className="flex items-center justify-between gap-2 border-t border-border px-5 py-4 sm:px-6">
-          <div>
-            {isQuick && onRequestFull ? (
-              <button
-                type="button"
-                onClick={onRequestFull}
-                className="text-xs font-semibold text-muted transition-colors hover:text-foreground"
-              >
-                {t.dialogs.logFullDetails}
-              </button>
-            ) : null}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
-            >
-              {t.common.cancel}
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
-            >
-              {isQuick ? (
-                <CheckCircle2 className="size-3.5" />
-              ) : isEditing ? (
-                <Save className="size-3.5" />
-              ) : (
-                <MessageSquareText className="size-3.5" />
+        <div className="grid gap-4 px-5 py-5 sm:grid-cols-2 sm:px-6">
+          <label className={`${labelClassName} sm:col-span-2`}>
+            {t.dialogs.conversationTitle}
+            <input
+              name="title"
+              required
+              defaultValue={discussion?.title}
+              placeholder={t.dialogs.conversationPlaceholder}
+              className={fieldClassName}
+            />
+          </label>
+          <label className={labelClassName}>
+            {t.dialogs.dateAndTime}
+            <input
+              name="date"
+              type="datetime-local"
+              required
+              defaultValue={toDateTimeLocal(
+                discussion?.date ?? new Date().toISOString(),
               )}
-              {isQuick
-                ? t.dialogs.saveCloseQuick
-                : isEditing
-                  ? t.dialogs.updateConversation
-                  : t.dialogs.saveConversation}
-            </button>
-          </div>
+              className={fieldClassName}
+            />
+          </label>
+          <label className={labelClassName}>
+            {t.dialogs.howDidItFeel}
+            <select
+              name="mood"
+              value={mood}
+              onChange={(event) =>
+                setMood(event.target.value as DiscussionMood)
+              }
+              className={fieldClassName}
+            >
+              <option value="energized">{t.mood.energized}</option>
+              <option value="positive">{t.mood.positive}</option>
+              <option value="neutral">{t.mood.neutral}</option>
+              <option value="tough">{t.mood.tough}</option>
+            </select>
+          </label>
+          <label className={`${labelClassName} sm:col-span-2`}>
+            {t.dialogs.summary}
+            <textarea
+              name="summary"
+              required
+              rows={4}
+              defaultValue={discussion?.summary}
+              placeholder={t.dialogs.summaryPlaceholder}
+              className={textareaClassName}
+            />
+          </label>
+          <label className={labelClassName}>
+            {t.dialogs.topics}
+            <textarea
+              name="topics"
+              rows={3}
+              defaultValue={discussion?.topics.join("\n")}
+              placeholder={t.dialogs.topicsPlaceholder}
+              className={textareaClassName}
+            />
+          </label>
+          <label className={labelClassName}>
+            {t.dialogs.followUps}
+            <textarea
+              name="followUps"
+              rows={3}
+              defaultValue={discussion?.followUps.join("\n")}
+              placeholder={t.dialogs.followUpsPlaceholder}
+              className={textareaClassName}
+            />
+          </label>
+        </div>
+        <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4 sm:px-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
+          >
+            {t.common.cancel}
+          </button>
+          <button
+            type="submit"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+          >
+            {isEditing ? (
+              <Save className="size-3.5" />
+            ) : (
+              <MessageSquareText className="size-3.5" />
+            )}
+            {isEditing
+              ? t.dialogs.updateConversation
+              : t.dialogs.saveConversation}
+          </button>
         </div>
       </form>
     </DialogFrame>

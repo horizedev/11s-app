@@ -35,7 +35,6 @@ import type {
   MeetingIntent,
   Person,
   PrepIdea,
-  PrepQuota,
   PrepRefineMode,
   PrepResponse,
 } from "@/lib/types";
@@ -51,7 +50,6 @@ import {
 interface PersonDetailProps {
   person: Person;
   prepMeta?: Pick<PrepResponse, "opening" | "source">;
-  prepQuota: PrepQuota;
   isGenerating: boolean;
   isRefining: boolean;
   intent: MeetingIntent;
@@ -67,7 +65,6 @@ interface PersonDetailProps {
   onAddIdeaToNotes: (idea: PrepIdea) => void;
   onDismissIdea: (ideaId: string) => void;
   onLogMeeting: () => void;
-  onQuickClose: () => void;
   onEditMeeting: (discussionId: string) => void;
   onAgendaCopied: () => void;
 }
@@ -77,7 +74,6 @@ type DetailTab = "prepare" | "history";
 export function PersonDetail({
   person,
   prepMeta,
-  prepQuota,
   isGenerating,
   isRefining,
   intent,
@@ -93,7 +89,6 @@ export function PersonDetail({
   onAddIdeaToNotes,
   onDismissIdea,
   onLogMeeting,
-  onQuickClose,
   onEditMeeting,
   onAgendaCopied,
 }: PersonDetailProps) {
@@ -104,10 +99,6 @@ export function PersonDetail({
   const [previewOpen, setPreviewOpen] = useState(false);
   const notesRef = useRef<HTMLTextAreaElement>(null);
   const timing = getLastMeetingTiming(person.lastMeetingAt, t, locale);
-  const remaining =
-    prepQuota.limit == null
-      ? null
-      : Math.max(0, prepQuota.limit - prepQuota.used);
 
   const lead = useMemo(
     () =>
@@ -217,14 +208,6 @@ export function PersonDetail({
             </button>
             <button
               type="button"
-              onClick={onQuickClose}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-semibold text-muted shadow-sm transition-[border-color,color] hover:border-border-strong hover:text-foreground"
-            >
-              <CheckCircle2 className="size-4" />
-              {t.person.closeQuickTitle}
-            </button>
-            <button
-              type="button"
               onClick={onLogMeeting}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_8px_22px_rgb(var(--shadow-color)/0.12)] transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-[0_10px_26px_rgb(var(--shadow-color)/0.16)]"
             >
@@ -323,27 +306,17 @@ export function PersonDetail({
           >
             <section className="flex flex-col gap-3 rounded-2xl border border-stone-200/80 bg-[#24211f] px-4 py-3 text-white sm:px-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7a58c]">
-                    <Sparkles className="size-3" />
-                    {t.person.coach}
-                    <Hint
-                      label={t.common.moreInfo}
-                      className="text-[#d7a58c]/70 [&_button]:text-[#d7a58c]/70 [&_button]:hover:bg-white/10 [&_button]:hover:text-[#f0d2c0]"
-                    >
-                      {t.person.coachBody}
-                    </Hint>
-                  </p>
-                  <p className="mt-1 truncate text-sm font-medium text-stone-100">
-                    {t.person.coachTitle}
-                  </p>
-                </div>
+                <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7a58c]">
+                  <Sparkles className="size-3" />
+                  {t.person.coach}
+                  <Hint
+                    label={t.common.moreInfo}
+                    className="text-[#d7a58c]/70 [&_button]:text-[#d7a58c]/70 [&_button]:hover:bg-white/10 [&_button]:hover:text-[#f0d2c0]"
+                  >
+                    {t.person.coachBody}
+                  </Hint>
+                </p>
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-medium text-stone-300">
-                    {remaining == null
-                      ? t.person.prepQuotaUnlimited
-                      : t.person.prepQuota(remaining, prepQuota.limit ?? 0)}
-                  </span>
                   <button
                     type="button"
                     onClick={copyAgenda}

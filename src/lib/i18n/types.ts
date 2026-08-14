@@ -81,9 +81,6 @@ export type Dictionary = {
     navPrivacy: string;
     navPricing: string;
     openWorkspace: string;
-    eyebrow: string;
-    platformLabel: string;
-    platformTitle: string;
     heroLead: string;
     heroAccent: string;
     heroBody: string;
@@ -148,7 +145,21 @@ export type Dictionary = {
     previewFloatLeft: string;
     previewFloatRight: string;
     previewManager: string;
-    previewCareerNav: string;
+    assistEyebrow: string;
+    assistTitle: string;
+    assistBody: string;
+    assistWhoTitle: string;
+    assistWhoBody: string;
+    assistWhoNeed: string;
+    assistWhoWhyLabel: string;
+    assistWhoWhyText: string;
+    assistWhoAskText: string;
+    assistTalkTitle: string;
+    assistTalkBody: string;
+    assistTalkContextLabel: string;
+    assistTalkContext: string[];
+    assistTalkIdeasLabel: string;
+    assistTalkIdeas: string[];    previewCareerNav: string;
     previewIntentCareer: string;
     previewLeadLabel: string;
     previewSupportLabel: string;
@@ -188,19 +199,15 @@ export type Dictionary = {
     recent: string;
     notesReady: (count: number) => string;
     preparedLine: (notes: number, ideas: number) => string;
-    toolkitEyebrow: string;
     toolkitTitle: string;
     toolkitBody: string;
     contextBankTitle: string;
     contextBankBody: string;
     contextBankPlaceholder: string;
-    contextTopics: string[];
-    contextSlotsLabel: string;
     contextSlots: Record<
       "Job" | "Energy" | "Learning" | "Career" | "Personal",
       { label: string; example: string }
     >;
-    contextFreshnessHint: string;
     contextPrivate: string;
     smallTalkTitle: string;
     smallTalkBody: string;
@@ -215,7 +222,7 @@ export type Dictionary = {
     smallTalkOpening: string;
     filters: Record<
       "all" | "work" | "personal",
-      { eyebrow: string; title: string; description: string }
+      { title: string; description: string }
     >;
     stats: {
       people: string;
@@ -230,7 +237,6 @@ export type Dictionary = {
     };
   };
   smallTalk: {
-    eyebrow: string;
     title: string;
     body: string;
     backToOverview: string;
@@ -256,7 +262,6 @@ export type Dictionary = {
     history: (count: number) => string;
     detailSections: string;
     coach: string;
-    coachTitle: string;
     coachBody: string;
     thinking: string;
     refreshIdeas: string;
@@ -327,7 +332,6 @@ export type Dictionary = {
     glanceMode: string;
     fullPrepMode: string;
     glanceEmpty: string;
-    closeQuickTitle: string;
   };
   dialogs: {
     addTitle: string;
@@ -379,15 +383,6 @@ export type Dictionary = {
     signOut: string;
     planFreeName: string;
     planProName: string;
-    closeQuickTitle: (firstName: string) => string;
-    closeQuickDescription: string;
-    closeQuickSummaryLabel: string;
-    closeQuickSummaryPlaceholder: string;
-    closeQuickFollowUpsLabel: string;
-    closeQuickSuggested: string;
-    useSuggestedFollowUp: string;
-    saveCloseQuick: string;
-    logFullDetails: string;
   };
   toast: {
     aiReady: string;
@@ -417,7 +412,6 @@ export type Dictionary = {
     needAdded: string;
   };
   career: {
-    eyebrow: string;
     title: string;
     body: string;
     directionTitle: string;

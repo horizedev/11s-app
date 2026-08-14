@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 
 import { RelationshipPill } from "@/components/ui-kit";
+import { Hint } from "@/components/hint";
 import { useLocale } from "@/lib/i18n";
 import type {
   CareerNeed,
@@ -112,17 +113,103 @@ export function CareerPage({
           {t.common.overview}
         </button>
 
-        <header className="mt-5 max-w-2xl">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
-            {t.career.eyebrow}
-          </p>
-          <h1 className="mt-2 text-balance text-3xl font-semibold tracking-[-0.04em] text-foreground">
+        <header className="mt-4 flex max-w-2xl items-center gap-2">
+          <h1 className="text-balance text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
             {t.career.title}
           </h1>
-          <p className="mt-2 text-pretty text-sm leading-6 text-muted">{t.career.body}</p>
+          <Hint label={t.common.moreInfo}>{t.career.body}</Hint>
         </header>
 
-        <div className="mt-8 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="mt-6 rounded-[24px] border border-secondary/15 bg-gradient-to-br from-violet-50/50 via-white to-white p-5 dark:from-secondary-soft/45 dark:via-surface-raised dark:to-surface-raised sm:p-6">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-4 text-secondary" />
+            <h2 className="text-base font-semibold text-foreground">
+              {t.career.whoToAskTitle}
+            </h2>
+            <Hint label={t.common.moreInfo}>{t.career.whoToAskBody}</Hint>
+          </div>
+
+          <div className="mt-3 flex gap-2">
+            <input
+              name="who-to-ask"
+              value={routeDraft}
+              onChange={(event) => setRouteDraft(event.target.value)}
+              autoComplete="off"
+              placeholder={t.career.whoToAskPlaceholder}
+              className="h-10 min-w-0 flex-1 rounded-xl border border-secondary/20 bg-surface px-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] focus:border-secondary/40 focus:ring-4 focus:ring-secondary/10"
+            />
+            <button
+              type="button"
+              disabled={isRouting || !routeDraft.trim()}
+              onClick={() => void onRouteNeed(routeDraft.trim())}
+              className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-secondary px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 dark:text-background"
+            >
+              {isRouting ? (
+                <LoaderCircle className="size-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="size-3.5" />
+              )}
+              {isRouting ? t.career.routing : t.career.whoToAskRun}
+            </button>
+          </div>
+
+          {suggestions.length === 0 ? (
+            <p className="mt-4 text-xs text-muted-subtle">
+              {t.career.whoToAskEmpty}
+            </p>
+          ) : (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {routeSource ? (
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-500 sm:col-span-2">
+                  {routeSource === "ai"
+                    ? t.person.aiGenerated
+                    : t.person.starterIdeas}
+                </p>
+              ) : null}
+              {suggestions.map((suggestion) => (
+                <article
+                  key={`${suggestion.personId}-${suggestion.suggestedAsk}`}
+                  className="rounded-2xl border border-secondary/15 bg-surface p-4"
+                >
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-sm font-semibold text-foreground">
+                      {suggestion.personName}
+                    </h3>
+                    <RelationshipPill
+                      relationship={suggestion.relationship}
+                    />
+                  </div>
+                  <p className="mt-2 text-[11px] text-muted">
+                    <span className="font-semibold text-foreground">
+                      {t.career.whyThem}:{" "}
+                    </span>
+                    {suggestion.why}
+                  </p>
+                  <p className="mt-1.5 text-[11px] text-muted">
+                    <span className="font-semibold text-foreground">
+                      {t.career.suggestedAsk}:{" "}
+                    </span>
+                    {suggestion.suggestedAsk}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onPrepareWith(
+                        suggestion.personId,
+                        suggestion.suggestedAsk,
+                      )
+                    }
+                    className="mt-3 inline-flex h-8 items-center rounded-lg border border-border bg-surface-muted px-3 text-[11px] font-semibold text-foreground transition-colors hover:border-border-strong"
+                  >
+                    {t.career.prepareWith}
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <section className="rounded-[24px] border border-border bg-surface-raised p-5 shadow-[0_14px_40px_rgb(var(--shadow-color)/0.06)] sm:p-6">
             <div className="flex items-center gap-2">
               <Target className="size-4 text-accent" />
@@ -311,95 +398,6 @@ export function CareerPage({
                   />
                 ))}
               </ul>
-            </section>
-
-            <section className="rounded-[24px] border border-secondary/15 bg-gradient-to-br from-violet-50/50 via-white to-white p-5 dark:from-secondary-soft/45 dark:via-surface-raised dark:to-surface-raised sm:p-6">
-              <div className="flex items-center gap-2">
-                <Sparkles className="size-4 text-secondary" />
-                <h2 className="text-base font-semibold text-foreground">
-                  {t.career.whoToAskTitle}
-                </h2>
-              </div>
-              <p className="mt-1 text-xs text-muted">{t.career.whoToAskBody}</p>
-
-              <div className="mt-3 flex gap-2">
-                <input
-                  name="who-to-ask"
-                  value={routeDraft}
-                  onChange={(event) => setRouteDraft(event.target.value)}
-                  autoComplete="off"
-                  placeholder={t.career.whoToAskPlaceholder}
-                  className="h-10 min-w-0 flex-1 rounded-xl border border-secondary/20 bg-surface px-3 text-sm text-foreground outline-none transition-[border-color,box-shadow] focus:border-secondary/40 focus:ring-4 focus:ring-secondary/10"
-                />
-                <button
-                  type="button"
-                  disabled={isRouting || !routeDraft.trim()}
-                  onClick={() => void onRouteNeed(routeDraft.trim())}
-                  className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-secondary px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 dark:text-background"
-                >
-                  {isRouting ? (
-                    <LoaderCircle className="size-3.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="size-3.5" />
-                  )}
-                  {isRouting ? t.career.routing : t.career.whoToAskRun}
-                </button>
-              </div>
-
-              {suggestions.length === 0 ? (
-                <p className="mt-4 text-xs text-muted-subtle">
-                  {t.career.whoToAskEmpty}
-                </p>
-              ) : (
-                <div className="mt-4 space-y-3">
-                  {routeSource ? (
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-500">
-                      {routeSource === "ai"
-                        ? t.person.aiGenerated
-                        : t.person.starterIdeas}
-                    </p>
-                  ) : null}
-                  {suggestions.map((suggestion) => (
-                    <article
-                      key={`${suggestion.personId}-${suggestion.suggestedAsk}`}
-                      className="rounded-2xl border border-secondary/15 bg-surface p-4"
-                    >
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="text-sm font-semibold text-foreground">
-                          {suggestion.personName}
-                        </h3>
-                        <RelationshipPill
-                          relationship={suggestion.relationship}
-                        />
-                      </div>
-                      <p className="mt-2 text-[11px] text-muted">
-                        <span className="font-semibold text-foreground">
-                          {t.career.whyThem}:{" "}
-                        </span>
-                        {suggestion.why}
-                      </p>
-                      <p className="mt-1.5 text-[11px] text-muted">
-                        <span className="font-semibold text-foreground">
-                          {t.career.suggestedAsk}:{" "}
-                        </span>
-                        {suggestion.suggestedAsk}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onPrepareWith(
-                            suggestion.personId,
-                            suggestion.suggestedAsk,
-                          )
-                        }
-                        className="mt-3 inline-flex h-8 items-center rounded-lg border border-border bg-surface-muted px-3 text-[11px] font-semibold text-foreground transition-colors hover:border-border-strong"
-                      >
-                        {t.career.prepareWith}
-                      </button>
-                    </article>
-                  ))}
-                </div>
-              )}
             </section>
           </div>
         </div>

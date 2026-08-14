@@ -64,27 +64,38 @@ export function SmallTalkPage({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-8 sm:px-8 lg:px-10 lg:pb-16 lg:pt-11">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 rounded-lg text-xs font-medium text-muted transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="size-3.5" />
-          {t.smallTalk.backToOverview}
-        </button>
-
-        <header className="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700/80 dark:text-amber-300/80">
-              {t.smallTalk.eyebrow}
-            </p>
-            <div className="mt-3 flex items-center gap-2">
-              <h1 className="text-balance text-[2.15rem] font-semibold leading-[1.08] tracking-[-0.045em] text-foreground sm:text-[2.75rem]">
-                {t.smallTalk.title}
-              </h1>
-              <Hint label={t.common.moreInfo}>{t.smallTalk.body}</Hint>
-            </div>
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-16 lg:pt-8">
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={onBack}
+              className="grid size-8 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
+              aria-label={t.smallTalk.backToOverview}
+            >
+              <ArrowLeft className="size-4" />
+            </button>
+            <h1 className="text-balance text-2xl font-semibold leading-[1.15] tracking-[-0.04em] text-foreground sm:text-3xl">
+              {t.smallTalk.title}
+            </h1>
+            <Hint label={t.common.moreInfo}>
+              <span className="block">{t.smallTalk.body}</span>
+              <span className="mt-2 block">
+                {remaining == null
+                  ? t.person.prepQuotaUnlimited
+                  : t.person.prepQuota(remaining, prepQuota.limit ?? 0)}
+                {generalPrep.source
+                  ? ` · ${
+                      generalPrep.source === "ai"
+                        ? t.person.aiGenerated
+                        : t.person.starterIdeas
+                    }`
+                  : ""}
+                {newsAreas.length > 0
+                  ? ` · ${t.smallTalk.newsActive(newsAreas.length)}`
+                  : ""}
+              </span>
+            </Hint>
           </div>
           <button
             type="button"
@@ -104,30 +115,6 @@ export function SmallTalkPage({
                 : t.overview.generateSmallTalk}
           </button>
         </header>
-
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-muted-subtle">
-          <span>
-            {remaining == null
-              ? t.person.prepQuotaUnlimited
-              : t.person.prepQuota(remaining, prepQuota.limit ?? 0)}
-          </span>
-          {generalPrep.source ? (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>
-                {generalPrep.source === "ai"
-                  ? t.person.aiGenerated
-                  : t.person.starterIdeas}
-              </span>
-            </>
-          ) : null}
-          {newsAreas.length > 0 ? (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>{t.smallTalk.newsActive(newsAreas.length)}</span>
-            </>
-          ) : null}
-        </div>
 
         <section className="mt-8">
           <div className="flex items-center gap-3">
@@ -192,9 +179,6 @@ export function SmallTalkPage({
             </div>
 
             <div className="mt-4 flex flex-wrap gap-1.5">
-              <p className="w-full text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                {t.overview.contextSlotsLabel}
-              </p>
               {(
                 Object.keys(t.overview.contextSlots) as Array<
                   keyof typeof t.overview.contextSlots
@@ -217,9 +201,6 @@ export function SmallTalkPage({
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-[10px] text-muted-subtle">
-              {t.overview.contextFreshnessHint}
-            </p>
 
             <textarea
               name="small-talk-context-bank"
@@ -305,10 +286,7 @@ export function SmallTalkPage({
               </div>
             ) : (
               <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-amber-200 bg-surface/60 px-6 py-10 text-center dark:border-amber-500/20">
-                <span aria-hidden="true" className="text-2xl">
-                  💬
-                </span>
-                <span className="mt-3 grid size-11 place-items-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
+                <span className="grid size-11 place-items-center rounded-2xl bg-amber-100 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
                   <MessageCircle className="size-5" />
                 </span>
                 <h3 className="mt-4 text-sm font-semibold text-foreground">

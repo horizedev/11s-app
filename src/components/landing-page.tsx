@@ -32,7 +32,6 @@ const featureMeta = [
   {
     number: "01",
     icon: History,
-    emoji: "🧠",
     accent: "bg-secondary-soft text-secondary",
     card:
       "from-[#f7f4fb] to-white dark:from-secondary-soft/55 dark:to-surface-raised",
@@ -40,7 +39,6 @@ const featureMeta = [
   {
     number: "02",
     icon: NotebookPen,
-    emoji: "📝",
     accent: "bg-accent-soft text-accent",
     card:
       "from-[#fff8f4] to-white dark:from-accent-soft/60 dark:to-surface-raised",
@@ -48,7 +46,6 @@ const featureMeta = [
   {
     number: "03",
     icon: Sparkles,
-    emoji: "✨",
     accent:
       "bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300",
     card:
@@ -57,11 +54,10 @@ const featureMeta = [
 ];
 
 const stepMeta = [
-  { icon: NotebookPen, emoji: "📌", tint: "bg-accent-soft text-accent" },
-  { icon: Brain, emoji: "💡", tint: "bg-secondary-soft text-secondary" },
+  { icon: NotebookPen, tint: "bg-accent-soft text-accent" },
+  { icon: Brain, tint: "bg-secondary-soft text-secondary" },
   {
     icon: RotateCcw,
-    emoji: "🔄",
     tint:
       "bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300",
   },
@@ -79,19 +75,16 @@ const talkingPointColors = [
 ];
 
 const roleMeta = [
-  { color: "#7c6fa4", emoji: "🧭" },
-  { color: "#bd7257", emoji: "🚀" },
-  { color: "#4e8876", emoji: "🤝" },
-  { color: "#9d6581", emoji: "🌱" },
-  { color: "#4f78a0", emoji: "🎯" },
+  { color: "#7c6fa4" },
+  { color: "#bd7257" },
+  { color: "#4e8876" },
+  { color: "#9d6581" },
+  { color: "#4f78a0" },
 ];
 
 export function LandingPage() {
   const { locale, t } = useLocale();
   const isZh = locale === "zh-TW";
-  const labelClass = isZh
-    ? "text-[10px] font-semibold tracking-[0.08em] text-muted"
-    : "text-[10px] font-semibold uppercase tracking-[0.12em] text-muted";
   const sectionLabelClass = isZh
     ? "text-[10px] font-semibold tracking-[0.1em]"
     : "text-[10px] font-semibold uppercase tracking-[0.16em]";
@@ -169,25 +162,8 @@ export function LandingPage() {
           </div>
 
           <div className="mx-auto max-w-[1050px] px-5 text-center sm:px-8">
-            <div
-              className={`inline-flex items-center gap-2 rounded-full border border-border bg-surface/85 px-3 py-1.5 shadow-sm backdrop-blur ${labelClass}`}
-            >
-              <span aria-hidden="true" className="text-sm leading-none">
-                🤝
-              </span>
-              <HeartHandshake className="size-3.5 text-[#b46649]" />
-              {t.landing.eyebrow}
-            </div>
-
-            <p className={`mt-5 text-accent ${sectionLabelClass}`}>
-              {t.landing.platformLabel}
-            </p>
-            <p className="mx-auto mt-2 max-w-2xl text-base font-medium leading-7 text-foreground/80 sm:text-lg">
-              {t.landing.platformTitle}
-            </p>
-
             <h1
-              className={`mx-auto mt-6 max-w-4xl break-words text-balance font-semibold leading-[1.01] text-foreground sm:text-[4.75rem] sm:leading-[0.98] lg:text-[6.15rem] ${
+              className={`mx-auto max-w-4xl break-words text-balance font-semibold leading-[1.01] text-foreground sm:text-[4.75rem] sm:leading-[0.98] lg:text-[6.15rem] ${
                 isZh
                   ? "text-[2.35rem] tracking-[-0.02em] sm:text-[4.1rem] lg:text-[5.25rem]"
                   : "text-[2.6rem] tracking-[-0.055em]"
@@ -244,9 +220,6 @@ export function LandingPage() {
                   key={role}
                   className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/75 px-3 py-1.5 text-xs font-medium text-muted shadow-sm backdrop-blur"
                 >
-                  <span aria-hidden="true" className="text-sm leading-none">
-                    {roleMeta[index]?.emoji}
-                  </span>
                   <span
                     className="size-1.5 rounded-full"
                     style={{
@@ -352,12 +325,6 @@ export function LandingPage() {
                         className={`relative grid size-12 place-items-center rounded-2xl ${feature.accent}`}
                       >
                         <Icon className="size-5" strokeWidth={1.7} />
-                        <span
-                          aria-hidden="true"
-                          className="absolute -right-1.5 -top-1.5 text-base leading-none drop-shadow-sm"
-                        >
-                          {feature.emoji}
-                        </span>
                       </span>
                       <span className="text-[10px] font-semibold tracking-[0.12em] text-muted-subtle">
                         {feature.number}
@@ -406,12 +373,6 @@ export function LandingPage() {
                           className={`relative grid size-12 shrink-0 place-items-center rounded-2xl ${meta.tint}`}
                         >
                           <Icon className="size-5" strokeWidth={1.7} />
-                          <span
-                            aria-hidden="true"
-                            className="absolute -bottom-1 -right-1 text-sm leading-none"
-                          >
-                            {meta.emoji}
-                          </span>
                         </span>
                         <div className="min-w-0">
                           <p
@@ -437,6 +398,128 @@ export function LandingPage() {
               </div>
 
               <ConversationLoop className="lg:sticky lg:top-24" />
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-border bg-surface/70 py-24 sm:py-28">
+          <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className={`text-secondary ${sectionLabelClass}`}>
+                {t.landing.assistEyebrow}
+              </p>
+              <h2 className="mt-4 text-balance text-3xl font-semibold tracking-[-0.04em] text-foreground sm:text-4xl">
+                {t.landing.assistTitle}
+              </h2>
+              <p className="mt-4 text-pretty text-base leading-7 text-muted sm:text-lg">
+                {t.landing.assistBody}
+              </p>
+            </div>
+
+            <div className="mt-12 grid gap-4 lg:grid-cols-2">
+              <article className="overflow-hidden rounded-[24px] border border-border bg-surface-raised shadow-[0_14px_40px_rgb(var(--shadow-color)/0.06)]">
+                <div className="flex items-start gap-3 px-6 pt-6 sm:px-7 sm:pt-7">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary-soft text-secondary">
+                    <UsersRound className="size-4" strokeWidth={1.7} />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold tracking-[-0.02em] text-foreground">
+                      {t.landing.assistWhoTitle}
+                    </h3>
+                    <p className="mt-1 text-sm leading-6 text-muted">
+                      {t.landing.assistWhoBody}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="px-6 pb-6 pt-5 sm:px-7 sm:pb-7">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-secondary/20 bg-surface px-4 py-3">
+                    <Sparkles className="size-3.5 shrink-0 text-secondary" />
+                    <p className="truncate text-xs text-muted">
+                      {t.landing.assistWhoNeed}
+                    </p>
+                  </div>
+                  <div className="flex justify-center py-1.5" aria-hidden="true">
+                    <span className="h-5 w-px bg-border-strong" />
+                  </div>
+                  <div className="rounded-2xl border border-secondary/15 bg-gradient-to-br from-violet-50/60 via-white to-white p-4 dark:from-secondary-soft/45 dark:via-surface-raised dark:to-surface-raised">
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="grid size-8 shrink-0 place-items-center rounded-full text-[10px] font-semibold text-white"
+                        style={{
+                          background:
+                            "linear-gradient(145deg, #6C63A8 0%, color-mix(in srgb, #6C63A8 72%, #1c1917) 100%)",
+                        }}
+                      >
+                        MC
+                      </span>
+                      <p className="text-sm font-semibold text-foreground">
+                        Maya Chen
+                      </p>
+                      <span className="rounded-full bg-secondary-soft px-2 py-0.5 text-[9px] font-semibold text-secondary">
+                        {t.landing.previewManager}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-[11px] leading-5 text-muted">
+                      <span className="font-semibold text-foreground">
+                        {t.landing.assistWhoWhyLabel}
+                      </span>{" "}
+                      {t.landing.assistWhoWhyText}
+                    </p>
+                    <p className="mt-2 rounded-xl bg-surface px-3 py-2.5 text-[11px] font-medium leading-5 text-foreground">
+                      “{t.landing.assistWhoAskText}”
+                    </p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="overflow-hidden rounded-[24px] border border-border bg-surface-raised shadow-[0_14px_40px_rgb(var(--shadow-color)/0.06)]">
+                <div className="flex items-start gap-3 px-6 pt-6 sm:px-7 sm:pt-7">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-100/80 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
+                    <MessageSquareText className="size-4" strokeWidth={1.7} />
+                  </span>
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold tracking-[-0.02em] text-foreground">
+                      {t.landing.assistTalkTitle}
+                    </h3>
+                    <p className="mt-1 text-sm leading-6 text-muted">
+                      {t.landing.assistTalkBody}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="px-6 pb-6 pt-5 sm:px-7 sm:pb-7">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                    {t.landing.assistTalkContextLabel}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {t.landing.assistTalkContext.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[10px] font-semibold text-muted"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex justify-center py-1.5" aria-hidden="true">
+                    <span className="h-5 w-px bg-border-strong" />
+                  </div>
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-amber-700 dark:text-amber-300">
+                    {t.landing.assistTalkIdeasLabel}
+                  </p>
+                  <div className="mt-2 space-y-2">
+                    {t.landing.assistTalkIdeas.map((idea) => (
+                      <div
+                        key={idea}
+                        className="rounded-xl border border-amber-200/70 bg-amber-50/70 px-3.5 py-2.5 text-[11px] font-medium leading-5 text-foreground dark:border-amber-500/20 dark:bg-amber-400/10"
+                      >
+                        “{idea}”
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </article>
             </div>
           </div>
         </section>
@@ -547,18 +630,6 @@ export function LandingPage() {
               <span className="relative grid size-16 place-items-center rounded-[20px] bg-foreground text-background shadow-[0_15px_35px_rgb(var(--shadow-color)/0.18)]">
                 <LockKeyhole className="size-6" strokeWidth={1.6} />
               </span>
-              <span
-                aria-hidden="true"
-                className="absolute left-8 top-10 text-2xl drop-shadow-sm"
-              >
-                🔐
-              </span>
-              <span
-                aria-hidden="true"
-                className="absolute bottom-14 right-8 text-2xl drop-shadow-sm"
-              >
-                🛡️
-              </span>
               <span className="absolute left-3 top-24 rounded-full border border-border bg-surface-raised px-3 py-1.5 text-[9px] font-semibold text-muted shadow-sm">
                 {t.landing.privacyNotes}
               </span>
@@ -593,18 +664,6 @@ export function LandingPage() {
 
         <section className="px-5 py-24 text-center sm:px-8 sm:py-32">
           <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[28px] border border-border bg-gradient-to-br from-[#fff8f4] via-white to-[#f4f1fa] px-6 py-14 shadow-[0_18px_50px_rgb(var(--shadow-color)/0.07)] dark:from-accent-soft/55 dark:via-surface-raised dark:to-secondary-soft/50 sm:px-10">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute left-8 top-8 text-3xl opacity-80"
-            >
-              ☕
-            </span>
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute right-10 top-12 text-3xl opacity-80"
-            >
-              💬
-            </span>
             <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent">
               <MessageSquareText className="size-5" strokeWidth={1.7} />
             </span>
@@ -675,10 +734,10 @@ function ProductPreview() {
   const { t } = useLocale();
 
   const people = [
-    ["🦊", "Maya Chen", t.timing.tomorrow, "#6C63A8"],
-    ["🚀", "Theo Williams", t.timing.inDays(2), "#D26A4C"],
-    ["🌿", "Priya Shah", t.timing.inDays(3), "#2E8277"],
-    ["🎯", "Jonah Lee", t.timing.inDays(5), "#3F6FA3"],
+    ["MC", "Maya Chen", t.timing.tomorrow, "#6C63A8"],
+    ["TW", "Theo Williams", t.timing.inDays(2), "#D26A4C"],
+    ["PS", "Priya Shah", t.timing.inDays(3), "#2E8277"],
+    ["JL", "Jonah Lee", t.timing.inDays(5), "#3F6FA3"],
   ] as const;
 
   return (
@@ -736,7 +795,7 @@ function ProductPreview() {
             <p className="mb-1 mt-5 px-2 text-[7px] font-semibold uppercase tracking-[0.15em] text-muted-subtle">
               {t.landing.previewPeople}
             </p>
-            {people.map(([emoji, name, time, color], index) => (
+            {people.map(([initials, name, time, color], index) => (
               <div
                 key={name}
                 className={`flex items-center gap-2 rounded-lg px-2 py-1.5 ${
@@ -746,12 +805,12 @@ function ProductPreview() {
                 }`}
               >
                 <span
-                  className="grid size-6 shrink-0 place-items-center rounded-full text-[10px] leading-none"
+                  className="grid size-6 shrink-0 place-items-center rounded-full text-[8px] font-semibold leading-none text-white"
                   style={{
-                    background: `linear-gradient(145deg, color-mix(in srgb, ${color} 28%, #fff) 0%, color-mix(in srgb, ${color} 55%, #f5f5f4) 100%)`,
+                    background: `linear-gradient(145deg, ${color} 0%, color-mix(in srgb, ${color} 72%, #1c1917) 100%)`,
                   }}
                 >
-                  {emoji}
+                  {initials}
                 </span>
                 <span className="min-w-0">
                   <span
@@ -790,13 +849,13 @@ function ProductPreview() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span
-                  className="grid size-10 place-items-center rounded-full text-[16px] leading-none sm:size-12 sm:text-[18px]"
+                  className="grid size-10 place-items-center rounded-full text-[11px] font-semibold leading-none text-white sm:size-12 sm:text-[13px]"
                   style={{
                     background:
-                      "linear-gradient(145deg, color-mix(in srgb, #6C63A8 28%, #fff) 0%, color-mix(in srgb, #6C63A8 55%, #f5f5f4) 100%)",
+                      "linear-gradient(145deg, #6C63A8 0%, color-mix(in srgb, #6C63A8 72%, #1c1917) 100%)",
                   }}
                 >
-                  🦊
+                  MC
                 </span>
                 <div>
                   <div className="flex items-center gap-2">

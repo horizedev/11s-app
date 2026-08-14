@@ -4,7 +4,6 @@ import { useLocale } from "@/lib/i18n";
 
 const NODES = [
   {
-    emoji: "📝",
     en: "Capture",
     zh: "記下",
     cx: 90,
@@ -12,7 +11,6 @@ const NODES = [
     tint: "var(--accent-soft)",
   },
   {
-    emoji: "✨",
     en: "Prepare",
     zh: "準備",
     cx: 230,
@@ -20,7 +18,6 @@ const NODES = [
     tint: "var(--secondary-soft)",
   },
   {
-    emoji: "💬",
     en: "Meet",
     zh: "對話",
     cx: 230,
@@ -28,13 +25,19 @@ const NODES = [
     tint: "var(--success-soft)",
   },
   {
-    emoji: "🔁",
     en: "Remember",
     zh: "記得",
     cx: 90,
     cy: 168,
     tint: "color-mix(in srgb, #4f78a0 18%, var(--surface))",
   },
+] as const;
+
+const EDGES = [
+  "M120 48 H200",
+  "M230 78 V138",
+  "M200 168 H120",
+  "M90 138 V78",
 ] as const;
 
 export function ConversationLoop({ className }: { className?: string }) {
@@ -59,7 +62,7 @@ export function ConversationLoop({ className }: { className?: string }) {
             </p>
             <p className="mt-1.5 text-sm font-semibold tracking-[-0.02em] text-foreground sm:text-base">
               {isZh
-                ? "記下 → 準備 → 對話 → 記得，再開始下一輪。"
+                ? "記下、準備、對話、記得——然後再開始。"
                 : "Capture, prepare, meet, remember—then start again."}
             </p>
           </div>
@@ -68,9 +71,12 @@ export function ConversationLoop({ className }: { className?: string }) {
           </span>
         </div>
 
+        {/* Arrows use currentColor and inline styles: Safari ignores var() in
+            SVG presentation attributes and does not inherit custom properties
+            into <marker> content, which previously left the arrowheads broken. */}
         <svg
           viewBox="0 0 320 220"
-          className="relative mx-auto h-auto w-full max-w-md"
+          className="relative mx-auto h-auto w-full max-w-md text-muted-subtle"
           role="img"
         >
           <defs>
@@ -82,69 +88,54 @@ export function ConversationLoop({ className }: { className?: string }) {
               refY="3.5"
               orient="auto"
             >
-              <path d="M0,0 L7,3.5 L0,7 Z" fill="var(--muted-subtle)" />
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="currentColor" />
             </marker>
           </defs>
 
-          <path
-            d="M120 48 H200"
-            stroke="var(--border-strong)"
-            strokeWidth="2"
-            strokeDasharray="5 6"
-            markerEnd="url(#loop-arrow)"
-            fill="none"
-          />
-          <path
-            d="M230 78 V138"
-            stroke="var(--border-strong)"
-            strokeWidth="2"
-            strokeDasharray="5 6"
-            markerEnd="url(#loop-arrow)"
-            fill="none"
-          />
-          <path
-            d="M200 168 H120"
-            stroke="var(--border-strong)"
-            strokeWidth="2"
-            strokeDasharray="5 6"
-            markerEnd="url(#loop-arrow)"
-            fill="none"
-          />
-          <path
-            d="M90 138 V78"
-            stroke="var(--border-strong)"
-            strokeWidth="2"
-            strokeDasharray="5 6"
-            markerEnd="url(#loop-arrow)"
-            fill="none"
-          />
+          {EDGES.map((d) => (
+            <path
+              key={d}
+              d={d}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeDasharray="5 6"
+              strokeLinecap="round"
+              markerEnd="url(#loop-arrow)"
+              fill="none"
+              className="text-border-strong"
+            />
+          ))}
 
-          {NODES.map((node) => (
+          {NODES.map((node, index) => (
             <g key={node.en}>
               <circle
                 cx={node.cx}
                 cy={node.cy}
                 r="34"
-                fill={node.tint}
-                stroke="var(--surface-raised)"
-                strokeWidth="4"
+                style={{
+                  fill: node.tint,
+                  stroke: "var(--surface-raised)",
+                  strokeWidth: 4,
+                }}
               />
               <text
                 x={node.cx}
-                y={node.cy + 2}
+                y={node.cy + 1}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="22"
+                fontSize="15"
+                fontWeight="700"
+                style={{ fill: "var(--foreground)" }}
               >
-                {node.emoji}
+                {index + 1}
               </text>
               <text
                 x={node.cx}
                 y={node.cy + 52}
                 textAnchor="middle"
-                fill="var(--foreground)"
                 fontSize="11"
                 fontWeight="600"
+                style={{ fill: "var(--foreground)" }}
               >
                 {isZh ? node.zh : node.en}
               </text>
