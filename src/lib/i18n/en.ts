@@ -314,16 +314,11 @@ export const en: Dictionary = {
       "Add someone you meet with regularly, then keep notes and discussion history in one place.",
     emptyCta: "Add your first person",
     ariaStats: "Relationship overview",
-    nextUp: "Focus",
-    focusPerson: "Most recent",
-    prepared: "Prepared",
-    openPreparation: "Open preparation",
     peopleList: "People",
     sortedByRecent: "Sorted by last conversation",
     recent: "Recent conversations",
     notesReady: (count) =>
       count === 1 ? "1 note ready" : `${count} notes ready`,
-    preparedLine: (notes, ideas) => `${notes} notes · ${ideas} ideas`,
     toolkitTitle: "Give every conversation more to work with.",
     toolkitBody:
       "Keep reusable context about your own world, then turn it into natural openings for any 1:1—or an easy chat with no one specific in mind.",
@@ -356,23 +351,6 @@ export const en: Dictionary = {
     smallTalkEmptyBody:
       "Generate a few warm ways to start from your context—or from evergreen topics when the bank is empty.",
     smallTalkOpening: "A natural way in",
-    filters: {
-      all: {
-        title: "Make your next conversation count.",
-        description:
-          "Keep context close, remember what matters, and show up with a better question.",
-      },
-      work: {
-        title: "Lead every 1:1 with context.",
-        description:
-          "Stay ahead of commitments, growth conversations, and the details that build trust.",
-      },
-      personal: {
-        title: "Remember more than the last update.",
-        description:
-          "Keep the small details and meaningful follow-ups close for the people you care about.",
-      },
-    },
     stats: {
       people: "People",
       inCircle: "in your circle",
@@ -388,7 +366,6 @@ export const en: Dictionary = {
   smallTalk: {
     title: "Small talk that stays useful.",
     body: "Keep longer idea lists here, pull from your context bank, and optionally tap recent news areas for fresher talking angles.",
-    backToOverview: "Back to overview",
     newsTitle: "Recent news areas",
     newsBody:
       "Pick a few areas. When you generate ideas, 11s will pull fresh headlines from those topics and weave a couple into natural talking points—without turning the chat into a news briefing.",
@@ -629,14 +606,12 @@ export const en: Dictionary = {
     suggestedAsk: "Suggested ask",
     prepareWith: "Prepare with",
     addAskToNotes: "Add ask to notes",
-    shortcutsTitle: "Shortcuts",
-    prepManager: "Prepare with manager",
-    prepMentor: "Prepare with mentor",
-    noManager: "No manager in your circle yet",
-    noMentor: "No mentor in your circle yet",
     saved: "Career profile saved",
     routing: "Finding the best people…",
     routeFailed: "Could not route that need. Try again in a moment.",
+  },
+  quickActions: {
+    open: "Quick actions",
   },
   mobile: {
     overview: "Overview",

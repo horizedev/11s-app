@@ -190,15 +190,10 @@ export type Dictionary = {
     emptyBody: string;
     emptyCta: string;
     ariaStats: string;
-    nextUp: string;
-    focusPerson: string;
-    prepared: string;
-    openPreparation: string;
     peopleList: string;
     sortedByRecent: string;
     recent: string;
     notesReady: (count: number) => string;
-    preparedLine: (notes: number, ideas: number) => string;
     toolkitTitle: string;
     toolkitBody: string;
     contextBankTitle: string;
@@ -220,10 +215,6 @@ export type Dictionary = {
     smallTalkEmptyTitle: string;
     smallTalkEmptyBody: string;
     smallTalkOpening: string;
-    filters: Record<
-      "all" | "work" | "personal",
-      { title: string; description: string }
-    >;
     stats: {
       people: string;
       inCircle: string;
@@ -239,7 +230,6 @@ export type Dictionary = {
   smallTalk: {
     title: string;
     body: string;
-    backToOverview: string;
     newsTitle: string;
     newsBody: string;
     newsActive: (count: number) => string;
@@ -445,14 +435,12 @@ export type Dictionary = {
     suggestedAsk: string;
     prepareWith: string;
     addAskToNotes: string;
-    shortcutsTitle: string;
-    prepManager: string;
-    prepMentor: string;
-    noManager: string;
-    noMentor: string;
     saved: string;
     routing: string;
     routeFailed: string;
+  };
+  quickActions: {
+    open: string;
   };
   mobile: {
     overview: string;

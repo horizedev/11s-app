@@ -1,12 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
-  ArrowLeft,
-  BriefcaseBusiness,
   Check,
   LoaderCircle,
-  MessageSquareText,
   Plus,
   Sparkles,
   Target,
@@ -21,43 +18,34 @@ import type {
   CareerNeed,
   CareerNeedStatus,
   CareerProfile,
-  Person,
   WhoToAskSuggestion,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface CareerPageProps {
   career: CareerProfile;
-  people: Person[];
   isRouting: boolean;
   suggestions: WhoToAskSuggestion[];
   routeSource: "ai" | "starter" | null;
-  onBack: () => void;
   onSaveProfile: (profile: Omit<CareerProfile, "needs">) => Promise<void>;
   onAddNeed: (body: string) => Promise<void>;
   onUpdateNeedStatus: (id: string, status: CareerNeedStatus) => Promise<void>;
   onDeleteNeed: (id: string) => Promise<void>;
   onRouteNeed: (need: string) => Promise<void>;
   onPrepareWith: (personId: string, ask: string) => void;
-  onPrepManager: () => void;
-  onPrepMentor: () => void;
 }
 
 export function CareerPage({
   career,
-  people,
   isRouting,
   suggestions,
   routeSource,
-  onBack,
   onSaveProfile,
   onAddNeed,
   onUpdateNeedStatus,
   onDeleteNeed,
   onRouteNeed,
   onPrepareWith,
-  onPrepManager,
-  onPrepMentor,
 }: CareerPageProps) {
   const { t } = useLocale();
   const [targetRole, setTargetRole] = useState(career.targetRole);
@@ -68,15 +56,6 @@ export function CareerPage({
   const [routeDraft, setRouteDraft] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedFlash, setSavedFlash] = useState(false);
-
-  const hasManager = useMemo(
-    () => people.some((person) => person.relationship === "manager"),
-    [people],
-  );
-  const hasMentor = useMemo(
-    () => people.some((person) => person.relationship === "mentor"),
-    [people],
-  );
 
   async function handleSave() {
     setSaving(true);
@@ -103,17 +82,8 @@ export function CareerPage({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1100px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-20 lg:pt-8">
-        <button
-          type="button"
-          onClick={onBack}
-          className="group -ml-2 inline-flex h-9 items-center gap-2 rounded-lg px-2 text-xs font-medium text-muted transition-[background-color,color] hover:bg-surface-muted hover:text-foreground"
-        >
-          <ArrowLeft className="size-3.5 transition group-hover:-translate-x-0.5" />
-          {t.common.overview}
-        </button>
-
-        <header className="mt-4 flex max-w-2xl items-center gap-2">
+      <div className="mx-auto w-full max-w-[1100px] px-5 pb-36 pt-6 sm:px-8 lg:px-10 lg:pb-28 lg:pt-10">
+        <header className="flex max-w-2xl items-center gap-2">
           <h1 className="text-balance text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
             {t.career.title}
           </h1>
@@ -160,7 +130,7 @@ export function CareerPage({
           ) : (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {routeSource ? (
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-500 sm:col-span-2">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary sm:col-span-2">
                   {routeSource === "ai"
                     ? t.person.aiGenerated
                     : t.person.starterIdeas}
@@ -331,32 +301,6 @@ export function CareerPage({
           <div className="space-y-5">
             <section className="rounded-[24px] border border-border bg-surface-raised p-5 sm:p-6">
               <h2 className="text-base font-semibold text-foreground">
-                {t.career.shortcutsTitle}
-              </h2>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={onPrepManager}
-                  disabled={!hasManager}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-surface-muted px-3 text-xs font-semibold text-foreground transition-colors hover:border-border-strong disabled:opacity-40"
-                >
-                  <BriefcaseBusiness className="size-3.5" />
-                  {hasManager ? t.career.prepManager : t.career.noManager}
-                </button>
-                <button
-                  type="button"
-                  onClick={onPrepMentor}
-                  disabled={!hasMentor}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-surface-muted px-3 text-xs font-semibold text-foreground transition-colors hover:border-border-strong disabled:opacity-40"
-                >
-                  <MessageSquareText className="size-3.5" />
-                  {hasMentor ? t.career.prepMentor : t.career.noMentor}
-                </button>
-              </div>
-            </section>
-
-            <section className="rounded-[24px] border border-border bg-surface-raised p-5 sm:p-6">
-              <h2 className="text-base font-semibold text-foreground">
                 {t.career.needsTitle}
               </h2>
               <p className="mt-1 text-xs text-muted">{t.career.needsBody}</p>
@@ -436,7 +380,7 @@ function NeedRow({
               need.status === "done"
                 ? "text-emerald-600"
                 : need.status === "routed"
-                  ? "text-violet-600"
+                  ? "text-secondary"
                   : "text-muted-subtle",
             )}
           >

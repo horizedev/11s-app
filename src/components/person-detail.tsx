@@ -152,7 +152,7 @@ export function PersonDetail({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-20 lg:pt-8">
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-36 pt-5 sm:px-8 lg:px-10 lg:pb-28 lg:pt-8">
         <button
           type="button"
           onClick={onBack}
@@ -172,7 +172,7 @@ export function PersonDetail({
             />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="truncate text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-[2rem]">
+                <h1 className="truncate text-2xl font-semibold leading-[1.15] tracking-[-0.04em] text-foreground sm:text-3xl">
                   {person.name}
                 </h1>
                 <RelationshipPill relationship={person.relationship} />
@@ -320,7 +320,7 @@ export function PersonDetail({
                   <button
                     type="button"
                     onClick={copyAgenda}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/15 bg-white/5 px-3 text-xs font-semibold text-stone-100"
+                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 text-xs font-semibold text-stone-100 transition-colors hover:bg-white/15"
                   >
                     <Copy className="size-3.5" />
                     {t.person.copyAgenda}

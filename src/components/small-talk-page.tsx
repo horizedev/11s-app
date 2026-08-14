@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
   Check,
   Lightbulb,
   LoaderCircle,
@@ -28,7 +27,6 @@ interface SmallTalkPageProps {
   prepQuota: PrepQuota;
   newsAreas: NewsArea[];
   isGenerating: boolean;
-  onBack: () => void;
   onContextBankChange: (value: string) => void;
   onNewsAreasChange: (areas: NewsArea[]) => void;
   onGenerate: () => void;
@@ -42,7 +40,6 @@ export function SmallTalkPage({
   prepQuota,
   newsAreas,
   isGenerating,
-  onBack,
   onContextBankChange,
   onNewsAreasChange,
   onGenerate,
@@ -64,17 +61,9 @@ export function SmallTalkPage({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-16 lg:pt-8">
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-36 pt-6 sm:px-8 lg:px-10 lg:pb-28 lg:pt-10">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-2">
-            <button
-              type="button"
-              onClick={onBack}
-              className="grid size-8 shrink-0 place-items-center rounded-lg text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
-              aria-label={t.smallTalk.backToOverview}
-            >
-              <ArrowLeft className="size-4" />
-            </button>
             <h1 className="text-balance text-2xl font-semibold leading-[1.15] tracking-[-0.04em] text-foreground sm:text-3xl">
               {t.smallTalk.title}
             </h1>

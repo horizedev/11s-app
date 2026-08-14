@@ -299,15 +299,10 @@ export const zhTW: Dictionary = {
     emptyBody: "把常見面的人加進來，筆記和對話紀錄都收在同一個地方。",
     emptyCta: "新增第一位聯絡人",
     ariaStats: "關係總覽",
-    nextUp: "焦點",
-    focusPerson: "最近一次",
-    prepared: "已準備",
-    openPreparation: "開啟準備",
     peopleList: "聯絡人",
     sortedByRecent: "依最近對話排序",
     recent: "近期對話",
     notesReady: (count) => `${count} 則筆記備妥`,
-    preparedLine: (notes, ideas) => `${notes} 則筆記 · ${ideas} 個建議`,
     toolkitTitle: "讓每段對話，都有話可聊。",
     toolkitBody:
       "把關於你的近況收進脈絡庫，11s 就能為任何一對一生出貼近的話題；沒有特定對象時，也能準備幾個輕鬆的開場。",
@@ -336,20 +331,6 @@ export const zhTW: Dictionary = {
     smallTalkEmptyBody:
       "從你的脈絡產生幾個自然開場；脈絡庫空白時，也會提供耐用的輕鬆話題。",
     smallTalkOpening: "自然開場",
-    filters: {
-      all: {
-        title: "讓下一次對話更有份量。",
-        description: "重要的脈絡隨手記，帶著更好的問題赴約。",
-      },
-      work: {
-        title: "每一次一對一，都帶著脈絡上場。",
-        description: "掌握每件承諾、每場成長對話，以及建立信任的細節。",
-      },
-      personal: {
-        title: "記得的，不只是近況。",
-        description: "把小細節與值得跟進的事，留給你在意的人。",
-      },
-    },
     stats: {
       people: "聯絡人",
       inCircle: "在你的圈中",
@@ -365,7 +346,6 @@ export const zhTW: Dictionary = {
   smallTalk: {
     title: "閒聊，也能聊得下去。",
     body: "比總覽更完整的靈感清單。從你的脈絡庫出發，也可以勾幾個新聞領域，讓話題多一點新鮮感。",
-    backToOverview: "回到總覽",
     newsTitle: "近期新聞領域",
     newsBody:
       "勾幾個你有興趣的領域。產生靈感時，11s 會擷取這些主題的近期標題，轉成好聊的切入點——而不是把聊天變成新聞播報。",
@@ -590,14 +570,12 @@ export const zhTW: Dictionary = {
     suggestedAsk: "建議開口",
     prepareWith: "一起準備",
     addAskToNotes: "把提問加入筆記",
-    shortcutsTitle: "快速入口",
-    prepManager: "與主管準備",
-    prepMentor: "與導師準備",
-    noManager: "圈子裡還沒有主管",
-    noMentor: "圈子裡還沒有導師",
     saved: "職涯資料已儲存",
     routing: "正在找出最適合的人…",
     routeFailed: "暫時無法轉介這個需求，請稍後再試。",
+  },
+  quickActions: {
+    open: "快速操作",
   },
   mobile: {
     overview: "總覽",

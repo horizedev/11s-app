@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   ChevronRight,
   Clock3,
@@ -21,20 +20,18 @@ import {
 } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
 import { useLocale } from "@/lib/i18n";
-import type { GeneralPrep, PeopleFilter, Person } from "@/lib/types";
+import type { GeneralPrep, Person } from "@/lib/types";
 import {
   cn,
   countNoteLines,
   formatHistoryDate,
   formatMeetingDate,
   getLastMeetingTiming,
-  relationshipLabel,
   sortByLastMeetingThenName,
 } from "@/lib/utils";
 
 interface OverviewProps {
   people: Person[];
-  filter: PeopleFilter;
   contextBank: string;
   contextSaved: boolean;
   generalPrep: GeneralPrep;
@@ -46,7 +43,6 @@ interface OverviewProps {
 
 export function Overview({
   people,
-  filter,
   contextBank,
   contextSaved,
   generalPrep,
@@ -58,10 +54,6 @@ export function Overview({
   const { locale, t } = useLocale();
 
   const sortedPeople = people.toSorted(sortByLastMeetingThenName);
-  const nextPerson = sortedPeople[0];
-  const nextTiming = nextPerson
-    ? getLastMeetingTiming(nextPerson.lastMeetingAt, t, locale)
-    : null;
   const recentDiscussions = people
     .flatMap((person) =>
       person.discussions.map((discussion) => ({ discussion, person })),
@@ -72,23 +64,16 @@ export function Overview({
         new Date(a.discussion.date).getTime(),
     )
     .slice(0, 3);
-  const copy = t.overview.filters[filter];
   const previewIdeas = generalPrep.ideas.slice(0, 2);
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-28 pt-5 sm:px-8 lg:px-10 lg:pb-16 lg:pt-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex max-w-2xl items-center gap-2">
-            <h1 className="text-balance text-2xl font-semibold leading-[1.15] tracking-[-0.04em] text-foreground sm:text-3xl">
-              {copy.title}
-            </h1>
-            <Hint label={t.common.moreInfo}>{copy.description}</Hint>
-          </div>
+      <div className="mx-auto w-full max-w-[1180px] px-5 pb-36 pt-6 sm:px-8 lg:px-10 lg:pb-28 lg:pt-10">
+        <header className="flex items-center justify-end">
           <button
             type="button"
             onClick={onAddPerson}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-xl bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_8px_22px_rgb(var(--shadow-color)/0.12)] transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-[0_10px_26px_rgb(var(--shadow-color)/0.16)] sm:self-auto"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_8px_22px_rgb(var(--shadow-color)/0.12)] transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:bg-accent-hover hover:shadow-[0_10px_26px_rgb(var(--shadow-color)/0.16)]"
           >
             <Plus className="size-4" />
             {t.common.addPerson}
@@ -244,84 +229,6 @@ export function Overview({
             </div>
           </div>
         </section>
-
-        {nextPerson ? (
-          <section className="mt-8">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold tracking-[-0.01em] text-foreground">
-                {t.overview.nextUp}
-              </h2>
-              <span className="text-[11px] text-muted-subtle">
-                {nextTiming?.label}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={() => onSelectPerson(nextPerson.id)}
-              className="group relative w-full overflow-hidden rounded-[24px] bg-[#22201e] p-5 text-left text-white shadow-[0_14px_40px_rgba(28,25,23,0.12)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(28,25,23,0.16)] sm:p-7"
-            >
-              <span
-                className="absolute -right-20 -top-24 size-72 rounded-full opacity-30 blur-2xl"
-                style={{ backgroundColor: nextPerson.color }}
-              />
-              <span className="absolute right-20 top-0 h-full w-px rotate-[24deg] bg-white/[0.06]" />
-              <span className="relative flex flex-col gap-7 sm:flex-row sm:items-center sm:justify-between">
-                <span className="flex min-w-0 items-center gap-4">
-                  <Avatar
-                    name={nextPerson.name}
-                    color={nextPerson.color}
-                    size="xl"
-                    emoji={nextPerson.avatarEmoji}
-                  />
-                  <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-2">
-                      <span className="block truncate text-xl font-semibold tracking-[-0.03em]">
-                        {nextPerson.name}
-                      </span>
-                      <span className="rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[10px] font-medium text-stone-200">
-                        {relationshipLabel(nextPerson.relationship, t)}
-                      </span>
-                    </span>
-                    <span className="mt-1 block text-xs text-stone-400">
-                      {nextPerson.role} · {nextPerson.organization}
-                    </span>
-                  </span>
-                </span>
-
-                <span className="grid grid-cols-2 gap-3 sm:min-w-[350px]">
-                  <span className="rounded-2xl border border-white/[0.08] bg-white/[0.06] px-4 py-3.5 backdrop-blur">
-                    <span className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-stone-400">
-                      <CalendarDays className="size-3.5" />
-                      {t.overview.focusPerson}
-                    </span>
-                    <span className="mt-2 block text-xs font-medium text-stone-100 sm:text-sm">
-                      {nextPerson.lastMeetingAt
-                        ? formatMeetingDate(nextPerson.lastMeetingAt, locale)
-                        : t.person.noLastConversation}
-                    </span>
-                  </span>
-                  <span className="rounded-2xl border border-white/[0.08] bg-white/[0.06] px-4 py-3.5 backdrop-blur">
-                    <span className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.1em] text-stone-400">
-                      <NotebookPen className="size-3.5" />
-                      {t.overview.prepared}
-                    </span>
-                    <span className="mt-2 block text-xs font-medium text-stone-100 sm:text-sm">
-                      {t.overview.preparedLine(
-                        countNoteLines(nextPerson.notes),
-                        nextPerson.prepIdeas.length,
-                      )}
-                    </span>
-                  </span>
-                </span>
-
-                <span className="absolute bottom-0 right-0 hidden items-center gap-2 text-xs font-semibold text-white sm:flex sm:translate-y-12">
-                  {t.overview.openPreparation}
-                  <ArrowRight className="size-4 transition group-hover:translate-x-1" />
-                </span>
-              </span>
-            </button>
-          </section>
-        ) : null}
 
         {people.length > 0 ? (
           <div className="mt-9 grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,0.75fr)]">

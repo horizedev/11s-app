@@ -25,6 +25,7 @@ import {
 import { LanguageToggle } from "@/components/language-toggle";
 import { Overview } from "@/components/overview";
 import { PersonDetail } from "@/components/person-detail";
+import { QuickActions } from "@/components/quick-actions";
 import { SmallTalkPage } from "@/components/small-talk-page";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useLocale } from "@/lib/i18n";
@@ -838,13 +839,6 @@ export function OneOnOneApp({
     goToPerson(personId);
   }
 
-  function prepWithRelationship(relationship: "manager" | "mentor") {
-    const person = people.find((item) => item.relationship === relationship);
-    if (!person) return;
-    setMeetingIntent("career");
-    goToPerson(person.id);
-  }
-
   async function removePrepIdea(person: Person, ideaId: string) {
     try {
       await dismissPrepIdea(supabase, ideaId);
@@ -941,7 +935,6 @@ export function OneOnOneApp({
             prepQuota={prepQuota}
             newsAreas={newsAreas}
             isGenerating={generatingGeneral}
-            onBack={goToOverview}
             onContextBankChange={updateContextBank}
             onNewsAreasChange={updateNewsAreas}
             onGenerate={() => void generateGeneralPrep()}
@@ -950,11 +943,9 @@ export function OneOnOneApp({
         ) : panel === "career" ? (
           <CareerPage
             career={career}
-            people={people}
             isRouting={routingNeed}
             suggestions={whoToAskSuggestions}
             routeSource={whoToAskSource}
-            onBack={goToOverview}
             onSaveProfile={async (profile) => {
               await saveCareerProfile(supabase, userId, profile);
               setCareer((current) => ({ ...current, ...profile }));
@@ -986,8 +977,6 @@ export function OneOnOneApp({
             }}
             onRouteNeed={routeCareerNeed}
             onPrepareWith={prepareWithPerson}
-            onPrepManager={() => prepWithRelationship("manager")}
-            onPrepMentor={() => prepWithRelationship("mentor")}
           />
         ) : (
           <>
@@ -997,7 +986,6 @@ export function OneOnOneApp({
             />
             <Overview
               people={filteredPeople}
-              filter={filter}
               contextBank={contextBank}
               contextSaved={contextSaved}
               generalPrep={generalPrep}
@@ -1008,6 +996,11 @@ export function OneOnOneApp({
             />
           </>
         )}
+
+        <QuickActions
+          onAddPerson={() => setDialog("add")}
+          onLogMeeting={selectedPerson ? openLogMeeting : undefined}
+        />
       </div>
 
       <MobileNavigation
