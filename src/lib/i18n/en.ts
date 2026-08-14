@@ -72,8 +72,10 @@ export const en: Dictionary = {
   landing: {
     homeAria: "11s home",
     navAria: "Landing page navigation",
+    navWhy: "Why 11s",
     navHow: "How it works",
     navUseCases: "Use cases",
+    navPrivacy: "Privacy",
     navPricing: "Pricing",
     openWorkspace: "Open workspace",
     heroLead: "Show up ready.",
@@ -83,30 +85,171 @@ export const en: Dictionary = {
     ctaPrimary: "Start preparing better 1:1s",
     ctaSecondary: "See how it works",
     noAccount: "Free account · Private sync across devices",
+    rolesLabel: "Your circle for better conversations and career leverage",
+    roles: ["Managers", "Mentors", "Peers", "Reports", "Network"],
+    whyEyebrow: "Why 11s",
+    whyTitle: "Better 1:1s that move your career.",
+    whyBody:
+      "Great careers are built in recurring conversations—not in annual reviews alone. 11s helps you avoid dead air, keep every thread, and turn manager, mentor, and peer 1:1s into real progress.",
+    features: [
+      {
+        title: "Walk in prepared, not scripted",
+        description:
+          "Set meeting intent, get one lead question plus a few supporting threads, and use glance mode when you are in the room—so the talk stays natural and useful.",
+      },
+      {
+        title: "Make career advancement visible",
+        description:
+          "Keep a private career direction, brag doc, and needs inbox. Route “who to leverage” across your circle, then prep the ask before your next manager or mentor 1:1.",
+      },
+      {
+        title: "Compound every conversation",
+        description:
+          "Notes, history, backgrounds, context bank, and career signals feed the next prep—so follow-ups, feedback, and growth asks get sharper over time.",
+      },
+    ],
     howEyebrow: "A simple rhythm",
     howTitle: "Capture. Prepare. Advance.",
+    howBody:
+      "11s supports the full loop around each 1:1—so you can be present in the room and still leave with career-ready follow-through.",
     steps: [
       {
         step: "Capture",
         title: "Save what matters",
-        hint: "Notes and follow-ups, kept in one place",
+        copy: "Park notes, open needs, wins in your brag doc, and background on each person—no agenda formatting required.",
       },
       {
         step: "Prepare",
         title: "Shape the conversation",
-        hint: "AI drafts a lead question from your notes",
+        copy: "Choose intent (career, catch-up, hard talk…), preview context, then generate a lead question with supports and stall cards.",
       },
       {
-        step: "Meet",
-        title: "Glance and go",
-        hint: "Walk in with talking points, not a script",
-      },
-      {
-        step: "Remember",
+        step: "Continue",
         title: "Close the loop",
-        hint: "Log it, and carry the threads forward",
+        copy: "Log what mattered after the meeting, carry follow-ups forward, and keep career asks moving across your network.",
       },
     ],
+    aiEyebrow: "Context-aware conversation coach",
+    aiTitle: "A thoughtful nudge,",
+    aiTitleAccent: "not a script.",
+    aiBody:
+      "AI prep synthesizes notes, discussion history, person background, your context bank, career direction, brag doc, and open needs—then returns one lead question with supporting threads. You stay in control of what enters the room.",
+    aiBullets: [
+      "Career and promotion asks grounded in your real goals and evidence",
+      "Relationship-aware tone for managers, mentors, peers, and friends",
+      "Warm openers and stall cards so conversations never go cold",
+      "Who-to-ask routing so the right career need reaches the right person",
+    ],
+    previewPreparing: "Preparing for Maya · Career",
+    previewMeta: "3 notes · brag + history in context",
+    previewReady: "Lead ready",
+    previewIdeas: [
+      {
+        label: "Lead",
+        title: "Make the promotion path concrete",
+        prompt:
+          "What evidence of next-level scope would make the strongest case this quarter?",
+      },
+      {
+        label: "Support",
+        title: "Connect wins to the ask",
+        prompt:
+          "Which recent outcomes should we put on the table as proof of readiness?",
+      },
+      {
+        label: "Stall",
+        title: "If the room goes quiet",
+        prompt:
+          "What part of the path feels least clear to you right now—and how can I help?",
+      },
+    ],
+    privacyEyebrow: "Personal by design",
+    privacyTitle: "Career honesty needs a private home.",
+    privacyBody:
+      "Your people, notes, history, brag doc, and career needs stay in an account-isolated workspace. Preparation shows what context it will use before you generate—and never trains models on your content.",
+    privacyNotes: "Your notes",
+    privacyContext: "Your career context",
+    privacyChips: [
+      "Account-isolated data",
+      "Secure cloud sync",
+      "Transparent AI context",
+    ],
+    finalTitle: "Better conversations. Clearer advancement.",
+    finalBody:
+      "Walk into your next 1:1 prepared to connect—and ready to ask for the career move that matters.",
+    openBetween: "Open 11s",
+    footerTagline:
+      "Better 1:1 conversations and career advancement—through the people you already know.",
+    footerNavAria: "Footer navigation",
+    footerTerms: "Terms",
+    footerPrivacy: "Privacy",
+    footerPricing: "Pricing",
+    goToWorkspace: "Go to workspace",
+    previewConversations: "Better 1:1s",
+    previewPeople: "People",
+    previewLog: "Log a 1:1",
+    previewPrepare: "Prepare",
+    previewHistory: "History · 2",
+    previewCoach: "Conversation coach",
+    previewCoachTitle: "Career intent · one lead question",
+    previewCoachBody:
+      "Notes and career context on the left. Lead + supports on the right.",
+    previewRefresh: "Generate",
+    previewSuggested: "AI suggestions",
+    previewQuestion:
+      "Lead with the promotion path, then use two supports if Maya wants evidence or timeline clarity.",
+    previewNext: "Prepare together",
+    previewTomorrow: "Last spoke 12d ago",
+    previewNotes: "Notes for next time",
+    previewSaved: "Saved automatically",
+    previewNotesList: [
+      "Ask what evidence would unlock the next level",
+      "Share Q2 launch outcomes from the brag doc",
+      "Clarify timeline for the director track",
+    ],
+    previewTalkingPoints: [
+      {
+        label: "Support",
+        title: "Surface proof from recent wins",
+      },
+      {
+        label: "Support",
+        title: "Align on a concrete next step",
+      },
+    ],
+    previewFloatLeft: "Career context in the room",
+    previewFloatRight: "1 lead · 2 supports ready",
+    previewManager: "Manager",
+    assistEyebrow: "Beyond the 1:1",
+    assistTitle: "Find the right person. Break the ice.",
+    assistBody:
+      "Two more ways 11s turns your private context into momentum—career asks routed to the people most able to help, and openers for any chat.",
+    assistWhoTitle: "Who to ask",
+    assistWhoBody:
+      "Describe a career need. 11s routes it to the person in your circle most able to help—and drafts a natural way to ask.",
+    assistWhoNeed: "I need sponsorship for a director-track conversation…",
+    assistWhoWhyLabel: "Why Maya:",
+    assistWhoWhyText:
+      "She has sponsored your work and knows the director rubric.",
+    assistWhoAskText:
+      "Could you sponsor me when the director-track conversation opens next cycle?",
+    assistTalkTitle: "Small talk, powered by your context",
+    assistTalkBody:
+      "Your context bank turns awkward silences into warm openings—even with no specific person in mind.",
+    assistTalkContextLabel: "From your context bank",
+    assistTalkContext: [
+      "Job · Leading a product launch",
+      "Interest · Trail running & coffee",
+    ],
+    assistTalkIdeasLabel: "Openers it sparks",
+    assistTalkIdeas: [
+      "I just got into trail running—any routes worth waking up early for?",
+      "We ship our launch next week—how does your team celebrate a big release?",
+    ],
+    previewCareerNav: "Career",
+    previewIntentCareer: "Career growth",
+    previewLeadLabel: "Lead question",
+    previewSupportLabel: "Supporting threads",
     useCasesEyebrow: "Who 11s is for",
     useCasesTitle: "Built for better conversations—and career leverage.",
     useCasesBody:
@@ -153,13 +296,6 @@ export const en: Dictionary = {
         example: "Catch-ups · support · shared life",
       },
     ],
-    footerTagline:
-      "Better 1:1 conversations and career advancement—through the people you already know.",
-    footerNavAria: "Footer navigation",
-    footerTerms: "Terms",
-    footerPrivacy: "Privacy",
-    footerPricing: "Pricing",
-    goToWorkspace: "Go to workspace",
   },
   sidebar: {
     searchAria: "Search people",
