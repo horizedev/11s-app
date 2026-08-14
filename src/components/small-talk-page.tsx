@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Check,
   Lightbulb,
   LoaderCircle,
   MessageCircle,
@@ -15,14 +14,21 @@ import {
 
 import { CategoryPill } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
+import { RotatingConversationSkill } from "@/components/rotating-conversation-skill";
+import { SaveStatus } from "@/components/save-status";
 import { useLocale } from "@/lib/i18n";
 import { NEWS_AREAS, type NewsArea } from "@/lib/news";
-import type { GeneralPrep, PrepQuota } from "@/lib/types";
+import {
+  CONTEXT_BANK_SLOTS,
+  type GeneralPrep,
+  type PrepQuota,
+} from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface SmallTalkPageProps {
   contextBank: string;
   contextSaved: boolean;
+  contextSaveError: boolean;
   generalPrep: GeneralPrep;
   prepQuota: PrepQuota;
   newsAreas: NewsArea[];
@@ -36,6 +42,7 @@ interface SmallTalkPageProps {
 export function SmallTalkPage({
   contextBank,
   contextSaved,
+  contextSaveError,
   generalPrep,
   prepQuota,
   newsAreas,
@@ -105,7 +112,7 @@ export function SmallTalkPage({
           </button>
         </header>
 
-        <section className="mt-8">
+        <section className="mt-6">
           <div className="flex items-center gap-3">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-muted text-muted">
               <Newspaper className="size-4" strokeWidth={1.7} />
@@ -156,23 +163,18 @@ export function SmallTalkPage({
                   </Hint>
                 </p>
               </div>
-              <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-muted-subtle">
-                <Check
-                  className={cn(
-                    "size-3",
-                    contextSaved ? "text-success" : "text-muted-subtle",
-                  )}
-                />
-                {contextSaved ? t.common.saved : t.common.saving}
-              </span>
+              <SaveStatus
+                isSaving={!contextSaved && !contextSaveError}
+                savedLabel={t.common.saved}
+                savingLabel={t.common.saving}
+                errorLabel={
+                  contextSaveError ? t.toast.saveFailed : undefined
+                }
+              />
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {(
-                Object.keys(t.overview.contextSlots) as Array<
-                  keyof typeof t.overview.contextSlots
-                >
-              ).map((slot) => (
+            <div className="mt-3 flex gap-1.5 overflow-x-auto pb-1">
+              {CONTEXT_BANK_SLOTS.map((slot) => (
                 <button
                   key={slot}
                   type="button"
@@ -183,7 +185,7 @@ export function SmallTalkPage({
                       `${current}${current ? "\n" : ""}${slot}: `,
                     );
                   }}
-                  className="rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[10px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground"
+                  className="shrink-0 rounded-full border border-border bg-surface-muted px-2.5 py-1 text-[10px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground"
                 >
                   <Plus className="mr-1 inline size-2.5" />
                   {t.overview.contextSlots[slot].label}
@@ -198,7 +200,7 @@ export function SmallTalkPage({
               maxLength={12_000}
               autoComplete="off"
               placeholder={t.overview.contextBankPlaceholder}
-              className="mt-4 min-h-56 flex-1 resize-none rounded-2xl border border-accent/20 bg-accent-soft/35 p-4 text-sm leading-6 text-foreground outline-none transition-[border-color,background-color,box-shadow] placeholder:text-muted-subtle focus:border-accent/40 focus:bg-surface-raised focus:ring-4 focus:ring-accent/10"
+              className="multiline-editor mt-4 flex-1"
             />
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-subtle">
@@ -267,9 +269,11 @@ export function SmallTalkPage({
                     <p className="mt-2 text-[11px] leading-5 text-muted">
                       {idea.rationale}
                     </p>
-                    <p className="mt-2.5 rounded-xl bg-amber-50/80 px-3 py-2.5 text-[11px] font-medium leading-5 text-foreground dark:bg-amber-400/10">
-                      “{idea.prompt}”
-                    </p>
+                    <div className="mt-2.5 rounded-xl bg-amber-50/80 px-3 py-2.5 dark:bg-amber-400/10">
+                      <p className="text-[11px] font-medium leading-5 text-foreground">
+                        “{idea.prompt}”
+                      </p>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -288,6 +292,8 @@ export function SmallTalkPage({
             )}
           </section>
         </div>
+
+        <RotatingConversationSkill kind="small-talk" className="mt-8" />
       </div>
     </main>
   );

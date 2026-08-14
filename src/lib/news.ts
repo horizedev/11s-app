@@ -15,31 +15,72 @@ export interface NewsHeadline {
   source: string;
 }
 
-const FEEDS: Record<NewsArea, { url: string; source: string }> = {
-  technology: {
-    url: "https://feeds.bbci.co.uk/news/technology/rss.xml",
-    source: "BBC Technology",
-  },
-  business: {
-    url: "https://feeds.bbci.co.uk/news/business/rss.xml",
-    source: "BBC Business",
-  },
-  culture: {
-    url: "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
-    source: "BBC Culture",
-  },
-  science: {
-    url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
-    source: "BBC Science",
-  },
-  sports: {
-    url: "https://feeds.bbci.co.uk/sport/rss.xml",
-    source: "BBC Sport",
-  },
-  world: {
-    url: "https://feeds.bbci.co.uk/news/world/rss.xml",
-    source: "BBC World",
-  },
+type NewsFeed = {
+  url: string;
+  source: string;
+};
+
+const FEEDS: Record<NewsArea, NewsFeed[]> = {
+  technology: [
+    {
+      url: "https://feeds.bbci.co.uk/news/technology/rss.xml",
+      source: "BBC Technology",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
+  business: [
+    {
+      url: "https://feeds.bbci.co.uk/news/business/rss.xml",
+      source: "BBC Business",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
+  culture: [
+    {
+      url: "https://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml",
+      source: "BBC Culture",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
+  science: [
+    {
+      url: "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+      source: "BBC Science",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
+  sports: [
+    {
+      url: "https://feeds.bbci.co.uk/sport/rss.xml",
+      source: "BBC Sport",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/SPORTS?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
+  world: [
+    {
+      url: "https://feeds.bbci.co.uk/news/world/rss.xml",
+      source: "BBC World",
+    },
+    {
+      url: "https://news.google.com/rss/headlines/section/topic/WORLD?hl=en-US&gl=US&ceid=US:en",
+      source: "Google News",
+    },
+  ],
 };
 
 function decodeXmlEntities(value: string) {
@@ -75,6 +116,39 @@ export function isNewsArea(value: string): value is NewsArea {
   return (NEWS_AREAS as readonly string[]).includes(value);
 }
 
+async function fetchFeedHeadlines(
+  area: NewsArea,
+  feed: NewsFeed,
+  limit: number,
+  signal?: AbortSignal,
+): Promise<NewsHeadline[]> {
+  try {
+    const response = await fetch(feed.url, {
+      signal,
+      headers: { Accept: "application/rss+xml, application/xml, text/xml" },
+      next: { revalidate: 1800 },
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `News feed ${feed.source} returned ${response.status} for ${area}.`,
+      );
+      return [];
+    }
+
+    const xml = await response.text();
+    return extractTitles(xml, limit).map((title) => ({
+      area,
+      title,
+      source: feed.source,
+    }));
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") throw error;
+    console.warn(`Could not load ${area} headlines from ${feed.source}.`, error);
+    return [];
+  }
+}
+
 export async function fetchNewsHeadlines(
   areas: NewsArea[],
   options?: { perArea?: number; signal?: AbortSignal },
@@ -85,23 +159,28 @@ export async function fetchNewsHeadlines(
   const perArea = options?.perArea ?? 3;
   const results = await Promise.all(
     uniqueAreas.map(async (area) => {
-      const feed = FEEDS[area];
-      try {
-        const response = await fetch(feed.url, {
-          signal: options?.signal,
-          headers: { Accept: "application/rss+xml, application/xml, text/xml" },
-          next: { revalidate: 1800 },
-        });
-        if (!response.ok) return [] as NewsHeadline[];
-        const xml = await response.text();
-        return extractTitles(xml, perArea).map((title) => ({
-          area,
-          title,
-          source: feed.source,
-        }));
-      } catch {
-        return [] as NewsHeadline[];
+      const headlineSets = await Promise.all(
+        FEEDS[area].map((feed) =>
+          fetchFeedHeadlines(area, feed, perArea, options?.signal),
+        ),
+      );
+      const headlines: NewsHeadline[] = [];
+      const seen = new Set<string>();
+
+      for (let index = 0; headlines.length < perArea; index += 1) {
+        let foundHeadline = false;
+        for (const set of headlineSets) {
+          const headline = set[index];
+          if (!headline || seen.has(headline.title)) continue;
+          seen.add(headline.title);
+          headlines.push(headline);
+          foundHeadline = true;
+          if (headlines.length >= perArea) break;
+        }
+        if (!foundHeadline) break;
       }
+
+      return headlines;
     }),
   );
 

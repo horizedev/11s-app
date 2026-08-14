@@ -57,16 +57,15 @@ const stepMeta = [
   { icon: NotebookPen, tint: "bg-accent-soft text-accent" },
   { icon: Brain, tint: "bg-secondary-soft text-secondary" },
   {
-    icon: RotateCcw,
+    icon: MessageSquareText,
     tint:
       "bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300",
   },
-];
-
-const previewIdeaColors = [
-  "text-blue-300 bg-blue-300/10",
-  "text-violet-300 bg-violet-300/10",
-  "text-teal-300 bg-teal-300/10",
+  {
+    icon: RotateCcw,
+    tint:
+      "bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-300",
+  },
 ];
 
 const talkingPointColors = [
@@ -107,7 +106,7 @@ export function LandingPage() {
             className="flex items-center gap-2.5 rounded-xl"
             aria-label={t.landing.homeAria}
           >
-            <BrandLogo size={36} />
+            <BrandLogo size={44} />
             <span className="hidden text-[15px] font-semibold tracking-[-0.025em] sm:inline">
               {t.common.brand}
             </span>
@@ -153,7 +152,7 @@ export function LandingPage() {
       </header>
 
       <main id="main-content">
-        <section className="relative isolate pb-20 pt-20 sm:pb-28 sm:pt-28 lg:pb-32 lg:pt-32">
+        <section className="relative isolate pb-16 pt-16 sm:pb-20 sm:pt-20 lg:pb-24 lg:pt-24">
           <div className="pointer-events-none absolute inset-x-0 top-[-76px] -z-10 h-[760px] overflow-hidden">
             <div className="absolute left-1/2 top-[-440px] h-[850px] w-[1050px] -translate-x-1/2 rounded-full border border-stone-200/80" />
             <div className="absolute left-1/2 top-[-330px] h-[650px] w-[810px] -translate-x-1/2 rounded-full border border-stone-200/70" />
@@ -163,20 +162,27 @@ export function LandingPage() {
 
           <div className="mx-auto max-w-[1050px] px-5 text-center sm:px-8">
             <h1
-              className={`mx-auto max-w-4xl break-words text-balance font-semibold leading-[1.01] text-foreground sm:text-[4.75rem] sm:leading-[0.98] lg:text-[6.15rem] ${
+              className={`mx-auto max-w-4xl break-words text-balance font-semibold text-foreground ${
                 isZh
-                  ? "text-[2.35rem] tracking-[-0.02em] sm:text-[4.1rem] lg:text-[5.25rem]"
-                  : "text-[2.6rem] tracking-[-0.055em]"
+                  ? "text-[2.1rem] leading-[1.16] tracking-[-0.03em] sm:text-[3.3rem] lg:text-[4.15rem]"
+                  : "text-[2.5rem] leading-[1.02] tracking-[-0.05em] sm:text-[3.9rem] lg:text-[5rem]"
               }`}
             >
-              {t.landing.heroLead}{" "}
-              <span
-                className={`mt-1 block font-serif font-normal italic text-accent sm:mt-0 sm:inline ${
-                  isZh ? "tracking-[-0.01em]" : "tracking-[-0.04em]"
-                }`}
-              >
-                {t.landing.heroAccent}
-              </span>
+              {isZh ? (
+                <>
+                  <span className="block">{t.landing.heroLead}</span>
+                  <span className="mt-2 block bg-gradient-to-r from-accent via-[#bd7257] to-secondary bg-clip-text font-serif font-semibold text-transparent sm:mt-4">
+                    {t.landing.heroAccent}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="block">{t.landing.heroLead}</span>
+                  <span className="mt-3 block font-serif font-normal italic tracking-[-0.045em] text-accent sm:mt-4">
+                    {t.landing.heroAccent}
+                  </span>
+                </>
+              )}
             </h1>
 
             <p className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-7 text-muted sm:text-lg sm:leading-8">
@@ -235,7 +241,7 @@ export function LandingPage() {
 
         <section
           id="use-cases"
-          className="scroll-mt-24 border-t border-border bg-surface/70 py-24 sm:py-28"
+          className="scroll-mt-24 border-t border-border bg-surface/70 py-16 sm:py-20"
         >
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <div className="mx-auto max-w-2xl text-center">
@@ -261,30 +267,30 @@ export function LandingPage() {
                 ] as const;
                 const Icon = icons[index] ?? UsersRound;
                 return (
-                  <article
+                  <Link
                     key={useCase.id}
-                    className="rounded-[22px] border border-border bg-surface-raised/90 p-5 shadow-[0_1px_2px_rgb(var(--shadow-color)/0.03)] transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-border-strong hover:shadow-[0_14px_36px_rgb(var(--shadow-color)/0.08)] sm:p-6"
+                    href={`/stories/${useCase.id}`}
+                    aria-label={t.landing.useCaseAria(useCase.title)}
+                    className="group flex items-start gap-3.5 rounded-2xl border border-border bg-surface-raised p-5 transition-[border-color,background-color] hover:border-border-strong hover:bg-surface"
                   >
-                    <div className="flex items-start gap-3">
-                      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
-                        <Icon className="size-4" strokeWidth={1.7} />
-                      </span>
-                      <div className="min-w-0">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent-soft text-accent">
+                      <Icon className="size-4" strokeWidth={1.7} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-baseline justify-between gap-2">
                         <h3 className="text-base font-semibold text-foreground">
                           {useCase.title}
                         </h3>
-                        <p className="mt-0.5 text-[11px] font-semibold text-accent">
-                          {useCase.audience}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="mt-4 text-sm leading-6 text-muted">
-                      {useCase.description}
-                    </p>
-                    <p className="mt-3 text-[11px] font-medium text-muted-subtle">
-                      {useCase.example}
-                    </p>
-                  </article>
+                        <ArrowRight className="size-3.5 shrink-0 self-center text-muted-subtle transition group-hover:translate-x-0.5 group-hover:text-accent" />
+                      </span>
+                      <p className="mt-0.5 text-[11px] font-semibold text-accent">
+                        {useCase.audience}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 text-muted">
+                        {useCase.description}
+                      </p>
+                    </span>
+                  </Link>
                 );
               })}
             </div>
@@ -293,7 +299,7 @@ export function LandingPage() {
 
         <section
           id="why-11s"
-          className="scroll-mt-24 border-y border-border bg-background py-24 sm:py-32"
+          className="scroll-mt-24 border-y border-border bg-background py-16 sm:py-24"
         >
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
@@ -345,7 +351,7 @@ export function LandingPage() {
 
         <section
           id="how-it-works"
-          className="scroll-mt-24 py-24 sm:py-32"
+          className="scroll-mt-24 py-16 sm:py-24"
         >
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <div className="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
@@ -402,7 +408,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="border-t border-border bg-surface/70 py-24 sm:py-28">
+        <section className="border-t border-border bg-surface/70 py-16 sm:py-20">
           <div className="mx-auto max-w-[1180px] px-5 sm:px-8">
             <div className="mx-auto max-w-2xl text-center">
               <p className={`text-secondary ${sectionLabelClass}`}>
@@ -524,103 +530,9 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="px-3 pb-24 sm:px-6 sm:pb-32">
-          <div className="relative mx-auto max-w-[1220px] overflow-hidden rounded-[30px] bg-[#24211f] px-5 py-16 text-white shadow-[0_30px_80px_rgba(28,25,23,0.14)] sm:px-10 sm:py-20 lg:px-16">
-            <div className="pointer-events-none absolute inset-0">
-              <div className="absolute -right-28 -top-36 size-[430px] rounded-full bg-[#755f90]/35 blur-3xl" />
-              <div className="absolute -bottom-48 -left-20 size-[380px] rounded-full bg-[#a8644b]/20 blur-3xl" />
-              <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
-            </div>
-
-            <div className="relative grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-20">
-              <div>
-                <span
-                  className={`inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[#d9a58f] ${
-                    isZh
-                      ? "text-[10px] font-semibold tracking-[0.08em]"
-                      : "text-[10px] font-semibold uppercase tracking-[0.13em]"
-                  }`}
-                >
-                  <Sparkles className="size-3.5" />
-                  {t.landing.aiEyebrow}
-                </span>
-                <h2 className="mt-6 max-w-lg text-4xl font-semibold leading-[1.04] tracking-[-0.05em] sm:text-5xl">
-                  {t.landing.aiTitle}{" "}
-                  <span className="font-serif font-normal italic text-[#d9a58f]">
-                    {t.landing.aiTitleAccent}
-                  </span>
-                </h2>
-                <p className="mt-5 max-w-lg text-sm leading-7 text-stone-400 sm:text-base">
-                  {t.landing.aiBody}
-                </p>
-                <div className="mt-7 space-y-3">
-                  {t.landing.aiBullets.map((item) => (
-                    <p
-                      key={item}
-                      className="flex items-center gap-2.5 text-xs text-stone-300"
-                    >
-                      <span className="grid size-5 place-items-center rounded-full bg-white/[0.08] text-emerald-300">
-                        <Check className="size-3" />
-                      </span>
-                      {item}
-                    </p>
-                  ))}
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="absolute inset-8 rounded-full bg-white/10 blur-3xl" />
-                <div className="relative rounded-[22px] border border-white/10 bg-[#302d2a]/90 p-4 shadow-2xl backdrop-blur sm:p-5">
-                  <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="grid size-9 place-items-center rounded-full bg-[#6C63A8] text-[10px] font-semibold">
-                        MC
-                      </span>
-                      <span>
-                        <span className="block text-xs font-semibold text-white">
-                          {t.landing.previewPreparing}
-                        </span>
-                        <span className="mt-0.5 block text-[9px] text-stone-400">
-                          {t.landing.previewMeta}
-                        </span>
-                      </span>
-                    </div>
-                    <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-[9px] font-medium text-emerald-300">
-                      {t.landing.previewReady}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 space-y-2.5">
-                    {t.landing.previewIdeas.map((idea, index) => (
-                      <div
-                        key={idea.title}
-                        className="rounded-2xl border border-white/[0.07] bg-white/[0.04] p-3.5"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[8px] font-semibold ${previewIdeaColors[index]}`}
-                          >
-                            {idea.label}
-                          </span>
-                          <p className="text-[11px] font-semibold text-stone-200">
-                            {idea.title}
-                          </p>
-                        </div>
-                        <p className="mt-2 text-[10px] leading-4 text-stone-400">
-                          “{idea.prompt}”
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section
           id="privacy"
-          className="scroll-mt-24 border-y border-border bg-background py-20 sm:py-24"
+          className="scroll-mt-24 border-y border-border bg-background py-14 sm:py-20"
         >
           <div className="mx-auto grid max-w-[1050px] gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_1.1fr] lg:items-center">
             <div className="relative mx-auto grid size-64 place-items-center sm:size-72 lg:mx-0">
@@ -662,7 +574,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="px-5 py-24 text-center sm:px-8 sm:py-32">
+        <section className="px-5 py-16 text-center sm:px-8 sm:py-24">
           <div className="relative mx-auto max-w-3xl overflow-hidden rounded-[28px] border border-border bg-gradient-to-br from-[#fff8f4] via-white to-[#f4f1fa] px-6 py-14 shadow-[0_18px_50px_rgb(var(--shadow-color)/0.07)] dark:from-accent-soft/55 dark:via-surface-raised dark:to-secondary-soft/50 sm:px-10">
             <span className="mx-auto grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent">
               <MessageSquareText className="size-5" strokeWidth={1.7} />
@@ -687,7 +599,7 @@ export function LandingPage() {
       <footer className="border-t border-border bg-background/90 backdrop-blur">
         <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-5 px-5 py-7 sm:flex-row sm:px-8">
           <div className="flex items-center gap-2.5">
-            <BrandLogo size={32} className="rounded-[10px]" />
+            <BrandLogo size={40} className="rounded-[10px]" />
             <span className="text-xs font-semibold text-stone-700">
               {t.common.brand}
             </span>
@@ -762,7 +674,7 @@ function ProductPreview() {
         <div className="grid min-h-[540px] bg-background lg:grid-cols-[232px_1fr]">
           <div className="hidden border-r border-border bg-sidebar p-4 lg:flex lg:flex-col">
             <div className="flex items-center gap-2.5 px-1.5 py-1">
-              <BrandLogo size={28} className="rounded-[8px]" />
+              <BrandLogo size={36} className="rounded-[8px]" />
               <div>
                 <p className="text-[11px] font-semibold text-foreground">
                   {t.common.brand}
@@ -837,7 +749,7 @@ function ProductPreview() {
           <div className="min-w-0 p-4 sm:p-6 lg:p-8">
             <div className="mb-5 flex items-center justify-between border-b border-border pb-3 lg:hidden">
               <div className="flex items-center gap-2">
-                <BrandLogo size={26} className="rounded-lg" />
+                <BrandLogo size={32} className="rounded-lg" />
                 <span className="text-[10px] font-semibold text-foreground">
                   {t.common.overview}
                 </span>

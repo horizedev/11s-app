@@ -1,6 +1,14 @@
 "use client";
 
-import { ArrowRight, Check, LoaderCircle, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Diamond,
+  Leaf,
+  LoaderCircle,
+  Rocket,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -117,7 +125,7 @@ export function PricingPage({
             className="flex items-center gap-2.5 rounded-xl"
             aria-label={t.landing.homeAria}
           >
-            <BrandLogo size={30} />
+            <BrandLogo size={40} />
             <span className="hidden text-sm font-semibold tracking-[-0.02em] sm:inline">
               {t.common.brand}
             </span>
@@ -128,7 +136,7 @@ export function PricingPage({
             <Link
               href="/workspace"
               aria-label={t.landing.openWorkspace}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+              className="inline-flex h-11 items-center gap-1.5 rounded-lg bg-accent px-3 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
             >
               <span className="sm:hidden">{isZh ? "開啟" : "Open"}</span>
               <span className="hidden whitespace-nowrap sm:inline">
@@ -155,7 +163,7 @@ export function PricingPage({
             )}
           >
             <span aria-hidden="true" className="mr-1.5">
-              💎
+              <Diamond className="inline size-3.5 -translate-y-px" />
             </span>
             {t.pricing.eyebrow}
           </p>
@@ -169,7 +177,11 @@ export function PricingPage({
             {t.pricing.body}
           </p>
 
-          <div className="mt-8 inline-flex items-center rounded-xl border border-border bg-surface p-1 shadow-sm">
+          <div
+            className="mt-8 inline-flex items-center rounded-xl border border-border bg-surface p-1 shadow-sm"
+            role="group"
+            aria-label={t.pricing.title}
+          >
             {(["month", "year"] as const).map((option) => (
               <button
                 key={option}
@@ -177,7 +189,7 @@ export function PricingPage({
                 onClick={() => setInterval(option)}
                 aria-pressed={interval === option}
                 className={cn(
-                  "flex h-9 items-center gap-2 rounded-lg px-4 text-xs font-semibold transition",
+                  "flex h-11 items-center gap-2 rounded-lg px-4 text-xs font-semibold transition",
                   interval === option
                     ? "bg-foreground text-background shadow-sm"
                     : "text-muted hover:text-foreground",
@@ -205,7 +217,7 @@ export function PricingPage({
           <section className="rounded-[26px] border border-border bg-gradient-to-br from-white to-[#f8f7f3] p-7 shadow-[0_14px_40px_rgb(var(--shadow-color)/0.05)] dark:from-surface-raised dark:to-surface-muted">
             <div className="flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <span aria-hidden="true">🌱</span>
+                <Leaf aria-hidden="true" className="size-4 text-success" />
                 {t.pricing.freeName}
               </h2>
               {signedIn && plan === "free" ? (
@@ -249,7 +261,7 @@ export function PricingPage({
             <div className="relative">
               <div className="flex items-center justify-between">
                 <h2 className="flex items-center gap-1.5 text-sm font-semibold">
-                  <span aria-hidden="true">🚀</span>
+                  <Rocket aria-hidden="true" className="size-4 text-[#d9a58f]" />
                   <Sparkles className="size-3.5 text-[#d9a58f]" />
                   {t.pricing.proName}
                 </h2>
@@ -302,11 +314,11 @@ export function PricingPage({
 
         <p className="mx-auto mt-10 max-w-xl text-center text-[11px] leading-5 text-muted">
           {t.pricing.footnote}{" "}
-          <Link href="/terms" className="underline underline-offset-2 transition hover:text-stone-700">
+          <Link href="/terms" className="underline underline-offset-2 transition hover:text-foreground">
             {t.landing.footerTerms}
           </Link>
           {" · "}
-          <Link href="/privacy" className="underline underline-offset-2 transition hover:text-stone-700">
+          <Link href="/privacy" className="underline underline-offset-2 transition hover:text-foreground">
             {t.landing.footerPrivacy}
           </Link>
         </p>

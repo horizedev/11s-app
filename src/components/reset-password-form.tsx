@@ -100,7 +100,7 @@ export function ResetPasswordForm() {
       >
         <div className="w-full rounded-[26px] border border-border bg-surface-raised p-8 shadow-[0_28px_90px_rgb(var(--shadow-color)/0.1)] sm:p-10">
           <div className="flex items-center justify-between">
-            <BrandLogo size={44} className="rounded-[14px]" />
+            <BrandLogo size={52} className="rounded-[14px]" />
             <span className="grid size-10 place-items-center rounded-xl bg-secondary-soft text-secondary">
               <LockKeyhole aria-hidden="true" className="size-4" />
             </span>

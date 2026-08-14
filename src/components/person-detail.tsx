@@ -1,13 +1,15 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Archive,
   ArrowLeft,
   CalendarDays,
   Check,
   CheckCircle2,
+  ChevronDown,
   ChevronRight,
+  ChevronUp,
   Clock3,
   Copy,
   Eraser,
@@ -30,6 +32,8 @@ import {
   RelationshipPill,
 } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
+import { RotatingConversationSkill } from "@/components/rotating-conversation-skill";
+import { SaveStatus } from "@/components/save-status";
 import { useLocale } from "@/lib/i18n";
 import type {
   MeetingIntent,
@@ -97,8 +101,12 @@ export function PersonDetail({
   const [saved, setSaved] = useState(true);
   const [glanceMode, setGlanceMode] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [coachExpanded, setCoachExpanded] = useState(false);
+  const [archivedNotesExpanded, setArchivedNotesExpanded] = useState(false);
   const notesRef = useRef<HTMLTextAreaElement>(null);
+  const saveStatusTimeout = useRef<number | null>(null);
   const timing = getLastMeetingTiming(person.lastMeetingAt, t, locale);
+  const hasArchivedNotes = Boolean(person.lastNotes.trim());
 
   const lead = useMemo(
     () =>
@@ -120,11 +128,29 @@ export function PersonDetail({
     return person.prepIdeas.filter((idea) => idea.kind === "support");
   }, [person.prepIdeas]);
   const displaySupports = supports;
+  const hasAgendaContent = Boolean(
+    person.notes.trim() || lead || displaySupports.length,
+  );
+
+  useEffect(
+    () => () => {
+      if (saveStatusTimeout.current !== null) {
+        window.clearTimeout(saveStatusTimeout.current);
+      }
+    },
+    [],
+  );
 
   function handleNotesChange(value: string) {
     setSaved(false);
     onNotesChange(value);
-    window.setTimeout(() => setSaved(true), 450);
+    if (saveStatusTimeout.current !== null) {
+      window.clearTimeout(saveStatusTimeout.current);
+    }
+    saveStatusTimeout.current = window.setTimeout(() => {
+      saveStatusTimeout.current = null;
+      setSaved(true);
+    }, 650);
   }
 
   function copyAgenda() {
@@ -320,7 +346,8 @@ export function PersonDetail({
                   <button
                     type="button"
                     onClick={copyAgenda}
-                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 text-xs font-semibold text-stone-100 transition-colors hover:bg-white/15"
+                    disabled={!hasAgendaContent}
+                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/15 bg-white/10 px-3 text-xs font-semibold text-stone-100 transition-colors hover:bg-white/15 disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <Copy className="size-3.5" />
                     {t.person.copyAgenda}
@@ -344,39 +371,66 @@ export function PersonDetail({
                         ? t.person.refreshIdeas
                         : t.person.generateIdeas}
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setCoachExpanded((current) => !current)}
+                    aria-expanded={coachExpanded}
+                    aria-controls="person-coach-controls"
+                    aria-label={
+                      coachExpanded
+                        ? t.person.collapseCoach
+                        : t.person.expandCoach
+                    }
+                    className="grid size-9 place-items-center rounded-xl border border-white/15 bg-white/10 text-stone-200 transition-colors hover:bg-white/15"
+                  >
+                    {coachExpanded ? (
+                      <ChevronUp className="size-3.5" />
+                    ) : (
+                      <ChevronDown className="size-3.5" />
+                    )}
+                  </button>
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-400">
-                    {t.person.intentLabel}
-                  </p>
-                  <Hint
-                    label={t.common.moreInfo}
-                    className="text-stone-400 [&_button]:text-stone-400 [&_button]:hover:bg-white/10 [&_button]:hover:text-stone-200"
-                  >
-                    {t.person.intentHint}
-                  </Hint>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {MEETING_INTENTS.map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => onIntentChange(value)}
-                      className={cn(
-                        "rounded-full px-2.5 py-1 text-[10px] font-semibold transition",
-                        intent === value
-                          ? "bg-[#fff] text-[#1c1917]"
-                          : "bg-white/10 text-stone-300 hover:bg-white/15",
-                      )}
+              {coachExpanded ? (
+                <div id="person-coach-controls">
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-400">
+                      {t.person.intentLabel}
+                    </p>
+                    <Hint
+                      label={t.common.moreInfo}
+                      className="text-stone-400 [&_button]:text-stone-400 [&_button]:hover:bg-white/10 [&_button]:hover:text-stone-200"
                     >
-                      {t.person.intents[value]}
-                    </button>
-                  ))}
+                      {t.person.intentHint}
+                    </Hint>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {MEETING_INTENTS.map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => onIntentChange(value)}
+                        className={cn(
+                          "rounded-full px-2.5 py-1 text-[10px] font-semibold transition",
+                          intent === value
+                            ? "bg-[#fff] text-[#1c1917]"
+                            : "bg-white/10 text-stone-300 hover:bg-white/15",
+                        )}
+                      >
+                        {t.person.intents[value]}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <p className="text-[10px] text-stone-400">
+                  {t.person.intentLabel}:{" "}
+                  <span className="font-semibold text-stone-200">
+                    {t.person.intents[intent]}
+                  </span>
+                </p>
+              )}
             </section>
 
             {previewOpen ? (
@@ -439,10 +493,11 @@ export function PersonDetail({
                         </Hint>
                       </div>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[10px] text-muted-subtle">
-                      <Check className="size-3 text-success" />
-                      {saved ? t.common.saved : t.common.saving}
-                    </span>
+                    <SaveStatus
+                      isSaving={!saved}
+                      savedLabel={t.common.saved}
+                      savingLabel={t.common.saving}
+                    />
                   </div>
 
                   <div className="flex flex-1 flex-col px-5 py-4 sm:px-6">
@@ -456,7 +511,7 @@ export function PersonDetail({
                       }
                       autoComplete="off"
                       placeholder={t.person.notesPlaceholder}
-                      className="min-h-0 w-full flex-1 resize-none rounded-xl border border-accent/20 bg-accent-soft/35 p-3.5 text-xs leading-6 text-foreground outline-none transition-[border-color,background-color,box-shadow] placeholder:text-muted-subtle focus:border-accent/40 focus:bg-surface-raised focus:ring-4 focus:ring-accent/10"
+                      className="multiline-editor w-full flex-1"
                     />
 
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
@@ -494,19 +549,50 @@ export function PersonDetail({
                         <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
                           {t.person.lastNotesTitle}
                         </p>
-                        {person.lastNotes.trim() ? (
-                          <button
-                            type="button"
-                            onClick={onRestoreLastNotes}
-                            className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
-                          >
-                            {t.person.restoreLastNote}
-                          </button>
+                        {hasArchivedNotes ? (
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={onRestoreLastNotes}
+                              className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
+                            >
+                              {t.person.restoreLastNote}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setArchivedNotesExpanded((current) => !current)
+                              }
+                              aria-expanded={archivedNotesExpanded}
+                              aria-controls="person-archived-notes"
+                              className="grid size-6 place-items-center rounded-md text-muted-subtle transition-colors hover:bg-surface hover:text-foreground"
+                              aria-label={
+                                archivedNotesExpanded
+                                  ? t.person.hideLastNotes
+                                  : t.person.showLastNotes
+                              }
+                            >
+                              {archivedNotesExpanded ? (
+                                <ChevronUp className="size-3.5" />
+                              ) : (
+                                <ChevronDown className="size-3.5" />
+                              )}
+                            </button>
+                          </div>
                         ) : null}
                       </div>
-                      <p className="mt-2 whitespace-pre-wrap text-[11px] leading-5 text-muted">
-                        {person.lastNotes.trim() || t.person.lastNotesEmpty}
-                      </p>
+                      {hasArchivedNotes && archivedNotesExpanded ? (
+                        <p
+                          id="person-archived-notes"
+                          className="mt-2 whitespace-pre-wrap text-[11px] leading-5 text-muted"
+                        >
+                          {person.lastNotes.trim()}
+                        </p>
+                      ) : !hasArchivedNotes ? (
+                        <p className="mt-2 text-[11px] leading-5 text-muted">
+                          {t.person.lastNotesEmpty}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -631,7 +717,7 @@ export function PersonDetail({
                                   <p className="mt-1 text-xs font-medium text-foreground">
                                     {idea.prompt}
                                   </p>
-                                  <div className="mt-2 flex gap-2">
+                                  <div className="mt-2 flex flex-wrap gap-2">
                                     <button
                                       type="button"
                                       onClick={() => onAddIdeaToNotes(idea)}
@@ -730,6 +816,8 @@ export function PersonDetail({
                 </div>
               </section>
             ) : null}
+
+            <RotatingConversationSkill kind="one-on-one" />
           </div>
         ) : tab === "history" ? (
           <HistoryView
@@ -901,7 +989,7 @@ function ContextPreview({
 }) {
   const { t } = useLocale();
   const noteCount = countNoteLines(person.notes);
-  const historyCount = Math.min(person.discussions.length, 3);
+  const historyCount = person.discussions.length;
 
   return (
     <div className="rounded-2xl border border-amber-300/70 bg-[#fffaf3] p-4 dark:border-amber-400/25 dark:bg-amber-400/10 sm:p-5">
@@ -918,7 +1006,9 @@ function ContextPreview({
         ))}
         <li className="flex gap-2 text-muted">
           <Check className="mt-0.5 size-3 shrink-0 text-amber-700 dark:text-amber-300" />
-          {noteCount} notes · {historyCount} recent logs · {person.relationship}
+          {t.person.savedNotes(noteCount)} ·{" "}
+          {t.person.pastDiscussions(historyCount)} ·{" "}
+          {t.relationship[person.relationship]}
         </li>
       </ul>
       <div className="mt-4 flex justify-end gap-2">
@@ -1033,7 +1123,7 @@ function HistoryView({
                       <button
                         type="button"
                         onClick={() => onEditMeeting(discussion.id)}
-                        className="grid size-8 place-items-center rounded-lg text-muted-subtle opacity-100 transition-colors hover:bg-surface-muted hover:text-foreground focus:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
+                        className="grid size-8 place-items-center rounded-lg text-muted-subtle opacity-100 transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                         aria-label={t.person.editConversation}
                       >
                         <Pencil className="size-3.5" />

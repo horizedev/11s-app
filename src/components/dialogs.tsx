@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  LoaderCircle,
   MessageSquareText,
   Pencil,
   Save,
@@ -260,7 +261,7 @@ function EmojiPicker({
       {open ? (
         <div
           className="absolute inset-x-4 top-[calc(100%-0.5rem)] z-20 rounded-2xl border border-border bg-surface-raised p-3 shadow-[0_18px_50px_rgb(var(--shadow-color)/0.14)] sm:inset-x-6"
-          role="listbox"
+          role="group"
           aria-label={t.person.chooseEmoji}
         >
           <div className="mb-2 flex items-center justify-between gap-2 px-1">
@@ -278,8 +279,8 @@ function EmojiPicker({
                 <button
                   key={emoji}
                   type="button"
-                  role="option"
-                  aria-selected={selected}
+                  aria-pressed={selected}
+                  aria-label={`${t.person.chooseEmoji}: ${emoji}`}
                   onClick={() => {
                     onChange(emoji);
                     setOpen(false);
@@ -426,17 +427,29 @@ export function AddPersonDialog({
   onSubmit,
 }: {
   onClose: () => void;
-  onSubmit: (person: NewPersonInput) => void;
+  onSubmit: (person: NewPersonInput) => void | Promise<void>;
 }) {
   const { t } = useLocale();
   const [relationship, setRelationship] = useState<Relationship>("peer");
   const [avatarEmoji, setAvatarEmoji] = useState<string>(() =>
     pickDefaultEmoji("new-person"),
   );
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    onSubmit(readPersonInput(event.currentTarget, relationship, avatarEmoji));
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await onSubmit(
+        readPersonInput(event.currentTarget, relationship, avatarEmoji),
+      );
+    } catch {
+      setSubmitError(t.toast.saveFailed);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -457,19 +470,33 @@ export function AddPersonDialog({
           relationship={relationship}
           onRelationshipChange={setRelationship}
         />
+        {submitError ? (
+          <p
+            role="alert"
+            className="mx-5 rounded-xl border border-danger/20 bg-danger-soft px-3 py-2 text-xs text-danger sm:mx-6"
+          >
+            {submitError}
+          </p>
+        ) : null}
         <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4 sm:px-6">
           <button
             type="button"
             onClick={onClose}
+            disabled={submitting}
             className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             {t.common.cancel}
           </button>
           <button
             type="submit"
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+            disabled={submitting}
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
           >
-            <UserRoundPlus className="size-3.5" />
+            {submitting ? (
+              <LoaderCircle className="size-3.5 animate-spin" />
+            ) : (
+              <UserRoundPlus className="size-3.5" />
+            )}
             {t.common.addPerson}
           </button>
         </div>
@@ -488,8 +515,8 @@ export function EditPersonDialog({
   person: NewPersonInput & { name: string };
   color: string;
   onClose: () => void;
-  onSubmit: (person: NewPersonInput) => void;
-  onDelete: () => void;
+  onSubmit: (person: NewPersonInput) => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
 }) {
   const { t } = useLocale();
   const [relationship, setRelationship] = useState(person.relationship);
@@ -497,10 +524,35 @@ export function EditPersonDialog({
     person.avatarEmoji || pickDefaultEmoji(person.name),
   );
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    onSubmit(readPersonInput(event.currentTarget, relationship, avatarEmoji));
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await onSubmit(
+        readPersonInput(event.currentTarget, relationship, avatarEmoji),
+      );
+    } catch {
+      setSubmitError(t.toast.saveFailed);
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    setSubmitError("");
+    try {
+      await onDelete();
+    } catch {
+      setSubmitError(t.toast.saveFailed);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -523,19 +575,33 @@ export function EditPersonDialog({
             <button
               type="button"
               onClick={() => setConfirmDelete(false)}
+              disabled={deleting}
               className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
             >
               {t.common.cancel}
             </button>
             <button
               type="button"
-              onClick={onDelete}
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-semibold text-white transition hover:bg-red-500"
+              onClick={() => void handleDelete()}
+              disabled={deleting}
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-red-600 px-4 text-xs font-semibold text-white transition hover:bg-red-500 disabled:opacity-60"
             >
-              <Trash2 className="size-3.5" />
+              {deleting ? (
+                <LoaderCircle className="size-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="size-3.5" />
+              )}
               {t.dialogs.deletePerson}
             </button>
           </div>
+          {submitError ? (
+            <p
+              role="alert"
+              className="mt-4 rounded-xl border border-danger/20 bg-danger-soft px-3 py-2 text-xs text-danger"
+            >
+              {submitError}
+            </p>
+          ) : null}
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -550,10 +616,19 @@ export function EditPersonDialog({
             onRelationshipChange={setRelationship}
             values={person}
           />
+          {submitError ? (
+            <p
+              role="alert"
+              className="mx-5 rounded-xl border border-danger/20 bg-danger-soft px-3 py-2 text-xs text-danger sm:mx-6"
+            >
+              {submitError}
+            </p>
+          ) : null}
           <div className="flex items-center justify-between gap-2 border-t border-border px-5 py-4 sm:px-6">
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
+              disabled={submitting}
               className="inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-xs font-semibold text-red-600 transition hover:bg-red-50"
             >
               <Trash2 className="size-3.5" />
@@ -563,15 +638,21 @@ export function EditPersonDialog({
               <button
                 type="button"
                 onClick={onClose}
+                disabled={submitting}
                 className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+                disabled={submitting}
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
               >
-                <Save className="size-3.5" />
+                {submitting ? (
+                  <LoaderCircle className="size-3.5 animate-spin" />
+                ) : (
+                  <Save className="size-3.5" />
+                )}
                 {t.dialogs.savePerson}
               </button>
             </div>
@@ -591,15 +672,17 @@ export function LogMeetingDialog({
   personName: string;
   discussion?: Discussion;
   onClose: () => void;
-  onSubmit: (discussion: NewDiscussionInput) => void;
+  onSubmit: (discussion: NewDiscussionInput) => void | Promise<void>;
 }) {
   const { t } = useLocale();
   const isEditing = Boolean(discussion);
   const [mood, setMood] = useState<DiscussionMood>(
     discussion?.mood ?? "positive",
   );
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const splitList = (value: string) =>
@@ -608,14 +691,22 @@ export function LogMeetingDialog({
         .map((item) => item.trim())
         .filter(Boolean);
 
-    onSubmit({
-      title: String(formData.get("title")).trim(),
-      date: new Date(String(formData.get("date"))).toISOString(),
-      summary: String(formData.get("summary")).trim(),
-      topics: splitList(String(formData.get("topics") ?? "")),
-      followUps: splitList(String(formData.get("followUps") ?? "")),
-      mood,
-    });
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await onSubmit({
+        title: String(formData.get("title")).trim(),
+        date: new Date(String(formData.get("date"))).toISOString(),
+        summary: String(formData.get("summary")).trim(),
+        topics: splitList(String(formData.get("topics") ?? "")),
+        followUps: splitList(String(formData.get("followUps") ?? "")),
+        mood,
+      });
+    } catch {
+      setSubmitError(t.toast.saveFailed);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -646,6 +737,7 @@ export function LogMeetingDialog({
             <input
               name="title"
               required
+              autoComplete="off"
               defaultValue={discussion?.title}
               placeholder={t.dialogs.conversationPlaceholder}
               className={fieldClassName}
@@ -711,19 +803,31 @@ export function LogMeetingDialog({
             />
           </label>
         </div>
+        {submitError ? (
+          <p
+            role="alert"
+            className="mx-5 rounded-xl border border-danger/20 bg-danger-soft px-3 py-2 text-xs text-danger sm:mx-6"
+          >
+            {submitError}
+          </p>
+        ) : null}
         <div className="flex items-center justify-end gap-2 border-t border-border px-5 py-4 sm:px-6">
           <button
             type="button"
             onClick={onClose}
+            disabled={submitting}
             className="h-10 rounded-xl px-4 text-xs font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             {t.common.cancel}
           </button>
           <button
             type="submit"
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover"
+            disabled={submitting}
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
           >
-            {isEditing ? (
+            {submitting ? (
+              <LoaderCircle className="size-3.5 animate-spin" />
+            ) : isEditing ? (
               <Save className="size-3.5" />
             ) : (
               <MessageSquareText className="size-3.5" />

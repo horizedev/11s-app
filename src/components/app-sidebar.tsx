@@ -152,26 +152,26 @@ export function AppSidebar({
     >
       <div
         className={cn(
-          "flex h-[76px] items-center",
-          collapsed ? "justify-center px-2" : "justify-between px-4",
+          "flex h-[88px] items-center",
+          collapsed ? "justify-center px-2" : "justify-between px-5",
         )}
       >
         <button
           type="button"
           className={cn(
             "group flex items-center rounded-xl text-left outline-none focus-visible:ring-2 focus-visible:ring-focus",
-            collapsed ? "justify-center" : "gap-3",
+            collapsed ? "justify-center" : "gap-3.5",
           )}
           onClick={onSelectOverview}
           aria-label={t.sidebar.goToOverview}
         >
-          <BrandLogo size={36} />
+          <BrandLogo size={44} />
           {!collapsed ? (
             <span>
-              <span className="block text-[15px] font-semibold tracking-[-0.02em] text-foreground">
+              <span className="block text-[15px] font-semibold leading-none tracking-[-0.02em] text-foreground">
                 {t.common.brand}
               </span>
-              <span className="block text-[10px] font-medium uppercase tracking-[0.12em] text-muted-subtle">
+              <span className="mt-1 block whitespace-nowrap text-[11px] font-medium leading-4 text-muted-subtle">
                 {t.common.brandTagline}
               </span>
             </span>

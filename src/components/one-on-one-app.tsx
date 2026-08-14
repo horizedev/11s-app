@@ -163,6 +163,7 @@ export function OneOnOneApp({
     () => initialSnapshot?.contextBank ?? "",
   );
   const [contextSaved, setContextSaved] = useState(true);
+  const [contextSaveError, setContextSaveError] = useState(false);
   const [generalPrep, setGeneralPrep] = useState<GeneralPrep>(
     () =>
       initialSnapshot?.generalPrep ?? {
@@ -335,13 +336,20 @@ export function OneOnOneApp({
   function updateContextBank(value: string) {
     setContextBank(value);
     setContextSaved(false);
+    setContextSaveError(false);
     cancelPendingContextSave();
 
     contextSaveTimeout.current = window.setTimeout(() => {
       contextSaveTimeout.current = null;
       void saveContextBank(supabase, userId, value)
-        .then(() => setContextSaved(true))
-        .catch(() => showToast(t.toast.saveFailed));
+        .then(() => {
+          setContextSaved(true);
+          setContextSaveError(false);
+        })
+        .catch(() => {
+          setContextSaveError(true);
+          showToast(t.toast.saveFailed);
+        });
     }, 600);
   }
 
@@ -513,8 +521,15 @@ export function OneOnOneApp({
     cancelPendingContextSave();
 
     try {
-      await saveContextBank(supabase, userId, contextBank);
-      setContextSaved(true);
+      try {
+        await saveContextBank(supabase, userId, contextBank);
+        setContextSaved(true);
+        setContextSaveError(false);
+      } catch {
+        setContextSaveError(true);
+        showToast(t.toast.saveFailed);
+        return;
+      }
 
       const response = await fetch("/api/prep", {
         method: "POST",
@@ -597,6 +612,7 @@ export function OneOnOneApp({
       organization: person.organization,
       relationship: person.relationship,
       notes: person.notes,
+      lastNotes: person.lastNotes,
       background: person.background,
       linkedinUrl: person.linkedinUrl,
       lastMeetingAt: person.lastMeetingAt || null,
@@ -768,6 +784,13 @@ export function OneOnOneApp({
     setDialog("log");
   }
 
+  function openLogMeetingForPerson(personId: string) {
+    setActivePersonId(personId);
+    setPanel("overview");
+    setEditingDiscussionId(null);
+    setDialog("log");
+  }
+
   function openEditMeeting(discussionId: string) {
     setEditingDiscussionId(discussionId);
     setDialog("log");
@@ -785,19 +808,7 @@ export function OneOnOneApp({
           need,
           people: people.map((person) => ({
             id: person.id,
-            name: person.name,
-            role: person.role,
-            organization: person.organization,
-            relationship: person.relationship,
-            notes: person.notes,
-            background: person.background,
-            lastMeetingAt: person.lastMeetingAt || null,
-            recentTopics: person.discussions
-              .flatMap((discussion) => discussion.topics)
-              .slice(0, 12),
-            recentFollowUps: person.discussions
-              .flatMap((discussion) => discussion.followUps)
-              .slice(0, 12),
+            ...personPayload(person),
           })),
         }),
       });
@@ -931,6 +942,7 @@ export function OneOnOneApp({
           <SmallTalkPage
             contextBank={contextBank}
             contextSaved={contextSaved}
+            contextSaveError={contextSaveError}
             generalPrep={generalPrep}
             prepQuota={prepQuota}
             newsAreas={newsAreas}
@@ -949,7 +961,6 @@ export function OneOnOneApp({
             onSaveProfile={async (profile) => {
               await saveCareerProfile(supabase, userId, profile);
               setCareer((current) => ({ ...current, ...profile }));
-              showToast(t.toast.careerSaved);
             }}
             onAddNeed={async (body) => {
               const need = await createCareerNeed(supabase, userId, body);
@@ -988,6 +999,7 @@ export function OneOnOneApp({
               people={filteredPeople}
               contextBank={contextBank}
               contextSaved={contextSaved}
+              contextSaveError={contextSaveError}
               generalPrep={generalPrep}
               onSelectPerson={goToPerson}
               onAddPerson={() => setDialog("add")}
@@ -998,8 +1010,12 @@ export function OneOnOneApp({
         )}
 
         <QuickActions
+          people={people}
           onAddPerson={() => setDialog("add")}
           onLogMeeting={selectedPerson ? openLogMeeting : undefined}
+          onLogMeetingForPerson={
+            selectedPerson ? undefined : openLogMeetingForPerson
+          }
         />
       </div>
 
@@ -1032,7 +1048,7 @@ export function OneOnOneApp({
           color={selectedPerson.color}
           onClose={() => setDialog(null)}
           onSubmit={(input) => editPerson(selectedPerson, input)}
-          onDelete={() => void removePerson(selectedPerson)}
+          onDelete={() => removePerson(selectedPerson)}
         />
       ) : null}
       {dialog === "log" && selectedPerson ? (
@@ -1051,14 +1067,13 @@ export function OneOnOneApp({
           }}
           onSubmit={(discussion) => {
             if (editingDiscussionId) {
-              void editDiscussion(
+              return editDiscussion(
                 selectedPerson,
                 editingDiscussionId,
                 discussion,
               );
-              return;
             }
-            void logDiscussion(selectedPerson, discussion);
+            return logDiscussion(selectedPerson, discussion);
           }}
         />
       ) : null}
@@ -1110,7 +1125,19 @@ function WorkspaceStatus({
         ) : (
           <span className="mx-auto block size-2 rounded-full bg-[#d26a4c]" />
         )}
-        <p className="mt-4 text-sm font-medium text-muted">{message}</p>
+        {loading ? (
+          <p
+            role="status"
+            aria-live="polite"
+            className="mt-4 text-sm font-medium text-muted"
+          >
+            {message}
+          </p>
+        ) : (
+          <p role="alert" className="mt-4 text-sm font-medium text-muted">
+            {message}
+          </p>
+        )}
         {actionLabel && onAction ? (
           <button
             type="button"
@@ -1138,8 +1165,9 @@ function MobileHeader({
         type="button"
         onClick={onOverview}
         className="flex items-center gap-2.5 rounded-lg"
+        aria-label={t.sidebar.goToOverview}
       >
-        <BrandLogo size={32} className="rounded-[10px]" />
+        <BrandLogo size={40} className="rounded-[10px]" />
         <span className="text-sm font-semibold tracking-[-0.02em]">
           {t.common.brand}
         </span>
@@ -1162,7 +1190,11 @@ function MobileFilters({
   const { t } = useLocale();
 
   return (
-    <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border px-5 py-3 lg:hidden">
+    <div
+      role="group"
+      aria-label={t.sidebar.groups}
+      className="flex shrink-0 gap-2 overflow-x-auto border-b border-border px-5 py-3 lg:hidden"
+    >
       {(
         [
           ["all", t.common.allPeople],

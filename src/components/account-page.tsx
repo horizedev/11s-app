@@ -157,8 +157,9 @@ export function AccountPage({
           <Link
             href="/"
             className="flex items-center gap-3 rounded-xl"
+            aria-label={t.landing.homeAria}
           >
-            <BrandLogo size={36} />
+            <BrandLogo size={44} />
             <span className="text-sm font-semibold tracking-[-0.02em]">
               {t.common.brand}
             </span>
@@ -331,6 +332,9 @@ export function AccountPage({
                 {copied ? t.account.referral.copied : t.account.referral.copy}
               </button>
             </div>
+            <span className="sr-only" role="status" aria-live="polite">
+              {copied ? t.account.referral.copied : ""}
+            </span>
           </div>
 
           <div className="grid gap-px border-t border-border bg-border sm:grid-cols-3">

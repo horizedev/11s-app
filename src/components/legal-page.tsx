@@ -22,7 +22,7 @@ export function LegalPage({ doc }: { doc: "terms" | "privacy" }) {
             className="flex items-center gap-2.5 rounded-xl"
             aria-label={t.landing.homeAria}
           >
-            <BrandLogo size={30} />
+            <BrandLogo size={40} />
             <span className="text-sm font-semibold tracking-[-0.02em]">
               {t.common.brand}
             </span>

@@ -2,7 +2,6 @@
 
 import {
   ArrowRight,
-  Check,
   ChevronRight,
   Clock3,
   MessageCircle,
@@ -19,6 +18,7 @@ import {
   TinyArrow,
 } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
+import { SaveStatus } from "@/components/save-status";
 import { useLocale } from "@/lib/i18n";
 import type { GeneralPrep, Person } from "@/lib/types";
 import {
@@ -34,6 +34,7 @@ interface OverviewProps {
   people: Person[];
   contextBank: string;
   contextSaved: boolean;
+  contextSaveError: boolean;
   generalPrep: GeneralPrep;
   onSelectPerson: (id: string) => void;
   onAddPerson: () => void;
@@ -45,6 +46,7 @@ export function Overview({
   people,
   contextBank,
   contextSaved,
+  contextSaveError,
   generalPrep,
   onSelectPerson,
   onAddPerson,
@@ -69,7 +71,18 @@ export function Overview({
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
       <div className="mx-auto w-full max-w-[1180px] px-5 pb-36 pt-6 sm:px-8 lg:px-10 lg:pb-28 lg:pt-10">
-        <header className="flex items-center justify-end">
+        <header className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-accent">
+              {t.common.overview}
+            </p>
+            <div className="mt-2 flex items-center gap-1.5">
+              <h1 className="text-balance text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
+                {t.overview.toolkitTitle}
+              </h1>
+              <Hint label={t.common.moreInfo}>{t.overview.toolkitBody}</Hint>
+            </div>
+          </div>
           <button
             type="button"
             onClick={onAddPerson}
@@ -80,16 +93,7 @@ export function Overview({
           </button>
         </header>
 
-        <section className="mt-8">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-balance text-xl font-semibold tracking-[-0.03em] text-foreground sm:text-2xl">
-                {t.overview.toolkitTitle}
-              </h2>
-              <Hint label={t.common.moreInfo}>{t.overview.toolkitBody}</Hint>
-            </div>
-          </div>
-
+        <section className="mt-6">
           <div className="mt-5 grid overflow-hidden rounded-[24px] border border-border bg-surface-raised shadow-[0_14px_40px_rgb(var(--shadow-color)/0.06)] xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
             <div className="flex min-h-[22rem] flex-col border-b border-border p-5 sm:p-6 xl:border-b-0 xl:border-r">
               <div className="flex items-start justify-between gap-4">
@@ -105,15 +109,14 @@ export function Overview({
                     </Hint>
                   </p>
                 </div>
-                <span className="inline-flex shrink-0 items-center gap-1 text-[10px] text-muted-subtle">
-                  <Check
-                    className={cn(
-                      "size-3",
-                      contextSaved ? "text-success" : "text-muted-subtle",
-                    )}
-                  />
-                  {contextSaved ? t.common.saved : t.common.saving}
-                </span>
+                <SaveStatus
+                  isSaving={!contextSaved && !contextSaveError}
+                  savedLabel={t.common.saved}
+                  savingLabel={t.common.saving}
+                  errorLabel={
+                    contextSaveError ? t.toast.saveFailed : undefined
+                  }
+                />
               </div>
 
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -147,7 +150,7 @@ export function Overview({
                 maxLength={12_000}
                 autoComplete="off"
                 placeholder={t.overview.contextBankPlaceholder}
-                className="mt-4 min-h-48 flex-1 resize-none rounded-2xl border border-accent/20 bg-accent-soft/35 p-4 text-sm leading-6 text-foreground outline-none transition-[border-color,background-color,box-shadow] placeholder:text-muted-subtle focus:border-accent/40 focus:bg-surface-raised focus:ring-4 focus:ring-accent/10"
+                className="multiline-editor mt-4 flex-1"
               />
 
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-subtle">

@@ -250,7 +250,7 @@ export function AuthForm({
             <div className="absolute -bottom-32 -left-20 size-72 rounded-full bg-[#a8644b]/30 blur-3xl" />
             <div className="relative flex h-full min-h-[570px] flex-col justify-between">
               <div>
-                <BrandLogo size={48} className="rounded-2xl" />
+                <BrandLogo size={56} className="rounded-2xl" />
                 <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#d7a58c]">
                   {t.eyebrow}
                 </p>
@@ -270,7 +270,7 @@ export function AuthForm({
 
           <section className="px-6 py-10 sm:px-12 sm:py-14">
             <div className="mx-auto max-w-sm">
-              <BrandLogo size={44} className="rounded-[14px] lg:hidden" />
+              <BrandLogo size={52} className="rounded-[14px] lg:hidden" />
 
               {mode !== "forgot" ? (
                 <div className="mt-8 flex rounded-xl border border-border bg-surface-muted p-1 lg:mt-0">

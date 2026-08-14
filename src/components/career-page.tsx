@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  Check,
   LoaderCircle,
   Plus,
   Sparkles,
@@ -13,6 +12,7 @@ import {
 
 import { RelationshipPill } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
+import { SaveStatus } from "@/components/save-status";
 import { useLocale } from "@/lib/i18n";
 import type {
   CareerNeed,
@@ -21,6 +21,17 @@ import type {
   WhoToAskSuggestion,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+type CareerDraft = Omit<CareerProfile, "needs">;
+
+function careerDraftMatches(left: CareerDraft, right: CareerDraft) {
+  return (
+    left.targetRole === right.targetRole &&
+    left.timeline === right.timeline &&
+    left.direction === right.direction &&
+    left.bragDoc === right.bragDoc
+  );
+}
 
 interface CareerPageProps {
   career: CareerProfile;
@@ -55,21 +66,131 @@ export function CareerPage({
   const [needDraft, setNeedDraft] = useState("");
   const [routeDraft, setRouteDraft] = useState("");
   const [saving, setSaving] = useState(false);
-  const [savedFlash, setSavedFlash] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const initialDraft: CareerDraft = {
+    targetRole: career.targetRole,
+    timeline: career.timeline,
+    direction: career.direction,
+    bragDoc: career.bragDoc,
+  };
+  const latestDraftRef = useRef<CareerDraft>(initialDraft);
+  const savedDraftRef = useRef<CareerDraft>(initialDraft);
+  const saveTimerRef = useRef<number | null>(null);
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve());
+  const onSaveProfileRef = useRef(onSaveProfile);
+  const mountedRef = useRef(true);
 
-  async function handleSave() {
-    setSaving(true);
+  useEffect(() => {
+    onSaveProfileRef.current = onSaveProfile;
+  }, [onSaveProfile]);
+
+  const queueSave = useCallback(
+    (draft: CareerDraft, reportStatus = true) => {
+      if (reportStatus && mountedRef.current) {
+        setSaving(true);
+        setSaveError("");
+      }
+
+      const nextSave = saveChainRef.current
+        .catch(() => undefined)
+        .then(async () => {
+          if (careerDraftMatches(draft, savedDraftRef.current)) return;
+          await onSaveProfileRef.current(draft);
+          savedDraftRef.current = draft;
+        });
+
+      saveChainRef.current = nextSave;
+
+      if (reportStatus) {
+        void nextSave
+          .then(() => {
+            if (saveChainRef.current === nextSave && mountedRef.current) {
+              setSaving(false);
+            }
+          })
+          .catch(() => {
+            if (saveChainRef.current === nextSave && mountedRef.current) {
+              setSaving(false);
+              setSaveError(t.toast.saveFailed);
+            }
+          });
+      }
+
+      return nextSave;
+    },
+    [t.toast.saveFailed],
+  );
+
+  const scheduleSave = useCallback(
+    (draft: CareerDraft) => {
+      if (saveTimerRef.current !== null) {
+        window.clearTimeout(saveTimerRef.current);
+      }
+
+      setSaving(true);
+      setSaveError("");
+      saveTimerRef.current = window.setTimeout(() => {
+        saveTimerRef.current = null;
+        void queueSave(draft);
+      }, 650);
+    },
+    [queueSave],
+  );
+
+  const flushSave = useCallback(async () => {
+    if (saveTimerRef.current !== null) {
+      window.clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    }
+    await queueSave(latestDraftRef.current);
+  }, [queueSave]);
+
+  useEffect(
+    () => {
+      mountedRef.current = true;
+      return () => {
+        mountedRef.current = false;
+        if (saveTimerRef.current !== null) {
+          window.clearTimeout(saveTimerRef.current);
+          saveTimerRef.current = null;
+        }
+        void queueSave(latestDraftRef.current, false).catch(() => undefined);
+      };
+    },
+    [queueSave],
+  );
+
+  function updateDraft(draft: CareerDraft) {
+    latestDraftRef.current = draft;
+    scheduleSave(draft);
+  }
+
+  function updateTargetRole(value: string) {
+    setTargetRole(value);
+    updateDraft({ ...latestDraftRef.current, targetRole: value });
+  }
+
+  function updateTimeline(value: string) {
+    setTimeline(value);
+    updateDraft({ ...latestDraftRef.current, timeline: value });
+  }
+
+  function updateDirection(value: string) {
+    setDirection(value);
+    updateDraft({ ...latestDraftRef.current, direction: value });
+  }
+
+  function updateBragDoc(value: string) {
+    setBragDoc(value);
+    updateDraft({ ...latestDraftRef.current, bragDoc: value });
+  }
+
+  async function handleRouteNeed(need: string) {
     try {
-      await onSaveProfile({
-        targetRole,
-        timeline,
-        direction,
-        bragDoc,
-      });
-      setSavedFlash(true);
-      window.setTimeout(() => setSavedFlash(false), 1600);
-    } finally {
-      setSaving(false);
+      await flushSave();
+      await onRouteNeed(need);
+    } catch {
+      setSaveError(t.toast.saveFailed);
     }
   }
 
@@ -111,7 +232,7 @@ export function CareerPage({
             <button
               type="button"
               disabled={isRouting || !routeDraft.trim()}
-              onClick={() => void onRouteNeed(routeDraft.trim())}
+              onClick={() => void handleRouteNeed(routeDraft.trim())}
               className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-secondary px-3 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60 dark:text-background"
             >
               {isRouting ? (
@@ -195,7 +316,7 @@ export function CareerPage({
                 <input
                   name="target-role"
                   value={targetRole}
-                  onChange={(event) => setTargetRole(event.target.value)}
+                  onChange={(event) => updateTargetRole(event.target.value)}
                   autoComplete="off"
                   placeholder={t.career.targetRolePlaceholder}
                   className="h-10 rounded-xl border border-border bg-surface-muted px-3 text-sm text-foreground outline-none transition-[border-color,background-color,box-shadow] focus:border-border-strong focus:bg-surface-raised focus:ring-4 focus:ring-focus/10"
@@ -206,7 +327,7 @@ export function CareerPage({
                 <input
                   name="career-timeline"
                   value={timeline}
-                  onChange={(event) => setTimeline(event.target.value)}
+                  onChange={(event) => updateTimeline(event.target.value)}
                   autoComplete="off"
                   placeholder={t.career.timelinePlaceholder}
                   className="h-10 rounded-xl border border-border bg-surface-muted px-3 text-sm text-foreground outline-none transition-[border-color,background-color,box-shadow] focus:border-border-strong focus:bg-surface-raised focus:ring-4 focus:ring-focus/10"
@@ -219,12 +340,12 @@ export function CareerPage({
               <textarea
                 name="career-direction"
                 value={direction}
-                onChange={(event) => setDirection(event.target.value)}
+                onChange={(event) => updateDirection(event.target.value)}
                 rows={4}
                 maxLength={4000}
                 autoComplete="off"
                 placeholder={t.career.directionNotesPlaceholder}
-                className="resize-none rounded-xl border border-border bg-surface-muted p-3 text-sm leading-6 text-foreground outline-none transition-[border-color,background-color,box-shadow] focus:border-border-strong focus:bg-surface-raised focus:ring-4 focus:ring-focus/10"
+                className="multiline-editor multiline-editor--compact"
               />
             </label>
 
@@ -242,7 +363,7 @@ export function CareerPage({
                   timeline.trim() ? `Timeline: ${timeline.trim()}` : null,
                   direction.trim() || null,
                 ].filter(Boolean);
-                void onRouteNeed(
+                void handleRouteNeed(
                   `Help me leverage my network for this career direction: ${parts.join(". ")}`,
                 );
               }}
@@ -269,32 +390,23 @@ export function CareerPage({
               <textarea
                 name="brag-document"
                 value={bragDoc}
-                onChange={(event) => setBragDoc(event.target.value)}
+                onChange={(event) => updateBragDoc(event.target.value)}
                 rows={8}
                 maxLength={20_000}
                 autoComplete="off"
                 placeholder={t.career.bragPlaceholder}
-                className="mt-3 w-full resize-none rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-sm leading-6 text-foreground outline-none transition-[border-color,background-color,box-shadow] focus:border-amber-300 focus:bg-surface-raised focus:ring-4 focus:ring-amber-500/10 dark:border-amber-500/20 dark:bg-amber-400/10"
+                className="multiline-editor mt-3 w-full"
               />
             </div>
 
             <div className="mt-4 flex items-center justify-between gap-3">
-              <span className="text-[11px] text-muted-subtle">
-                {savedFlash ? t.career.saved : null}
-              </span>
-              <button
-                type="button"
-                onClick={() => void handleSave()}
-                disabled={saving}
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
-              >
-                {saving ? (
-                  <LoaderCircle className="size-3.5 animate-spin" />
-                ) : (
-                  <Check className="size-3.5" />
-                )}
-                {t.dialogs.savePerson}
-              </button>
+              <SaveStatus
+                isSaving={saving}
+                savedLabel={t.career.saved}
+                savingLabel={t.common.saving}
+                errorLabel={saveError || undefined}
+                className="text-[11px]"
+              />
             </div>
           </section>
 
@@ -334,7 +446,7 @@ export function CareerPage({
                     need={need}
                     onRoute={() => {
                       setRouteDraft(need.body);
-                      void onRouteNeed(need.body);
+                      void handleRouteNeed(need.body);
                       void onUpdateNeedStatus(need.id, "routed");
                     }}
                     onDone={() => void onUpdateNeedStatus(need.id, "done")}

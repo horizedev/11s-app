@@ -78,10 +78,10 @@ export const zhTW: Dictionary = {
     navPrivacy: "隱私",
     navPricing: "方案與價格",
     openWorkspace: "開啟工作區",
-    heroLead: "準備好，再上場。",
-    heroAccent: "聊出你的下一步。",
+    heroLead: "每一次對話，",
+    heroAccent: "都能推進真正重要的事。",
     heroBody:
-      "11s 是你的私人準備空間，讓每一場一對一都更有份量。記下重要的事，AI 幫你整理出一個好問題和幾條延伸話題——無論對象是主管、導師、同儕或朋友，都能從容開口。",
+      "你的私人一對一準備空間。記下重要的事，帶著對的問題進場，讓職涯持續前進。",
     ctaPrimary: "開始準備下一場一對一",
     ctaSecondary: "看看怎麼運作",
     noAccount: "免費使用 · 資料在你的裝置間私密同步",
@@ -90,55 +90,45 @@ export const zhTW: Dictionary = {
     whyEyebrow: "為什麼選擇 11s",
     whyTitle: "更好的一對一，推動你的職涯。",
     whyBody:
-      "精彩職涯往往長在固定對話裡——不只在年度考核。11s 幫你避免冷場、留住每條主線，讓與主管、導師、同儕的一對一真正產生進度。",
+      "職涯在一場場固定對話裡累積——不只在年度考核。11s 留住每條主線，讓每次一對一都有進度。",
     features: [
       {
         title: "有準備地進場，而不是照稿念",
-        description:
-          "設定會議意圖，得到一個主問題與幾條延伸主線，臨場再用速覽模式——對話自然，也更有用。",
+        description: "設定意圖，得到一個主問題與延伸主線；臨場用速覽模式，自然開口。",
       },
       {
         title: "讓職涯推進被看見",
-        description:
-          "保有私人職涯方向、成果紀錄與需求收件匣。把「該找誰」路由到對的人，再在下次與主管或導師一對一前準備好提問。",
+        description: "方向、成果與需求收在同一個私密空間，把對的請求交給對的人。",
       },
       {
         title: "讓每次對話持續累積",
-        description:
-          "筆記、紀錄、對方背景、脈絡庫與職涯訊號會餵進下一次準備——跟進、回饋與成長提問會越來越準。",
+        description: "筆記、紀錄與脈絡餵進下一次準備——跟進與提問越來越準。",
       },
     ],
     howEyebrow: "簡單節奏",
-    howTitle: "記錄。準備。推進。",
-    howBody:
-      "11s 支援每一次一對一的完整循環——讓你在現場更專注，也能帶走對職涯有用的後續。",
+    howTitle: "記下。準備。對話。延續。",
+    howBody: "圍繞每一場一對一的簡單循環——專注在現場，也帶走後續。",
     steps: [
       {
         step: "記錄",
         title: "留下重要的事",
-        copy: "筆記、待解需求、成果紀錄，以及每個人的背景——不需要整理成正式議程。",
+        copy: "筆記、需求、成果與背景隨手記下，不需要整理成議程。",
       },
       {
         step: "準備",
         title: "塑造這次對話",
-        copy: "選擇意圖（職涯、敘舊、艱難對話…）、預覽脈絡，再產生主問題、延伸主線與冷場備援。",
+        copy: "選好意圖、預覽脈絡，產生一個主問題與延伸主線。",
+      },
+      {
+        step: "對話",
+        title: "專心在現場",
+        copy: "用主問題開場，讓眼前的人——而不是腳本——決定方向。",
       },
       {
         step: "延續",
         title: "把循環關上",
-        copy: "會後記下重點、帶走跟進事項，讓職涯請求在人脈裡持續前進。",
+        copy: "記下重點、帶走跟進，讓職涯請求持續前進。",
       },
-    ],
-    aiEyebrow: "懂全貌的對話教練",
-    aiTitle: "貼心的提點，",
-    aiTitleAccent: "不是腳本。",
-    aiBody:
-      "AI 會綜合筆記、對話紀錄、對方背景、你的脈絡庫、職涯方向、成果紀錄與待解需求——再回傳一個主問題與延伸主線。要不要帶進現場，仍由你決定。",
-    aiBullets: [
-      "依真實目標與證據，準備升遷與職涯提問",
-      "依主管、導師、同儕、朋友調整語氣",
-      "自然開場與冷場備援，讓對話不會卡住",
-      "「該找誰」路由，把對的職涯需求交給對的人",
     ],
     previewPreparing: "正在為 Maya 準備 · 職涯",
     previewMeta: "3 則筆記 · 成果與紀錄已納入",
@@ -163,15 +153,14 @@ export const zhTW: Dictionary = {
     privacyEyebrow: "為個人隱私而設計",
     privacyTitle: "職涯上的坦誠，需要私人空間。",
     privacyBody:
-      "你的聯絡人、筆記、紀錄、成果與職涯需求，都留在帳號隔離的工作區。產生前會先預覽 AI 將使用的脈絡——也不會用你的內容訓練模型。",
+      "你的聯絡人、筆記與職涯需求，都留在帳號隔離的工作區。產生前可先預覽使用的脈絡，也不會用你的內容訓練模型。",
     privacyNotes: "你的筆記",
     privacyContext: "你的職涯脈絡",
     privacyChips: ["資料只屬於你", "安全雲端同步", "AI 參考範圍透明"],
     finalTitle: "更好的對話。更清晰的推進。",
-    finalBody:
-      "走進下一次一對一，既準備好連結彼此——也準備好提出真正重要的職涯請求。",
+    finalBody: "走進下一次一對一：準備好連結，也準備好開口。",
     openBetween: "開啟 11s",
-    footerTagline: "更好的一對一對話與職涯推進——從你本來就認識的人開始。",
+    footerTagline: "更好的一對一。更清晰的職涯。",
     footerNavAria: "頁尾導覽",
     footerTerms: "服務條款",
     footerPrivacy: "隱私權政策",
@@ -213,18 +202,15 @@ export const zhTW: Dictionary = {
     previewManager: "主管",
     assistEyebrow: "一對一之外",
     assistTitle: "找對人幫忙，開場也不再冷場。",
-    assistBody:
-      "11s 把你的私密脈絡變成助力——職涯需求交給最幫得上忙的人，閒聊也有現成的自然開場。",
+    assistBody: "兩種方式，把你的私密脈絡變成動能。",
     assistWhoTitle: "該找誰談",
-    assistWhoBody:
-      "寫下你的職涯需求，11s 會從你的圈子找出最適合的人，並幫你擬好開口的方式。",
+    assistWhoBody: "寫下職涯需求，11s 會找出最幫得上忙的人，並擬好開口方式。",
     assistWhoNeed: "我想找人支持我規劃總監職位的對話…",
     assistWhoWhyLabel: "為什麼是 Maya：",
     assistWhoWhyText: "她一路看著你的成果，也熟悉總監職級的評核標準。",
     assistWhoAskText: "下一季談總監職缺時，可以請你當我的推薦人嗎？",
     assistTalkTitle: "閒聊，也能言之有物",
-    assistTalkBody:
-      "脈絡庫把尷尬的沉默變成自然的開場——即使還沒有特定對象也適用。",
+    assistTalkBody: "脈絡庫把尷尬的沉默，變成自然的開場。",
     assistTalkContextLabel: "來自你的脈絡庫",
     assistTalkContext: ["工作 · 正在帶領產品上線", "興趣 · 越野跑與咖啡"],
     assistTalkIdeasLabel: "由此展開的話題",
@@ -237,51 +223,41 @@ export const zhTW: Dictionary = {
     previewLeadLabel: "主問題",
     previewSupportLabel: "延伸主線",
     useCasesEyebrow: "誰適合用 11s",
-    useCasesTitle: "為更好的對話——與職涯槓桿——而打造。",
-    useCasesBody:
-      "若你在意更扎實的一對一、也想把職涯推進談清楚，11s 就是你的私人準備空間。它也適合管理者、求職者、朋友與更廣人脈的輕鬆聊天。",
+    useCasesTitle: "為坐在你對面的每個人而打造。",
+    useCasesBody: "更扎實的一對一、更清晰的職涯——給你、你的團隊，和你的人脈圈。",
     useCases: [
       {
         id: "professionals",
         title: "想推進職涯的專業人士",
-        audience: "與主管、導師、同儕的更好一對一",
-        description:
-          "用真實歷史準備升遷提問、回饋與對齊——讓每一次一對一都往前走一步。",
-        example: "升遷 · 回饋 · 贊助",
+        audience: "與主管、導師、同儕的一對一",
+        description: "用真實紀錄準備升遷提問與回饋。",
       },
       {
         id: "people-managers",
-        title: "People manager",
+        title: "團隊主管",
         audience: "與直屬部屬的一對一",
-        description:
-          "清楚掌握成長、阻礙與待辦，不讓定期一對一變成純進度更新。",
-        example: "教練 · 回饋 · 團隊健康",
+        description: "掌握團隊的成長、阻礙與待辦。",
       },
       {
         id: "fresh-grads",
         title: "新鮮人",
         audience: "求職中",
-        description:
-          "為與校友、招募與導師的咖啡聊天做好準備，讓每次介紹都更有方向。",
-        example: "咖啡聊天 · 內推 · 職涯建議",
+        description: "讓每場校友與招募的咖啡聊天都有方向。",
       },
       {
         id: "professional-network",
         title: "專業人脈",
         audience: "非正式／輕鬆聊天",
-        description:
-          "在更廣的人脈裡保持敏銳——活動、校友與弱連結，也能持續累積。",
-        example: "社交 · 介紹 · 輕鬆跟進",
+        description: "在輕鬆的閒聊中保持敏銳、持續累積。",
       },
       {
         id: "family-friends",
         title: "家人與朋友",
         audience: "私人關係",
-        description:
-          "即使很久沒聊，也能記得上次重要的事，自然溫暖地開場。",
-        example: "敘舊 · 支持 · 生活近況",
+        description: "記得上次重要的事，自然溫暖地開場。",
       },
     ],
+    useCaseAria: (title) => `查看「${title}」的故事`,
   },
   sidebar: {
     searchAria: "搜尋聯絡人",
@@ -304,19 +280,20 @@ export const zhTW: Dictionary = {
     recent: "近期對話",
     notesReady: (count) => `${count} 則筆記備妥`,
     toolkitTitle: "讓每段對話，都有話可聊。",
-    toolkitBody:
-      "把關於你的近況收進脈絡庫，11s 就能為任何一對一生出貼近的話題；沒有特定對象時，也能準備幾個輕鬆的開場。",
+    toolkitBody: "把你的近況收進脈絡庫，11s 就能為任何對話生出貼近的開場。",
     contextBankTitle: "你的脈絡庫",
-    contextBankBody:
-      "一行寫一個想法。11s 準備話題時會參考這些內容——寫得越新，開場就越自然、越具體。",
+    contextBankBody: "一行一個想法。11s 準備話題時會參考——寫得越新，開場越自然。",
     contextBankPlaceholder:
       "工作：正在帶領產品上線\n興趣：越野跑與咖啡\n學習：日常日文會話\n目標：晉升總監職位\n旅遊：計劃去京都…",
     contextSlots: {
       Job: { label: "工作", example: "正在帶領產品上線" },
-      Energy: { label: "生活", example: "越野跑與週末咖啡" },
+      Energy: { label: "能量", example: "越野跑與週末咖啡" },
       Learning: { label: "學習", example: "日常日文會話" },
       Career: { label: "職涯", example: "朝總監職位努力" },
+      Wins: { label: "成果", example: "完成新手引導流程改版" },
+      People: { label: "重要的人", example: "新同事與一位導師" },
       Personal: { label: "個人", example: "計劃去京都旅行" },
+      Plans: { label: "近期計劃", example: "一場音樂會與安靜的週末" },
     },
     contextPrivate: "僅限你的帳號，且只用於對話準備",
     smallTalkTitle: "閒聊靈感",
@@ -345,10 +322,9 @@ export const zhTW: Dictionary = {
   },
   smallTalk: {
     title: "閒聊，也能聊得下去。",
-    body: "比總覽更完整的靈感清單。從你的脈絡庫出發，也可以勾幾個新聞領域，讓話題多一點新鮮感。",
+    body: "從你的脈絡庫產生靈感，也可以勾幾個新聞領域增加新鮮感。",
     newsTitle: "近期新聞領域",
-    newsBody:
-      "勾幾個你有興趣的領域。產生靈感時，11s 會擷取這些主題的近期標題，轉成好聊的切入點——而不是把聊天變成新聞播報。",
+    newsBody: "勾幾個感興趣的領域，11s 會把近期標題轉成好聊的切入點。",
     newsActive: (count) => `已選 ${count} 個新聞領域`,
     emptyWithNews: "從你的脈絡、耐用開場，以及上方選取的新聞領域一起產生靈感。",
     newsAreas: {
@@ -360,6 +336,11 @@ export const zhTW: Dictionary = {
       world: "國際",
     },
   },
+  conversationSkills: {
+    smallTalkEyebrow: "閒聊小技巧",
+    oneOnOneEyebrow: "一對一技巧",
+    practice: "試著這樣說",
+  },
   person: {
     logMeeting: "記錄一對一",
     editPerson: "編輯聯絡人",
@@ -370,6 +351,8 @@ export const zhTW: Dictionary = {
     coach: "AI 對話教練",
     coachBody:
       "把你的脈絡庫、留給下次的筆記、過往對話與你們的關係，轉成自然又有溫度的提問。",
+    expandCoach: "展開對話控制項",
+    collapseCoach: "收合對話控制項",
     thinking: "思考中…",
     refreshIdeas: "重新產生",
     generateIdeas: "產生建議",
@@ -416,6 +399,8 @@ export const zhTW: Dictionary = {
     lastNotesTitle: "上次會議的筆記",
     lastNotesEmpty: "尚未封存任何筆記。",
     restoreLastNote: "帶回下次筆記",
+    showLastNotes: "展開已封存筆記",
+    hideLastNotes: "收合已封存筆記",
     changePhoto: "更換照片",
     removePhoto: "移除照片",
     photoHint: "支援 JPG、PNG 或 WebP，上限 2 MB。",
@@ -576,6 +561,9 @@ export const zhTW: Dictionary = {
   },
   quickActions: {
     open: "快速操作",
+    choosePerson: "選擇聯絡人",
+    searchPeople: "搜尋聯絡人",
+    noPeopleToLog: "請先新增聯絡人，再記錄一對一。",
   },
   mobile: {
     overview: "總覽",
@@ -589,7 +577,7 @@ export const zhTW: Dictionary = {
     eyebrow: "簡單明瞭的價格",
     title: "免費開始，",
     titleAccent: "需要時再無限升級。",
-    body: "免費方案就能照顧好最重要的幾段關係。當你的圈子變大，或想要不限次數的 AI 準備，再升級就好。",
+    body: "免費開始。圈子變大或想要無限 AI 準備時，再升級就好。",
     monthly: "按月付費",
     yearly: "按年付費",
     yearlyBadge: "省兩個月",

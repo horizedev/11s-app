@@ -97,11 +97,6 @@ export type Dictionary = {
     howTitle: string;
     howBody: string;
     steps: Array<{ step: string; title: string; copy: string }>;
-    aiEyebrow: string;
-    aiTitle: string;
-    aiTitleAccent: string;
-    aiBody: string;
-    aiBullets: string[];
     previewPreparing: string;
     previewMeta: string;
     previewReady: string;
@@ -171,8 +166,8 @@ export type Dictionary = {
       title: string;
       audience: string;
       description: string;
-      example: string;
     }>;
+    useCaseAria: (title: string) => string;
   };
   sidebar: {
     searchAria: string;
@@ -200,7 +195,14 @@ export type Dictionary = {
     contextBankBody: string;
     contextBankPlaceholder: string;
     contextSlots: Record<
-      "Job" | "Energy" | "Learning" | "Career" | "Personal",
+      | "Job"
+      | "Energy"
+      | "Learning"
+      | "Career"
+      | "Wins"
+      | "People"
+      | "Personal"
+      | "Plans",
       { label: string; example: string }
     >;
     contextPrivate: string;
@@ -244,6 +246,11 @@ export type Dictionary = {
       string
     >;
   };
+  conversationSkills: {
+    smallTalkEyebrow: string;
+    oneOnOneEyebrow: string;
+    practice: string;
+  };
   person: {
     logMeeting: string;
     editPerson: string;
@@ -253,6 +260,8 @@ export type Dictionary = {
     detailSections: string;
     coach: string;
     coachBody: string;
+    expandCoach: string;
+    collapseCoach: string;
     thinking: string;
     refreshIdeas: string;
     generateIdeas: string;
@@ -291,6 +300,8 @@ export type Dictionary = {
     lastNotesTitle: string;
     lastNotesEmpty: string;
     restoreLastNote: string;
+    showLastNotes: string;
+    hideLastNotes: string;
     changePhoto: string;
     removePhoto: string;
     photoHint: string;
@@ -441,6 +452,9 @@ export type Dictionary = {
   };
   quickActions: {
     open: string;
+    choosePerson: string;
+    searchPeople: string;
+    noPeopleToLog: string;
   };
   mobile: {
     overview: string;

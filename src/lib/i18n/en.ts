@@ -78,10 +78,10 @@ export const en: Dictionary = {
     navPrivacy: "Privacy",
     navPricing: "Pricing",
     openWorkspace: "Open workspace",
-    heroLead: "Show up ready.",
-    heroAccent: "Advance with intent.",
+    heroLead: "Make every conversation",
+    heroAccent: "move what matters forward.",
     heroBody:
-      "11s is a private workspace to prepare sharper 1:1s and career conversations. Capture what matters, generate a lead question with supporting threads, and walk in confident—whether you are talking to your manager, a mentor, a peer, or someone in your wider network.",
+      "A private workspace for better 1:1s. Capture what matters, walk in with the right question, and keep your career moving.",
     ctaPrimary: "Start preparing better 1:1s",
     ctaSecondary: "See how it works",
     noAccount: "Free account · Private sync across devices",
@@ -90,55 +90,49 @@ export const en: Dictionary = {
     whyEyebrow: "Why 11s",
     whyTitle: "Better 1:1s that move your career.",
     whyBody:
-      "Great careers are built in recurring conversations—not in annual reviews alone. 11s helps you avoid dead air, keep every thread, and turn manager, mentor, and peer 1:1s into real progress.",
+      "Careers compound in recurring conversations—not annual reviews. 11s keeps every thread alive and turns each 1:1 into progress.",
     features: [
       {
         title: "Walk in prepared, not scripted",
         description:
-          "Set meeting intent, get one lead question plus a few supporting threads, and use glance mode when you are in the room—so the talk stays natural and useful.",
+          "Set an intent, get one lead question with supporting threads, and use glance mode in the room.",
       },
       {
         title: "Make career advancement visible",
         description:
-          "Keep a private career direction, brag doc, and needs inbox. Route “who to leverage” across your circle, then prep the ask before your next manager or mentor 1:1.",
+          "Keep your direction, brag doc, and open needs in one private place—then route each ask to the right person.",
       },
       {
         title: "Compound every conversation",
         description:
-          "Notes, history, backgrounds, context bank, and career signals feed the next prep—so follow-ups, feedback, and growth asks get sharper over time.",
+          "Notes, history, and context feed the next prep, so follow-ups get sharper over time.",
       },
     ],
     howEyebrow: "A simple rhythm",
-    howTitle: "Capture. Prepare. Advance.",
+    howTitle: "Capture. Prepare. Meet. Continue.",
     howBody:
-      "11s supports the full loop around each 1:1—so you can be present in the room and still leave with career-ready follow-through.",
+      "A simple loop around every 1:1—so you stay present in the room and leave with follow-through.",
     steps: [
       {
         step: "Capture",
         title: "Save what matters",
-        copy: "Park notes, open needs, wins in your brag doc, and background on each person—no agenda formatting required.",
+        copy: "Park notes, needs, wins, and background on each person—no formatting required.",
       },
       {
         step: "Prepare",
         title: "Shape the conversation",
-        copy: "Choose intent (career, catch-up, hard talk…), preview context, then generate a lead question with supports and stall cards.",
+        copy: "Pick an intent, preview the context, and generate a lead question with supports.",
+      },
+      {
+        step: "Meet",
+        title: "Stay present in the room",
+        copy: "Open with the lead question, then let the person—not a script—set the direction.",
       },
       {
         step: "Continue",
         title: "Close the loop",
-        copy: "Log what mattered after the meeting, carry follow-ups forward, and keep career asks moving across your network.",
+        copy: "Log what mattered, carry follow-ups forward, and keep career asks moving.",
       },
-    ],
-    aiEyebrow: "Context-aware conversation coach",
-    aiTitle: "A thoughtful nudge,",
-    aiTitleAccent: "not a script.",
-    aiBody:
-      "AI prep synthesizes notes, discussion history, person background, your context bank, career direction, brag doc, and open needs—then returns one lead question with supporting threads. You stay in control of what enters the room.",
-    aiBullets: [
-      "Career and promotion asks grounded in your real goals and evidence",
-      "Relationship-aware tone for managers, mentors, peers, and friends",
-      "Warm openers and stall cards so conversations never go cold",
-      "Who-to-ask routing so the right career need reaches the right person",
     ],
     previewPreparing: "Preparing for Maya · Career",
     previewMeta: "3 notes · brag + history in context",
@@ -166,7 +160,7 @@ export const en: Dictionary = {
     privacyEyebrow: "Personal by design",
     privacyTitle: "Career honesty needs a private home.",
     privacyBody:
-      "Your people, notes, history, brag doc, and career needs stay in an account-isolated workspace. Preparation shows what context it will use before you generate—and never trains models on your content.",
+      "Your people, notes, and career needs stay in an account-isolated workspace. Prep shows its context before generating—and never trains on your content.",
     privacyNotes: "Your notes",
     privacyContext: "Your career context",
     privacyChips: [
@@ -176,10 +170,9 @@ export const en: Dictionary = {
     ],
     finalTitle: "Better conversations. Clearer advancement.",
     finalBody:
-      "Walk into your next 1:1 prepared to connect—and ready to ask for the career move that matters.",
+      "Walk into your next 1:1 ready to connect—and ready to ask.",
     openBetween: "Open 11s",
-    footerTagline:
-      "Better 1:1 conversations and career advancement—through the people you already know.",
+    footerTagline: "Better 1:1s. Better career.",
     footerNavAria: "Footer navigation",
     footerTerms: "Terms",
     footerPrivacy: "Privacy",
@@ -223,10 +216,10 @@ export const en: Dictionary = {
     assistEyebrow: "Beyond the 1:1",
     assistTitle: "Find the right person. Break the ice.",
     assistBody:
-      "Two more ways 11s turns your private context into momentum—career asks routed to the people most able to help, and openers for any chat.",
+      "Two more ways 11s turns your private context into momentum.",
     assistWhoTitle: "Who to ask",
     assistWhoBody:
-      "Describe a career need. 11s routes it to the person in your circle most able to help—and drafts a natural way to ask.",
+      "Describe a career need. 11s routes it to the person most able to help—and drafts the ask.",
     assistWhoNeed: "I need sponsorship for a director-track conversation…",
     assistWhoWhyLabel: "Why Maya:",
     assistWhoWhyText:
@@ -235,7 +228,7 @@ export const en: Dictionary = {
       "Could you sponsor me when the director-track conversation opens next cycle?",
     assistTalkTitle: "Small talk, powered by your context",
     assistTalkBody:
-      "Your context bank turns awkward silences into warm openings—even with no specific person in mind.",
+      "Your context bank turns awkward silences into warm openings.",
     assistTalkContextLabel: "From your context bank",
     assistTalkContext: [
       "Job · Leading a product launch",
@@ -251,51 +244,42 @@ export const en: Dictionary = {
     previewLeadLabel: "Lead question",
     previewSupportLabel: "Supporting threads",
     useCasesEyebrow: "Who 11s is for",
-    useCasesTitle: "Built for better conversations—and career leverage.",
+    useCasesTitle: "Made for whoever is across the table.",
     useCasesBody:
-      "If you care about sharper 1:1s and clearer advancement, 11s is your private prep home. It also helps managers, job seekers, friends, and wider network chats.",
+      "Sharper 1:1s and clearer career moves—for you, your team, and your wider circle.",
     useCases: [
       {
         id: "professionals",
         title: "Career-driven professionals",
-        audience: "Better 1:1s with managers, mentors, and peers",
-        description:
-          "Prepare promotion asks, feedback, and alignment with real history—so every 1:1 moves your career forward.",
-        example: "Promotion · feedback · sponsorship",
+        audience: "1:1s with managers, mentors, and peers",
+        description: "Prep promotion asks and feedback with real history behind you.",
       },
       {
         id: "people-managers",
         title: "People managers",
         audience: "1:1s with direct reports",
-        description:
-          "Keep growth, blockers, and follow-ups clear across your team—without turning check-ins into status theater.",
-        example: "Coaching · feedback · team health",
+        description: "Keep growth, blockers, and follow-ups clear across your team.",
       },
       {
         id: "fresh-grads",
         title: "Fresh grads",
         audience: "Looking for jobs",
-        description:
-          "Prep coffee chats with alumni, recruiters, and mentors so every intro leads somewhere useful.",
-        example: "Coffee chat · referrals · career advice",
+        description: "Turn coffee chats with alumni and recruiters into momentum.",
       },
       {
         id: "professional-network",
         title: "Professional network",
         audience: "Informal / casual chats",
-        description:
-          "Stay sharp in informal chats across your wider network—conferences, alumni, and weak ties that compound.",
-        example: "Networking · intros · light follow-ups",
+        description: "Stay sharp in the informal chats that compound over time.",
       },
       {
         id: "family-friends",
         title: "Family and friends",
         audience: "Personal relationships",
-        description:
-          "Remember what mattered last time and open warmly—even when life gets busy between catch-ups.",
-        example: "Catch-ups · support · shared life",
+        description: "Remember what mattered last time and open warmly.",
       },
     ],
+    useCaseAria: (title) => `Read the ${title} story`,
   },
   sidebar: {
     searchAria: "Search people",
@@ -321,10 +305,10 @@ export const en: Dictionary = {
       count === 1 ? "1 note ready" : `${count} notes ready`,
     toolkitTitle: "Give every conversation more to work with.",
     toolkitBody:
-      "Keep reusable context about your own world, then turn it into natural openings for any 1:1—or an easy chat with no one specific in mind.",
+      "Keep reusable context about your world, then turn it into natural openings for any conversation.",
     contextBankTitle: "Your context bank",
     contextBankBody:
-      "Add one thought per line. 11s can draw from these details when it prepares ideas for any person—fresher details make warmer, more specific openings.",
+      "One thought per line. 11s draws from these when preparing ideas—fresher details make warmer openings.",
     contextBankPlaceholder:
       "Job: Leading a product launch\nInterest: Trail running and coffee\nLearning: Conversational Japanese\nGoal: Move into a director role\nTravel: Planning a trip to Kyoto…",
     contextSlots: {
@@ -332,7 +316,10 @@ export const en: Dictionary = {
       Energy: { label: "Energy", example: "Trail running and weekend coffee" },
       Learning: { label: "Learning", example: "Conversational Japanese" },
       Career: { label: "Career", example: "Moving toward a director role" },
+      Wins: { label: "Wins", example: "Shipped the onboarding redesign" },
+      People: { label: "People", example: "A new teammate and a mentor" },
       Personal: { label: "Personal", example: "Planning a trip to Kyoto" },
+      Plans: { label: "Plans", example: "A concert and a quiet weekend ahead" },
     },
     contextPrivate: "Private to your account and used only for preparation",
     smallTalkTitle: "Small-talk ideas",
@@ -365,10 +352,10 @@ export const en: Dictionary = {
   },
   smallTalk: {
     title: "Small talk that stays useful.",
-    body: "Keep longer idea lists here, pull from your context bank, and optionally tap recent news areas for fresher talking angles.",
+    body: "Ideas from your context bank, plus optional news areas for fresher angles.",
     newsTitle: "Recent news areas",
     newsBody:
-      "Pick a few areas. When you generate ideas, 11s will pull fresh headlines from those topics and weave a couple into natural talking points—without turning the chat into a news briefing.",
+      "Pick a few areas. 11s pulls fresh headlines and weaves them into natural talking points.",
     newsActive: (count) =>
       count === 1 ? "1 news area selected" : `${count} news areas selected`,
     emptyWithNews:
@@ -382,6 +369,11 @@ export const en: Dictionary = {
       world: "World",
     },
   },
+  conversationSkills: {
+    smallTalkEyebrow: "Small-talk skill",
+    oneOnOneEyebrow: "1:1 skill",
+    practice: "Try this",
+  },
   person: {
     logMeeting: "Log a 1:1",
     editPerson: "Edit person",
@@ -392,6 +384,8 @@ export const en: Dictionary = {
     coach: "AI conversation coach",
     coachBody:
       "Turn your context bank, next-meeting notes, complete discussion history, and relationship context into thoughtful prompts.",
+    expandCoach: "Show conversation controls",
+    collapseCoach: "Hide conversation controls",
     thinking: "Thinking…",
     refreshIdeas: "Refresh ideas",
     generateIdeas: "Generate ideas",
@@ -441,6 +435,8 @@ export const en: Dictionary = {
     lastNotesTitle: "Notes from last meeting",
     lastNotesEmpty: "Nothing archived yet.",
     restoreLastNote: "Bring back into next notes",
+    showLastNotes: "Show archived notes",
+    hideLastNotes: "Hide archived notes",
     changePhoto: "Change photo",
     removePhoto: "Remove photo",
     photoHint: "JPG, PNG, or WebP up to 2 MB.",
@@ -612,6 +608,9 @@ export const en: Dictionary = {
   },
   quickActions: {
     open: "Quick actions",
+    choosePerson: "Choose a person",
+    searchPeople: "Search people",
+    noPeopleToLog: "Add a person before logging a 1:1.",
   },
   mobile: {
     overview: "Overview",
@@ -625,7 +624,7 @@ export const en: Dictionary = {
     eyebrow: "Simple pricing",
     title: "Free to start,",
     titleAccent: "unlimited when you're ready.",
-    body: "Keep your most important conversations warm for free. Upgrade when your circle grows or you want unlimited AI preparation.",
+    body: "Start free. Upgrade when your circle grows or you want unlimited AI preparation.",
     monthly: "Monthly",
     yearly: "Yearly",
     yearlyBadge: "2 months free",

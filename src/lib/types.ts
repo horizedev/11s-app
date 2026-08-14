@@ -128,7 +128,10 @@ export const CONTEXT_BANK_SLOTS = [
   "Energy",
   "Learning",
   "Career",
+  "Wins",
+  "People",
   "Personal",
+  "Plans",
 ] as const;
 
 export type ContextBankSlot = (typeof CONTEXT_BANK_SLOTS)[number];
