@@ -196,7 +196,7 @@ export function PersonDetail({
 
   return (
     <main id="main-content" className="min-w-0 flex-1 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[1180px] px-5 pb-36 pt-5 sm:px-8 lg:px-10 lg:pb-28 lg:pt-8">
+      <div className="mx-auto w-full max-w-[1440px] px-5 pb-36 pt-5 sm:px-8 lg:px-10 lg:pb-28 lg:pt-8">
         <button
           type="button"
           onClick={onBack}
@@ -492,315 +492,310 @@ export function PersonDetail({
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2">
-                <div className="flex flex-col lg:border-r">
-                <TalkingPointsColumn
-                  person={person}
-                  onAdd={onAddTalkingPoint}
-                  onDelete={onDeleteTalkingPoint}
+              <div className="grid lg:grid-cols-3">
+                <div className="flex min-h-[28rem] flex-col border-b border-border lg:border-b-0 lg:border-r">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
+                <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                <label
+                htmlFor={`notes-${person.id}`}
+                className="flex items-center gap-2 text-xs font-semibold text-foreground"
+                >
+                <NotebookPen
+                className="size-3.5 text-[#b56547]"
+                strokeWidth={1.7}
+                />
+                {t.person.brainstormNotes}
+                </label>
+                <SecureBadge>{t.person.notesHint}</SecureBadge>
+                </div>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                {t.person.stepBrainstorm}
+                </p>
+                </div>
+                <SaveStatus
+                isSaving={!saved}
+                savedLabel={t.common.saved}
+                savingLabel={t.common.saving}
+                />
+                </div>
+
+                <div className="flex flex-1 flex-col px-5 py-4 sm:px-6">
+                <textarea
+                ref={notesRef}
+                id={`notes-${person.id}`}
+                name={`notes-${person.id}`}
+                value={person.notes}
+                onChange={(event) =>
+                handleNotesChange(event.target.value)
+                }
+                autoComplete="off"
+                placeholder={t.person.notesPlaceholder}
+                className="multiline-editor w-full flex-1"
                 />
 
-<div className="flex min-h-[20rem] flex-col border-t border-border">
-                  <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <label
-                          htmlFor={`notes-${person.id}`}
-                          className="flex items-center gap-2 text-xs font-semibold text-foreground"
-                        >
-                          <NotebookPen
-                            className="size-3.5 text-[#b56547]"
-                            strokeWidth={1.7}
-                          />
-                          {t.person.brainstormNotes}
-                        </label>
-                        <SecureBadge />
-                        <Hint label={t.common.moreInfo}>
-                          {t.person.notesHint}
-                        </Hint>
-                      </div>
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                        {t.person.stepBrainstorm}
-                      </p>
-                    </div>
-                    <SaveStatus
-                      isSaving={!saved}
-                      savedLabel={t.common.saved}
-                      savingLabel={t.common.saving}
-                    />
-                  </div>
-
-                  <div className="flex flex-1 flex-col px-5 py-4 sm:px-6">
-                    <textarea
-                      ref={notesRef}
-                      id={`notes-${person.id}`}
-                      name={`notes-${person.id}`}
-                      value={person.notes}
-                      onChange={(event) =>
-                        handleNotesChange(event.target.value)
-                      }
-                      autoComplete="off"
-                      placeholder={t.person.notesPlaceholder}
-                      className="multiline-editor w-full flex-1"
-                    />
-
-                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                      <span className="text-[10px] text-muted-subtle">
-                        {t.person.noteLines(countNoteLines(person.notes))}
-                      </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (window.confirm(`${t.person.clearNotes}?`)) {
-                              onClearNotes();
-                            }
-                          }}
-                          disabled={!person.notes.trim()}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 text-[11px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground disabled:opacity-40"
-                        >
-                          <Eraser className="size-3" />
-                          {t.person.clearNotes}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={onArchiveNotes}
-                          disabled={!person.notes.trim()}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 text-[11px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground disabled:opacity-40"
-                        >
-                          <Archive className="size-3" />
-                          {t.person.archiveNotes}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 rounded-xl border border-dashed border-border bg-surface-muted/80 px-3.5 py-3">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                          {t.person.lastNotesTitle}
-                        </p>
-                        {hasArchivedNotes ? (
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={onRestoreLastNotes}
-                              className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
-                            >
-                              {t.person.restoreLastNote}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setArchivedNotesExpanded((current) => !current)
-                              }
-                              aria-expanded={archivedNotesExpanded}
-                              aria-controls="person-archived-notes"
-                              className="grid size-6 place-items-center rounded-md text-muted-subtle transition-colors hover:bg-surface hover:text-foreground"
-                              aria-label={
-                                archivedNotesExpanded
-                                  ? t.person.hideLastNotes
-                                  : t.person.showLastNotes
-                              }
-                            >
-                              {archivedNotesExpanded ? (
-                                <ChevronUp className="size-3.5" />
-                              ) : (
-                                <ChevronDown className="size-3.5" />
-                              )}
-                            </button>
-                          </div>
-                        ) : null}
-                      </div>
-                      {hasArchivedNotes && archivedNotesExpanded ? (
-                        <p
-                          id="person-archived-notes"
-                          className="mt-2 whitespace-pre-wrap text-[11px] leading-5 text-muted"
-                        >
-                          {person.lastNotes.trim()}
-                        </p>
-                      ) : !hasArchivedNotes ? (
-                        <p className="mt-2 text-[11px] leading-5 text-muted">
-                          {t.person.lastNotesEmpty}
-                        </p>
-                      ) : null}
-                    </div>
-                  </div>
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[10px] text-muted-subtle">
+                {t.person.noteLines(countNoteLines(person.notes))}
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                <button
+                type="button"
+                onClick={() => {
+                if (window.confirm(`${t.person.clearNotes}?`)) {
+                onClearNotes();
+                }
+                }}
+                disabled={!person.notes.trim()}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 text-[11px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground disabled:opacity-40"
+                >
+                <Eraser className="size-3" />
+                {t.person.clearNotes}
+                </button>
+                <button
+                type="button"
+                onClick={onArchiveNotes}
+                disabled={!person.notes.trim()}
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 text-[11px] font-semibold text-muted transition-[border-color,color] hover:border-border-strong hover:text-foreground disabled:opacity-40"
+                >
+                <Archive className="size-3" />
+                {t.person.archiveNotes}
+                </button>
                 </div>
                 </div>
 
-<div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised">
-                  <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
-                    <div>
-                      <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
-                        <Sparkles className="size-3" />
-                        {t.person.aiIdeation}
-                      </p>
-                      <h3 className="mt-1 text-xs font-semibold text-foreground">
-                        {t.person.suggested}
-                        {person.prepIdeas.length > 0
-                          ? ` · ${person.prepIdeas.length}`
-                          : ""}
-                      </h3>
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                        {t.person.stepIdeas}
-                      </p>
-                    </div>
-                    {prepMeta ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-secondary/20 bg-surface/80 px-2.5 py-1 text-[10px] font-semibold text-secondary">
-                        <span
-                          className={cn(
-                            "size-1.5 rounded-full",
-                            prepMeta.source === "ai"
-                              ? "bg-emerald-500"
-                              : "bg-amber-500",
-                          )}
-                        />
-                        {prepMeta.source === "ai"
-                          ? t.person.aiGenerated
-                          : t.person.starterIdeas}
-                      </span>
-                    ) : null}
-                  </div>
-
-                  <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4 sm:px-6">
-                    {person.prepIdeas.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        <span className="mr-1 self-center text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                          {t.person.refineLabel}
-                        </span>
-                        {(
-                          [
-                            ["warmer", t.person.refineWarmer],
-                            ["shorter", t.person.refineShorter],
-                            ["more-career", t.person.refineMoreCareer],
-                          ] as const
-                        ).map(([mode, label]) => (
-                          <button
-                            key={mode}
-                            type="button"
-                            disabled={isRefining || isGenerating}
-                            onClick={() => onRefinePrep(mode)}
-                            className="rounded-full border border-secondary/20 bg-surface px-2.5 py-1 text-[10px] font-semibold text-secondary transition-colors hover:border-secondary/40 disabled:opacity-50"
-                          >
-                            {isRefining ? "…" : label}
-                          </button>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {prepMeta?.opening ? (
-                      <div className="flex items-start gap-3 rounded-2xl border border-secondary/20 bg-surface/80 px-4 py-3">
-                        <Lightbulb
-                          className="mt-0.5 size-4 shrink-0 text-secondary"
-                          strokeWidth={1.8}
-                        />
-                        <p className="text-xs leading-5 text-muted">
-                          {prepMeta.opening}
-                        </p>
-                      </div>
-                    ) : null}
-
-                    {person.prepIdeas.length > 0 ? (
-                      <>
-                        {lead ? (
-                          <div>
-                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
-                              {t.person.leadQuestion}
-                            </p>
-                            <IdeaCard
-                              idea={lead}
-                              emphasis
-                              onAdd={() => onAddIdeaToTalkingPoints(lead)}
-                              onDismiss={() => onDismissIdea(lead.id)}
-                            />
-                          </div>
-                        ) : null}
-
-                        {displaySupports.length > 0 ? (
-                          <div>
-                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
-                              {t.person.supportingThreads}
-                            </p>
-                            <div className="space-y-3">
-                              {displaySupports.map((idea) => (
-                                <IdeaCard
-                                  key={idea.id}
-                                  idea={idea}
-                                  onAdd={() => onAddIdeaToTalkingPoints(idea)}
-                                  onDismiss={() => onDismissIdea(idea.id)}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {stalls.length > 0 ? (
-                          <div>
-                            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
-                              {t.person.stallCards}
-                            </p>
-                            <div className="space-y-2">
-                              {stalls.map((idea) => (
-                                <article
-                                  key={idea.id}
-                                  className="rounded-xl border border-dashed border-border bg-surface-muted/80 px-3.5 py-3"
-                                >
-                                  <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
-                                    {t.person.stallIfNeeded}
-                                  </p>
-                                  <p className="mt-1 text-xs font-medium text-foreground">
-                                    {idea.prompt}
-                                  </p>
-                                  <div className="mt-2 flex flex-wrap gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => onAddIdeaToTalkingPoints(idea)}
-                                      className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
-                                    >
-                                      {t.person.addToTalkingPoints}
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => onDismissIdea(idea.id)}
-                                      className="text-[10px] font-semibold text-muted-subtle transition-colors hover:text-danger"
-                                    >
-                                      {t.person.dismiss(idea.title)}
-                                    </button>
-                                  </div>
-                                </article>
-                              ))}
-                            </div>
-                          </div>
-                        ) : null}
-                      </>
-                    ) : (
-                      <div className="flex h-full min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-secondary/25 bg-surface/70 px-6 py-10 text-center">
-                        <span className="grid size-11 place-items-center rounded-2xl bg-secondary-soft text-secondary">
-                          <Sparkles className="size-5" />
-                        </span>
-                        <h3 className="mt-4 text-sm font-semibold text-foreground">
-                          {t.person.blankTitle}
-                        </h3>
-                        <p className="mx-auto mt-1.5 max-w-sm text-xs leading-5 text-muted-subtle">
-                          {t.person.blankBody}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={requestGenerate}
-                          disabled={isGenerating}
-                          className="mt-5 inline-flex h-9 items-center gap-2 rounded-xl bg-accent px-3.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
-                        >
-                          {isGenerating ? (
-                            <LoaderCircle className="size-3.5 animate-spin" />
-                          ) : (
-                            <Sparkles className="size-3.5" />
-                          )}
-                          {t.person.generatePrep}
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                <div className="mt-4 rounded-xl border border-dashed border-border bg-surface-muted/80 px-3.5 py-3">
+                <div className="flex items-center justify-between gap-2">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                {t.person.lastNotesTitle}
+                </p>
+                {hasArchivedNotes ? (
+                <div className="flex items-center gap-2">
+                <button
+                type="button"
+                onClick={onRestoreLastNotes}
+                className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
+                >
+                {t.person.restoreLastNote}
+                </button>
+                <button
+                type="button"
+                onClick={() =>
+                setArchivedNotesExpanded((current) => !current)
+                }
+                aria-expanded={archivedNotesExpanded}
+                aria-controls="person-archived-notes"
+                className="grid size-6 place-items-center rounded-md text-muted-subtle transition-colors hover:bg-surface hover:text-foreground"
+                aria-label={
+                archivedNotesExpanded
+                ? t.person.hideLastNotes
+                : t.person.showLastNotes
+                }
+                >
+                {archivedNotesExpanded ? (
+                <ChevronUp className="size-3.5" />
+                ) : (
+                <ChevronDown className="size-3.5" />
+                )}
+                </button>
                 </div>
+                ) : null}
+                </div>
+                {hasArchivedNotes && archivedNotesExpanded ? (
+                <p
+                id="person-archived-notes"
+                className="mt-2 whitespace-pre-wrap text-[11px] leading-5 text-muted"
+                >
+                {person.lastNotes.trim()}
+                </p>
+                ) : !hasArchivedNotes ? (
+                <p className="mt-2 text-[11px] leading-5 text-muted">
+                {t.person.lastNotesEmpty}
+                </p>
+                ) : null}
+                </div>
+                </div>
+                </div>
+
+                <div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised">
+                <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
+                <div>
+                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
+                <Sparkles className="size-3" />
+                {t.person.aiIdeation}
+                </p>
+                <h3 className="mt-1 text-xs font-semibold text-foreground">
+                {t.person.suggested}
+                {person.prepIdeas.length > 0
+                ? ` · ${person.prepIdeas.length}`
+                : ""}
+                </h3>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                {t.person.stepIdeas}
+                </p>
+                </div>
+                {prepMeta ? (
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-secondary/20 bg-surface/80 px-2.5 py-1 text-[10px] font-semibold text-secondary">
+                <span
+                className={cn(
+                "size-1.5 rounded-full",
+                prepMeta.source === "ai"
+                ? "bg-emerald-500"
+                : "bg-amber-500",
+                )}
+                />
+                {prepMeta.source === "ai"
+                ? t.person.aiGenerated
+                : t.person.starterIdeas}
+                </span>
+                ) : null}
+                </div>
+
+                <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4 sm:px-6">
+                {person.prepIdeas.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                <span className="mr-1 self-center text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                {t.person.refineLabel}
+                </span>
+                {(
+                [
+                ["warmer", t.person.refineWarmer],
+                ["shorter", t.person.refineShorter],
+                ["more-career", t.person.refineMoreCareer],
+                ] as const
+                ).map(([mode, label]) => (
+                <button
+                key={mode}
+                type="button"
+                disabled={isRefining || isGenerating}
+                onClick={() => onRefinePrep(mode)}
+                className="rounded-full border border-secondary/20 bg-surface px-2.5 py-1 text-[10px] font-semibold text-secondary transition-colors hover:border-secondary/40 disabled:opacity-50"
+                >
+                {isRefining ? "…" : label}
+                </button>
+                ))}
+                </div>
+                ) : null}
+
+                {prepMeta?.opening ? (
+                <div className="flex items-start gap-3 rounded-2xl border border-secondary/20 bg-surface/80 px-4 py-3">
+                <Lightbulb
+                className="mt-0.5 size-4 shrink-0 text-secondary"
+                strokeWidth={1.8}
+                />
+                <p className="text-xs leading-5 text-muted">
+                {prepMeta.opening}
+                </p>
+                </div>
+                ) : null}
+
+                {person.prepIdeas.length > 0 ? (
+                <>
+                {lead ? (
+                <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700 dark:text-amber-300">
+                {t.person.leadQuestion}
+                </p>
+                <IdeaCard
+                idea={lead}
+                emphasis
+                onAdd={() => onAddIdeaToTalkingPoints(lead)}
+                onDismiss={() => onDismissIdea(lead.id)}
+                />
+                </div>
+                ) : null}
+
+                {displaySupports.length > 0 ? (
+                <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
+                {t.person.supportingThreads}
+                </p>
+                <div className="space-y-3">
+                {displaySupports.map((idea) => (
+                <IdeaCard
+                key={idea.id}
+                idea={idea}
+                onAdd={() => onAddIdeaToTalkingPoints(idea)}
+                onDismiss={() => onDismissIdea(idea.id)}
+                />
+                ))}
+                </div>
+                </div>
+                ) : null}
+
+                {stalls.length > 0 ? (
+                <div>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted">
+                {t.person.stallCards}
+                </p>
+                <div className="space-y-2">
+                {stalls.map((idea) => (
+                <article
+                key={idea.id}
+                className="rounded-xl border border-dashed border-border bg-surface-muted/80 px-3.5 py-3"
+                >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                {t.person.stallIfNeeded}
+                </p>
+                <p className="mt-1 text-xs font-medium text-foreground">
+                {idea.prompt}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                <button
+                type="button"
+                onClick={() => onAddIdeaToTalkingPoints(idea)}
+                className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
+                >
+                {t.person.addToTalkingPoints}
+                </button>
+                <button
+                type="button"
+                onClick={() => onDismissIdea(idea.id)}
+                className="text-[10px] font-semibold text-muted-subtle transition-colors hover:text-danger"
+                >
+                {t.person.dismiss(idea.title)}
+                </button>
+                </div>
+                </article>
+                ))}
+                </div>
+                </div>
+                ) : null}
+                </>
+                ) : (
+                <div className="flex h-full min-h-64 flex-col items-center justify-center rounded-2xl border border-dashed border-secondary/25 bg-surface/70 px-6 py-10 text-center">
+                <span className="grid size-11 place-items-center rounded-2xl bg-secondary-soft text-secondary">
+                <Sparkles className="size-5" />
+                </span>
+                <h3 className="mt-4 text-sm font-semibold text-foreground">
+                {t.person.blankTitle}
+                </h3>
+                <p className="mx-auto mt-1.5 max-w-sm text-xs leading-5 text-muted-subtle">
+                {t.person.blankBody}
+                </p>
+                <button
+                type="button"
+                onClick={requestGenerate}
+                disabled={isGenerating}
+                className="mt-5 inline-flex h-9 items-center gap-2 rounded-xl bg-accent px-3.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-60"
+                >
+                {isGenerating ? (
+                <LoaderCircle className="size-3.5 animate-spin" />
+                ) : (
+                <Sparkles className="size-3.5" />
+                )}
+                {t.person.generatePrep}
+                </button>
+                </div>
+                )}
+                </div>
+                </div>
+
+                <TalkingPointsColumn
+                person={person}
+                onAdd={onAddTalkingPoint}
+                onDelete={onDeleteTalkingPoint}
+                />
               </div>
             </section>
 
@@ -949,8 +944,7 @@ function TalkingPointsColumn({
             <MessageSquareText className="size-3" />
             {t.person.talkingPointsTitle}
           </p>
-          <SecureBadge />
-          <Hint label={t.common.moreInfo}>{t.person.talkingPointsHint}</Hint>
+          <SecureBadge>{t.person.talkingPointsHint}</SecureBadge>
         </div>
         <h3 className="mt-1 text-xs font-semibold text-foreground">
           {t.person.talkingPointsList(person.talkingPoints.length)}

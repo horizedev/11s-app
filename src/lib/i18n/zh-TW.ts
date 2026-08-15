@@ -370,7 +370,7 @@ export const zhTW: Dictionary = {
     aiGenerated: "AI 產生",
     starterIdeas: "入門建議",
     addToNotes: "加入筆記",
-    addToTalkingPoints: "加入談話重點",
+    addToTalkingPoints: "加入",
     dismiss: (title) => `略過 ${title}`,
     blankTitle: "還沒有準備內容",
     blankBody: "AI 會從你的筆記和過往對話找靈感，也可以先為下次一對一記一則筆記。",
@@ -755,7 +755,7 @@ export const zhTW: Dictionary = {
       {
         question: "我的資料安全嗎？",
         answer:
-          "是的。你的聯絡人、筆記與紀錄只有你登入的帳號看得見，傳輸全程加密，也絕不會用來訓練 AI 模型。你可以隨時在帳號頁匯出或永久刪除所有資料。",
+          "是的。你的聯絡人、筆記與紀錄只有你登入的帳號看得見，傳輸全程加密，敏感內容在儲存前另以 AES-256-GCM 加密。你的內容絕不會用來訓練 AI 模型。你可以隨時在帳號頁匯出完整 JSON 檔，或永久刪除所有資料。",
       },
       {
         question: "免費版可以做什麼？",

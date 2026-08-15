@@ -159,10 +159,7 @@ export function SmallTalkPage({
                     strokeWidth={1.7}
                   />
                   {t.overview.contextBankTitle}
-                  <SecureBadge />
-                  <Hint label={t.common.moreInfo}>
-                    {t.overview.contextBankBody}
-                  </Hint>
+                  <SecureBadge>{t.overview.contextBankBody}</SecureBadge>
                 </p>
               </div>
               <SaveStatus

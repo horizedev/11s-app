@@ -218,8 +218,7 @@ export function CareerPage({
             <h2 className="text-base font-semibold text-foreground">
               {t.career.whoToAskTitle}
             </h2>
-            <SecureBadge />
-            <Hint label={t.common.moreInfo}>{t.career.whoToAskBody}</Hint>
+            <SecureBadge>{t.career.whoToAskBody}</SecureBadge>
           </div>
 
           <div className="mt-3 flex gap-2">

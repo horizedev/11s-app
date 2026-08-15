@@ -32,7 +32,7 @@ const termsEn: LegalDoc = {
     {
       heading: "1. The Service",
       paragraphs: [
-        "11s helps you keep notes, discussion history, and preparation ideas for your recurring one-on-one conversations, and can generate suggested talking points using artificial intelligence based on the context you provide.",
+        "11s helps you keep notes, discussion history, curated talking points, and preparation ideas for your recurring one-on-one conversations, and can generate suggested talking points using artificial intelligence based on the context you provide. Sensitive workspace content is encrypted at rest (AES-256-GCM), and you can export or permanently delete your data at any time from the account page.",
         "The Service is a productivity and memory aid. It does not provide professional, legal, medical, psychological, financial, or human-resources advice, and it is not a system of record for employment decisions.",
       ],
     },
@@ -68,7 +68,7 @@ const termsEn: LegalDoc = {
     {
       heading: "6. Plans, billing, and cancellation",
       paragraphs: [
-        "The Service offers a free plan with usage limits and a paid plan (\"Pro\"). We may change plan features and limits with reasonable notice; changes that materially reduce the value of a paid plan will not take effect for you until your next renewal.",
+        "The Service offers a free plan with usage limits (currently up to 20 people and 3 AI credits per day, renewed daily) and a paid plan (\"Pro\", currently unlimited people and 100 AI credits per day, renewed daily, offered monthly, quarterly, and yearly). An AI credit is spent each time fresh preparation is generated. We may change plan features and limits with reasonable notice; changes that materially reduce the value of a paid plan will not take effect for you until your next renewal.",
         "Paid subscriptions renew automatically at the start of each billing period until cancelled. Prices are shown at checkout, are exclusive of applicable taxes unless stated otherwise, and are processed by our payment provider. You authorize us to charge your chosen payment method on a recurring basis.",
         "You can cancel at any time through the billing portal linked from your workspace settings. Cancellation takes effect at the end of the current paid period; you keep access until then. Payments are non-refundable except where required by law.",
         "If a payment fails, we may retry it and may downgrade your account to the free plan after notice. If your account is downgraded while it exceeds free-plan limits, your existing content is preserved, but features above the free limits may become unavailable until you upgrade again or reduce usage.",
@@ -89,7 +89,7 @@ const termsEn: LegalDoc = {
     {
       heading: "9. Termination",
       paragraphs: [
-        "You may stop using the Service and request deletion of your account at any time by contacting us. We may suspend or terminate access if you breach these Terms, if required by law, or if the Service is discontinued, in which case we will give reasonable notice and a chance to export your data where practicable.",
+        "You may stop using the Service and delete your account at any time directly from the account page, which permanently removes your content and cancels any active subscription; you may also contact us for help. We recommend exporting your data first (a JSON export is available on the account page). We may suspend or terminate access if you breach these Terms, if required by law, or if the Service is discontinued, in which case we will give reasonable notice and a chance to export your data where practicable.",
       ],
     },
     {
@@ -147,7 +147,7 @@ const termsZh: LegalDoc = {
     {
       heading: "1. 服務內容",
       paragraphs: [
-        "11s 協助你為固定進行的一對一對話保存筆記、對話紀錄與準備構想,並可依你提供的脈絡,以人工智慧產生建議話題。",
+        "11s 協助你為固定進行的一對一對話保存筆記、對話紀錄、你親自整理的談話重點與準備構想,並可依你提供的脈絡,以人工智慧產生建議話題。敏感的工作區內容會以 AES-256-GCM 加密儲存;你也可以隨時在帳號頁匯出或永久刪除你的資料。",
         "本服務是提升效率與記憶的輔助工具,不提供專業、法律、醫療、心理、財務或人力資源建議,也不是用來做成人事決策的正式紀錄系統。",
       ],
     },
@@ -264,7 +264,7 @@ const privacyEn: LegalDoc = {
       paragraphs: ["We collect the following categories of information:"],
       list: [
         "Account data: your email address and authentication credentials (passwords are stored only as cryptographic hashes by our authentication provider).",
-        "Workspace content: the people, roles, organizations, notes, conversation summaries, topics, follow-ups, and preparation ideas you enter or generate — which may include personal information about other people.",
+        "Workspace content: the people, roles, organizations, notes, conversation summaries, topics, follow-ups, talking points, and preparation ideas you enter or generate — which may include personal information about other people. Sensitive workspace content is encrypted at rest (AES-256-GCM) in addition to transport encryption.",
         "Preferences: your language choice and plan details.",
         "Billing data: your plan, subscription status, and payment-history references. Card numbers and full payment details are collected and stored by our payment processor, not by us.",
         "Technical data: standard server logs such as IP address, browser type, and timestamps, used for security and reliability.",
@@ -315,19 +315,19 @@ const privacyEn: LegalDoc = {
     {
       heading: "7. Retention",
       paragraphs: [
-        "We keep your account data and workspace content for as long as your account is active. When you delete content, it is removed from active systems promptly and from backups on their normal rotation cycle. If you ask us to delete your account, we delete your content within a reasonable period, except where law requires longer retention (for example, payment records).",
+        "We keep your account data and workspace content for as long as your account is active. When you delete content, it is removed from active systems promptly and from backups on their normal rotation cycle. When you delete your account — which you can do yourself from the account page — we delete your content and cancel any active paid subscription within a reasonable period, except where law requires longer retention (for example, payment records).",
       ],
     },
     {
       heading: "8. Security",
       paragraphs: [
-        "We use encryption in transit and at rest, account-level isolation of workspace data, and least-privilege access controls. No method of transmission or storage is perfectly secure; if we learn of a breach affecting your personal data, we will notify you and the authorities as the law requires.",
+        "We use encryption in transit and at rest, account-level isolation of workspace data, and least-privilege access controls. Sensitive workspace content (such as names, notes, talking points, and career information) is additionally encrypted at the application layer with AES-256-GCM before it is stored. No method of transmission or storage is perfectly secure; if we learn of a breach affecting your personal data, we will notify you and the authorities as the law requires.",
       ],
     },
     {
       heading: "9. Your rights",
       paragraphs: [
-        "Depending on where you live (including the EEA, UK, California, and other jurisdictions), you may have rights to access, correct, export, or delete your personal data, to object to or restrict certain processing, and to withdraw consent. You can exercise most of these directly in the Service (viewing, editing, and deleting your content) or by contacting us.",
+        "Depending on where you live (including the EEA, UK, California, and other jurisdictions), you may have rights to access, correct, export, or delete your personal data, to object to or restrict certain processing, and to withdraw consent. You can exercise most of these directly in the Service: view, edit, and delete content in the workspace, download a full JSON export of your data from the account page, or permanently delete your account (which removes all associated content) from the account page. You can also contact us at any time.",
         "You may also have the right to complain to your local data-protection authority. California residents: we do not sell or share personal information for cross-context behavioral advertising.",
       ],
     },
@@ -374,7 +374,7 @@ const privacyZh: LegalDoc = {
       paragraphs: ["我們蒐集以下類別的資訊:"],
       list: [
         "帳號資料:你的電子郵件地址與驗證憑證(密碼僅由驗證服務商以密碼學雜湊形式保存)。",
-        "工作區內容:你輸入或產生的人物、職務、組織、筆記、對話摘要、主題、待追蹤事項與準備構想——其中可能包含其他人的個人資訊。",
+        "工作區內容:你輸入或產生的人物、職務、組織、筆記、對話摘要、主題、待追蹤事項、談話重點與準備構想——其中可能包含其他人的個人資訊。敏感的工作區內容除傳輸加密外,另以 AES-256-GCM 加密儲存。",
         "偏好設定:你的語言選擇與方案資訊。",
         "帳單資料:你的方案、訂閱狀態與付款紀錄參照。卡號與完整付款資料由金流服務商直接蒐集與保存,我們不經手。",
         "技術資料:標準伺服器紀錄,例如 IP 位址、瀏覽器類型與時間戳記,用於安全性與穩定性維護。",
@@ -423,19 +423,19 @@ const privacyZh: LegalDoc = {
     {
       heading: "7. 保存期間",
       paragraphs: [
-        "帳號有效期間,我們會保存你的帳號資料與工作區內容。你刪除內容後,線上系統會立即移除,備份則依正常輪替週期清除。若你要求刪除帳號,我們會在合理期間內刪除你的內容,但法律要求較長保存期間者除外(例如付款紀錄)。",
+        "帳號有效期間,我們會保存你的帳號資料與工作區內容。你刪除內容後,線上系統會立即移除,備份則依正常輪替週期清除。你可以在帳號頁自行刪除帳號——我們會在合理期間內刪除你的內容並取消任何有效中的付費訂閱,但法律要求較長保存期間者除外(例如付款紀錄)。",
       ],
     },
     {
       heading: "8. 安全性",
       paragraphs: [
-        "我們採用傳輸與儲存加密、以帳號為單位的資料隔離,以及最小權限的存取控管。但任何傳輸或儲存方式都無法保證絕對安全;若發生影響你個人資料的外洩事件,我們會依法通知你與主管機關。",
+        "我們採用傳輸與儲存加密、以帳號為單位的資料隔離,以及最小權限的存取控管。敏感的工作區內容(例如姓名、筆記、談話重點與職涯資訊)在儲存前另以 AES-256-GCM 於應用層加密。但任何傳輸或儲存方式都無法保證絕對安全;若發生影響你個人資料的外洩事件,我們會依法通知你與主管機關。",
       ],
     },
     {
       heading: "9. 你的權利",
       paragraphs: [
-        "依你所在地法律(包括歐洲經濟區、英國、加州及其他地區),你可能享有存取、更正、匯出或刪除個人資料、反對或限制特定處理,以及撤回同意的權利。大多數權利你可以直接在本服務中行使(檢視、編輯與刪除你的內容),或聯絡我們處理。",
+        "依你所在地法律(包括歐洲經濟區、英國、加州及其他地區),你可能享有存取、更正、匯出或刪除個人資料、反對或限制特定處理,以及撤回同意的權利。大多數權利你可以直接在本服務中行使:在工作區檢視、編輯與刪除內容,在帳號頁下載完整的 JSON 匯出檔,或永久刪除帳號(將一併刪除所有相關內容)。你也可以隨時聯絡我們。",
         "你也可以向當地資料保護主管機關提出申訴。加州居民:我們不出售個人資訊,也不為跨情境行為廣告目的分享個人資訊。",
       ],
     },

@@ -404,7 +404,7 @@ export const en: Dictionary = {
     aiGenerated: "AI generated",
     starterIdeas: "Starter suggestions",
     addToNotes: "Add to notes",
-    addToTalkingPoints: "Add to talking points",
+    addToTalkingPoints: "Add",
     dismiss: (title) => `Dismiss ${title}`,
     blankTitle: "A blank page, for now",
     blankBody:
@@ -814,7 +814,7 @@ export const en: Dictionary = {
       {
         question: "Is my data private?",
         answer:
-          "Yes. Your people, notes, and history are visible only to your signed-in account, encrypted in transit, and never used to train AI models. You can export or permanently delete everything at any time from your account page.",
+          "Yes. Your people, notes, and history are visible only to your signed-in account, encrypted in transit, and sensitive content is additionally encrypted at rest with AES-256-GCM before it is stored. Your content is never used to train AI models. You can export a full JSON copy or permanently delete everything at any time from your account page.",
       },
       {
         question: "What can I do on the Free plan?",
