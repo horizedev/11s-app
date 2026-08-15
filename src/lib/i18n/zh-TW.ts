@@ -402,7 +402,7 @@ export const zhTW: Dictionary = {
     privateBrowser: "僅限你的帳號",
     prepUses: "準備時會參考",
     prepUsesItems: [
-      "你的共用脈絡庫",
+      "你的「Your context bank」筆記（不會使用未選取的閒聊靈感）",
       "你的職涯方向、成果紀錄與待解需求",
       "你留給下次的筆記",
       "對方的背景／LinkedIn 資料",

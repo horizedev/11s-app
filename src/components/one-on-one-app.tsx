@@ -424,8 +424,20 @@ export function OneOnOneApp({
 
   async function generatePrep(person: Person) {
     setGeneratingPersonId(person.id);
+    cancelPendingNotesSave(person.id);
+    cancelPendingContextSave();
 
     try {
+      // Persist the current brainstorm and context-bank edits before the API
+      // loads its server-owned source pack. This prevents a just-typed note
+      // from being omitted by the preparation request.
+      await Promise.all([
+        savePersonFields(supabase, person.id, { notes: person.notes }),
+        saveContextBank(supabase, userId, contextBank),
+      ]);
+      setContextSaved(true);
+      setContextSaveError(false);
+
       const response = await fetch("/api/prep", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

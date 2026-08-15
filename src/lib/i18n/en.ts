@@ -440,7 +440,7 @@ export const en: Dictionary = {
     privateBrowser: "Private to your account",
     prepUses: "Preparation uses",
     prepUsesItems: [
-      "Your reusable context bank",
+      "Your “Your context bank” notes (not unselected small-talk ideas)",
       "Your career direction, brag doc, and open needs",
       "Your notes for next time",
       "Their background / LinkedIn profile text",
