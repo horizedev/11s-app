@@ -19,6 +19,7 @@ import {
 } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
 import { SaveStatus } from "@/components/save-status";
+import { SecureBadge } from "@/components/secure-badge";
 import { useLocale } from "@/lib/i18n";
 import type { GeneralPrep, Person } from "@/lib/types";
 import {
@@ -104,6 +105,7 @@ export function Overview({
                       strokeWidth={1.7}
                     />
                     {t.overview.contextBankTitle}
+                    <SecureBadge />
                     <Hint label={t.common.moreInfo}>
                       {t.overview.contextBankBody}
                     </Hint>

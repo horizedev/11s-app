@@ -13,6 +13,7 @@ import {
 import { RelationshipPill } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
 import { SaveStatus } from "@/components/save-status";
+import { SecureBadge } from "@/components/secure-badge";
 import { useLocale } from "@/lib/i18n";
 import type {
   CareerNeed,
@@ -217,6 +218,7 @@ export function CareerPage({
             <h2 className="text-base font-semibold text-foreground">
               {t.career.whoToAskTitle}
             </h2>
+            <SecureBadge />
             <Hint label={t.common.moreInfo}>{t.career.whoToAskBody}</Hint>
           </div>
 
@@ -307,6 +309,7 @@ export function CareerPage({
               <h2 className="text-base font-semibold text-foreground">
                 {t.career.directionTitle}
               </h2>
+              <SecureBadge />
             </div>
             <p className="mt-1 text-xs text-muted">{t.career.directionBody}</p>
 
@@ -385,6 +388,7 @@ export function CareerPage({
                 <h3 className="text-sm font-semibold text-foreground">
                   {t.career.bragTitle}
                 </h3>
+                <SecureBadge />
               </div>
               <p className="mt-1 text-xs text-muted">{t.career.bragBody}</p>
               <textarea
@@ -415,6 +419,7 @@ export function CareerPage({
               <h2 className="text-base font-semibold text-foreground">
                 {t.career.needsTitle}
               </h2>
+              <SecureBadge />
               <p className="mt-1 text-xs text-muted">{t.career.needsBody}</p>
 
               <div className="mt-3 flex gap-2">

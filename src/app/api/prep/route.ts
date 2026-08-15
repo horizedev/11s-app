@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { DEEPSEEK_MODEL, getDeepSeek } from "@/lib/ai/deepseek";
 import { dailyPrepLimit, planFromPreferences, prepWindowStartIso } from "@/lib/billing";
+import { decryptText, importEncryptionKey } from "@/lib/crypto";
 import { en } from "@/lib/i18n/en";
 import type { Dictionary, Locale } from "@/lib/i18n/types";
 import { zhTW } from "@/lib/i18n/zh-TW";
@@ -1141,13 +1142,22 @@ export async function POST(request: Request) {
       }
     | null;
 
-  const contextBank = preferenceRow?.context_bank ?? "";
+  // Sensitive content is encrypted at rest; decrypt before prompting.
+  const encryptionKey = process.env.DATA_ENCRYPTION_KEY
+    ? await importEncryptionKey(process.env.DATA_ENCRYPTION_KEY).catch(() => null)
+    : null;
+  const openText = (value: string | null | undefined) =>
+    encryptionKey ? decryptText(value ?? "", encryptionKey) : (value ?? "");
+
+  const contextBank = await openText(preferenceRow?.context_bank);
   const career: CareerContext = {
-    bragDoc: preferenceRow?.brag_doc ?? "",
-    careerDirection: preferenceRow?.career_direction ?? "",
-    careerTargetRole: preferenceRow?.career_target_role ?? "",
-    careerTimeline: preferenceRow?.career_timeline ?? "",
-    openNeeds: (openNeedRows ?? []).map((row) => row.body),
+    bragDoc: await openText(preferenceRow?.brag_doc),
+    careerDirection: await openText(preferenceRow?.career_direction),
+    careerTargetRole: await openText(preferenceRow?.career_target_role),
+    careerTimeline: await openText(preferenceRow?.career_timeline),
+    openNeeds: await Promise.all(
+      (openNeedRows ?? []).map((row) => openText(row.body)),
+    ),
   };
   const plan = planFromPreferences(preferenceRow);
   const deepseek = getDeepSeek();

@@ -34,6 +34,7 @@ import {
 import { Hint } from "@/components/hint";
 import { RotatingConversationSkill } from "@/components/rotating-conversation-skill";
 import { SaveStatus } from "@/components/save-status";
+import { SecureBadge } from "@/components/secure-badge";
 import { useLocale } from "@/lib/i18n";
 import type {
   MeetingIntent,
@@ -491,8 +492,15 @@ export function PersonDetail({
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-3">
-                <div className="flex min-h-[28rem] flex-col border-b border-border lg:border-b-0 lg:border-r">
+              <div className="grid lg:grid-cols-2">
+                <div className="flex flex-col lg:border-r">
+                <TalkingPointsColumn
+                  person={person}
+                  onAdd={onAddTalkingPoint}
+                  onDelete={onDeleteTalkingPoint}
+                />
+
+<div className="flex min-h-[20rem] flex-col border-t border-border">
                   <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
@@ -506,6 +514,7 @@ export function PersonDetail({
                           />
                           {t.person.brainstormNotes}
                         </label>
+                        <SecureBadge />
                         <Hint label={t.common.moreInfo}>
                           {t.person.notesHint}
                         </Hint>
@@ -617,8 +626,9 @@ export function PersonDetail({
                     </div>
                   </div>
                 </div>
+                </div>
 
-                <div className="flex min-h-[28rem] flex-col border-b border-border bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised lg:border-b-0 lg:border-r">
+<div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised">
                   <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
                     <div>
                       <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
@@ -791,12 +801,6 @@ export function PersonDetail({
                     )}
                   </div>
                 </div>
-
-                <TalkingPointsColumn
-                  person={person}
-                  onAdd={onAddTalkingPoint}
-                  onDelete={onDeleteTalkingPoint}
-                />
               </div>
             </section>
 
@@ -938,13 +942,14 @@ function TalkingPointsColumn({
   }
 
   return (
-    <div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-[#fff9f5] via-white to-white dark:from-accent-soft/40 dark:via-surface-raised dark:to-surface-raised">
+    <div className="flex min-h-[20rem] flex-col bg-gradient-to-br from-[#fff9f5] via-white to-white dark:from-accent-soft/40 dark:via-surface-raised dark:to-surface-raised">
       <div className="border-b border-border px-5 py-3.5 sm:px-6">
         <div className="flex items-center gap-1.5">
           <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#b56547]">
             <MessageSquareText className="size-3" />
             {t.person.talkingPointsTitle}
           </p>
+          <SecureBadge />
           <Hint label={t.common.moreInfo}>{t.person.talkingPointsHint}</Hint>
         </div>
         <h3 className="mt-1 text-xs font-semibold text-foreground">

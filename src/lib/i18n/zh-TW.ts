@@ -36,6 +36,9 @@ export const zhTW: Dictionary = {
     workspaceLoadFailed: "暫時無法載入工作區。",
     tryAgain: "再試一次",
     moreInfo: "更多說明",
+    sensitiveField: "私密欄位",
+    sensitiveHint:
+      "你在這裡填寫的內容會以 AES-256-GCM 加密儲存，只有你的帳號看得到。",
     career: "職涯",
   },
   relationship: {

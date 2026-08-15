@@ -36,6 +36,9 @@ export const en: Dictionary = {
     workspaceLoadFailed: "Your workspace could not be loaded.",
     tryAgain: "Try again",
     moreInfo: "More info",
+    sensitiveField: "Private field",
+    sensitiveHint:
+      "Whatever you write here is encrypted at rest (AES-256-GCM) and only visible to your account.",
     career: "Career",
   },
   relationship: {

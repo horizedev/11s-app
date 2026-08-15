@@ -2,6 +2,7 @@
 
 import {
   LoaderCircle,
+  LockKeyhole,
   MessageSquareText,
   Pencil,
   Save,
@@ -166,6 +167,22 @@ const textareaClassName =
   "mt-1.5 w-full resize-none rounded-xl border border-border bg-surface px-3 py-2.5 text-sm leading-5 text-foreground outline-none transition-[border-color,background-color,box-shadow] placeholder:text-muted-subtle focus:border-border-strong focus:bg-surface-raised focus:ring-4 focus:ring-focus/10";
 const labelClassName = "block text-[11px] font-semibold text-foreground/80";
 
+/** Marks a field label as holding encrypted-at-rest, private content. */
+function SensitiveLabel({ children }: { children: ReactNode }) {
+  const { t } = useLocale();
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {children}
+      <LockKeyhole
+        aria-hidden="true"
+        className="size-3 text-muted-subtle"
+        strokeWidth={2}
+      />
+      <span className="sr-only">{t.common.sensitiveField}</span>
+    </span>
+  );
+}
+
 function readPersonInput(
   form: HTMLFormElement,
   relationship: Relationship,
@@ -317,7 +334,7 @@ function PersonFormFields({
   return (
     <div className="grid gap-4 px-5 py-5 sm:grid-cols-2 sm:px-6">
       <label className={labelClassName}>
-        {t.dialogs.name}
+        <SensitiveLabel>{t.dialogs.name}</SensitiveLabel>
         <input
           name="name"
           required
@@ -348,7 +365,7 @@ function PersonFormFields({
         </select>
       </label>
       <label className={labelClassName}>
-        {t.dialogs.role}
+        <SensitiveLabel>{t.dialogs.role}</SensitiveLabel>
         <input
           name="role"
           maxLength={160}
@@ -363,7 +380,7 @@ function PersonFormFields({
         />
       </label>
       <label className={labelClassName}>
-        {t.dialogs.organization}
+        <SensitiveLabel>{t.dialogs.organization}</SensitiveLabel>
         <input
           name="organization"
           maxLength={160}
@@ -378,7 +395,7 @@ function PersonFormFields({
         />
       </label>
       <label className={`${labelClassName} sm:col-span-2`}>
-        {t.dialogs.linkedinUrl}
+        <SensitiveLabel>{t.dialogs.linkedinUrl}</SensitiveLabel>
         <input
           name="linkedinUrl"
           type="url"
@@ -392,7 +409,7 @@ function PersonFormFields({
         />
       </label>
       <label className={`${labelClassName} sm:col-span-2`}>
-        {t.dialogs.background}
+        <SensitiveLabel>{t.dialogs.background}</SensitiveLabel>
         <textarea
           name="background"
           rows={4}
@@ -407,7 +424,7 @@ function PersonFormFields({
         </span>
       </label>
       <label className={`${labelClassName} sm:col-span-2`}>
-        {t.dialogs.notesForNext}
+        <SensitiveLabel>{t.dialogs.notesForNext}</SensitiveLabel>
         <textarea
           name="notes"
           rows={4}
@@ -733,7 +750,7 @@ export function LogMeetingDialog({
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4 px-5 py-5 sm:grid-cols-2 sm:px-6">
           <label className={`${labelClassName} sm:col-span-2`}>
-            {t.dialogs.conversationTitle}
+            <SensitiveLabel>{t.dialogs.conversationTitle}</SensitiveLabel>
             <input
               name="title"
               required
@@ -772,7 +789,7 @@ export function LogMeetingDialog({
             </select>
           </label>
           <label className={`${labelClassName} sm:col-span-2`}>
-            {t.dialogs.summary}
+            <SensitiveLabel>{t.dialogs.summary}</SensitiveLabel>
             <textarea
               name="summary"
               required
@@ -783,7 +800,7 @@ export function LogMeetingDialog({
             />
           </label>
           <label className={labelClassName}>
-            {t.dialogs.topics}
+            <SensitiveLabel>{t.dialogs.topics}</SensitiveLabel>
             <textarea
               name="topics"
               rows={3}
@@ -793,7 +810,7 @@ export function LogMeetingDialog({
             />
           </label>
           <label className={labelClassName}>
-            {t.dialogs.followUps}
+            <SensitiveLabel>{t.dialogs.followUps}</SensitiveLabel>
             <textarea
               name="followUps"
               rows={3}

@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { decryptList, decryptText, encryptList, encryptText, importEncryptionKey } from "@/lib/crypto";
 import type {
   Database,
   Tables,
@@ -43,6 +44,76 @@ type DiscussionRow = Tables<"11s_discussions">;
 type PrepIdeaRow = Tables<"11s_prep_ideas">;
 type TalkingPointRow = Tables<"11s_talking_points">;
 type CareerNeedRow = Tables<"11s_career_needs">;
+
+/**
+ * Encryption key for sensitive user content at rest. Resolved lazily and
+ * cached for the session: server components use DATA_ENCRYPTION_KEY
+ * directly, the browser fetches it once from /api/crypto/key. When no key
+ * is configured the app keeps working with plaintext values.
+ */
+let cachedKey: CryptoKey | null | undefined;
+
+async function getEncryptionKey(): Promise<CryptoKey | null> {
+  if (cachedKey !== undefined) return cachedKey;
+
+  let base64: string | undefined;
+  if (typeof window === "undefined") {
+    base64 = process.env.DATA_ENCRYPTION_KEY;
+  } else {
+    try {
+      const response = await fetch("/api/crypto/key");
+      if (response.ok) {
+        const body = (await response.json()) as { key?: string };
+        base64 = body.key;
+      }
+    } catch {
+      base64 = undefined;
+    }
+  }
+
+  if (!base64) {
+    cachedKey = null;
+    return null;
+  }
+
+  try {
+    cachedKey = await importEncryptionKey(base64);
+  } catch {
+    cachedKey = null;
+  }
+  return cachedKey;
+}
+
+const enc = async (
+  value: string | null | undefined,
+): Promise<string | null> => {
+  if (value == null || value === "") return value ?? null;
+  const key = await getEncryptionKey();
+  return key ? encryptText(value, key) : value;
+};
+
+/** Encrypts a value for a not-null text column (empty string stays as-is). */
+const encReq = async (value: string): Promise<string> => {
+  if (value === "") return value;
+  const key = await getEncryptionKey();
+  return key ? encryptText(value, key) : value;
+};
+
+const dec = async <T extends string | null | undefined>(value: T): Promise<T> => {
+  if (!value) return value;
+  const key = await getEncryptionKey();
+  return (key ? await decryptText(value, key) : value) as T;
+};
+
+const encList = async (items: string[]): Promise<string[]> => {
+  const key = await getEncryptionKey();
+  return key ? encryptList(items, key) : items;
+};
+
+const decList = async (items: string[]): Promise<string[]> => {
+  const key = await getEncryptionKey();
+  return key ? decryptList(items, key) : items;
+};
 
 export type PrepMetaByPerson = Record<
   string,
@@ -95,63 +166,63 @@ type PersonFields = {
   prepSource?: PrepResponse["source"] | null;
 };
 
-function toDiscussion(row: DiscussionRow): Discussion {
+async function toDiscussion(row: DiscussionRow): Promise<Discussion> {
   return {
     id: row.id,
     date: row.occurred_at,
-    title: row.title,
-    summary: row.summary,
-    topics: row.topics,
-    followUps: row.follow_ups,
+    title: await dec(row.title),
+    summary: await dec(row.summary),
+    topics: await decList(row.topics),
+    followUps: await decList(row.follow_ups),
     mood: row.mood as DiscussionMood,
   };
 }
 
-function toPrepIdea(row: PrepIdeaRow): PrepIdea {
+async function toPrepIdea(row: PrepIdeaRow): Promise<PrepIdea> {
   return {
     id: row.id,
     category: row.category as PrepCategory,
-    title: row.title,
-    rationale: row.rationale,
-    prompt: row.prompt,
+    title: await dec(row.title),
+    rationale: await dec(row.rationale),
+    prompt: await dec(row.prompt),
     kind: (row.kind as PrepIdeaKind) || "support",
   };
 }
 
-function toCareerNeed(row: CareerNeedRow): CareerNeed {
+async function toCareerNeed(row: CareerNeedRow): Promise<CareerNeed> {
   return {
     id: row.id,
-    body: row.body,
+    body: await dec(row.body),
     status: row.status as CareerNeedStatus,
     createdAt: row.created_at,
   };
 }
 
-function toTalkingPoint(row: TalkingPointRow): TalkingPoint {
+async function toTalkingPoint(row: TalkingPointRow): Promise<TalkingPoint> {
   return {
     id: row.id,
-    body: row.body,
+    body: await dec(row.body),
     source: (row.source as TalkingPointSource) || "manual",
   };
 }
 
-function toPerson(
+async function toPerson(
   row: PersonRow,
   discussions: Discussion[],
   prepIdeas: PrepIdea[],
   talkingPoints: TalkingPoint[],
-): Person {
+): Promise<Person> {
   return {
     id: row.id,
-    name: row.name,
-    role: row.role,
-    organization: row.organization,
+    name: await dec(row.name),
+    role: await dec(row.role),
+    organization: await dec(row.organization),
     relationship: row.relationship as Relationship,
     lastMeetingAt: row.last_meeting_at ?? "",
-    notes: row.notes,
-    lastNotes: row.last_notes ?? "",
-    background: row.background ?? "",
-    linkedinUrl: row.linkedin_url ?? "",
+    notes: await dec(row.notes),
+    lastNotes: await dec(row.last_notes ?? ""),
+    background: await dec(row.background ?? ""),
+    linkedinUrl: await dec(row.linkedin_url ?? ""),
     avatarEmoji: resolvePersonAvatarEmoji(row.avatar_path),
     color: row.color,
     discussions,
@@ -230,7 +301,7 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
   const discussionsByPerson = new Map<string, Discussion[]>();
   for (const row of discussionsResult.data ?? []) {
     const current = discussionsByPerson.get(row.person_id) ?? [];
-    current.push(toDiscussion(row));
+    current.push(await toDiscussion(row));
     discussionsByPerson.set(row.person_id, current);
   }
 
@@ -238,37 +309,39 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
   const generalIdeas: PrepIdea[] = [];
   for (const row of ideasResult.data ?? []) {
     if (row.person_id === null) {
-      generalIdeas.push(toPrepIdea(row));
+      generalIdeas.push(await toPrepIdea(row));
       continue;
     }
     const current = ideasByPerson.get(row.person_id) ?? [];
-    current.push(toPrepIdea(row));
+    current.push(await toPrepIdea(row));
     ideasByPerson.set(row.person_id, current);
   }
 
   const talkingPointsByPerson = new Map<string, TalkingPoint[]>();
   for (const row of talkingPointsResult.data ?? []) {
     const current = talkingPointsByPerson.get(row.person_id) ?? [];
-    current.push(toTalkingPoint(row));
+    current.push(await toTalkingPoint(row));
     talkingPointsByPerson.set(row.person_id, current);
   }
 
   const prepMeta: PrepMetaByPerson = {};
-  const people = (peopleResult.data ?? []).map((row) => {
-    if (row.prep_opening && row.prep_source) {
-      prepMeta[row.id] = {
-        opening: row.prep_opening,
-        source: row.prep_source as PrepResponse["source"],
-      };
-    }
+  const people = await Promise.all(
+    (peopleResult.data ?? []).map(async (row) => {
+      if (row.prep_opening && row.prep_source) {
+        prepMeta[row.id] = {
+          opening: await dec(row.prep_opening),
+          source: row.prep_source as PrepResponse["source"],
+        };
+      }
 
-    return toPerson(
-      row,
-      discussionsByPerson.get(row.id) ?? [],
-      ideasByPerson.get(row.id) ?? [],
-      talkingPointsByPerson.get(row.id) ?? [],
-    );
-  });
+      return toPerson(
+        row,
+        discussionsByPerson.get(row.id) ?? [],
+        ideasByPerson.get(row.id) ?? [],
+        talkingPointsByPerson.get(row.id) ?? [],
+      );
+    }),
+  );
 
   const savedLocale = preferenceResult.data?.locale;
   const generalSource = preferenceResult.data?.general_prep_source;
@@ -278,9 +351,9 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
   return {
     people,
     prepMeta,
-    contextBank: preferenceResult.data?.context_bank ?? "",
+    contextBank: await dec(preferenceResult.data?.context_bank ?? ""),
     generalPrep: {
-      opening: preferenceResult.data?.general_prep_opening ?? "",
+      opening: await dec(preferenceResult.data?.general_prep_opening ?? ""),
       ideas: generalIdeas,
       source:
         generalSource === "ai" || generalSource === "starter"
@@ -288,11 +361,13 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
           : null,
     },
     career: {
-      direction: preferenceResult.data?.career_direction ?? "",
-      targetRole: preferenceResult.data?.career_target_role ?? "",
-      timeline: preferenceResult.data?.career_timeline ?? "",
-      bragDoc: preferenceResult.data?.brag_doc ?? "",
-      needs: (careerNeedsResult.data ?? []).map(toCareerNeed),
+      direction: await dec(preferenceResult.data?.career_direction ?? ""),
+      targetRole: await dec(preferenceResult.data?.career_target_role ?? ""),
+      timeline: await dec(preferenceResult.data?.career_timeline ?? ""),
+      bragDoc: await dec(preferenceResult.data?.brag_doc ?? ""),
+      needs: await Promise.all(
+        (careerNeedsResult.data ?? []).map(toCareerNeed),
+      ),
     },
     locale:
       savedLocale === "en" || savedLocale === "zh-TW" ? savedLocale : null,
@@ -349,14 +424,14 @@ export async function createPerson(
   const row: TablesInsert<"11s_people"> = {
     id: person.id,
     user_id: userId,
-    name: person.name,
-    role: person.role,
-    organization: person.organization,
+    name: await encReq(person.name),
+    role: await encReq(person.role),
+    organization: await encReq(person.organization),
     relationship: person.relationship,
-    notes: person.notes,
+    notes: await encReq(person.notes),
     last_notes: "",
-    background: person.background,
-    linkedin_url: person.linkedinUrl,
+    background: await encReq(person.background),
+    linkedin_url: await encReq(person.linkedinUrl),
     avatar_path: person.avatarEmoji,
     color: person.color,
     sort_order: sortOrder,
@@ -376,24 +451,24 @@ export async function savePersonFields(
     updated_at: new Date().toISOString(),
   };
 
-  if (fields.name !== undefined) update.name = fields.name;
-  if (fields.role !== undefined) update.role = fields.role;
+  if (fields.name !== undefined) update.name = await encReq(fields.name);
+  if (fields.role !== undefined) update.role = await encReq(fields.role);
   if (fields.organization !== undefined) {
-    update.organization = fields.organization;
+    update.organization = await encReq(fields.organization);
   }
   if (fields.relationship !== undefined) {
     update.relationship = fields.relationship;
   }
-  if (fields.notes !== undefined) update.notes = fields.notes;
-  if (fields.lastNotes !== undefined) update.last_notes = fields.lastNotes;
-  if (fields.background !== undefined) update.background = fields.background;
-  if (fields.linkedinUrl !== undefined) update.linkedin_url = fields.linkedinUrl;
+  if (fields.notes !== undefined) update.notes = await encReq(fields.notes);
+  if (fields.lastNotes !== undefined) update.last_notes = await encReq(fields.lastNotes);
+  if (fields.background !== undefined) update.background = await encReq(fields.background);
+  if (fields.linkedinUrl !== undefined) update.linkedin_url = await encReq(fields.linkedinUrl);
   if (fields.avatarEmoji !== undefined) update.avatar_path = fields.avatarEmoji;
   if (fields.lastMeetingAt !== undefined) {
     update.last_meeting_at = fields.lastMeetingAt || null;
   }
   if (fields.prepOpening !== undefined) {
-    update.prep_opening = fields.prepOpening;
+    update.prep_opening = await enc(fields.prepOpening);
   }
   if (fields.prepSource !== undefined) {
     update.prep_source = fields.prepSource;
@@ -427,10 +502,10 @@ export async function createDiscussion(
     user_id: userId,
     person_id: personId,
     occurred_at: discussion.date,
-    title: discussion.title,
-    summary: discussion.summary,
-    topics: discussion.topics,
-    follow_ups: discussion.followUps,
+    title: await encReq(discussion.title),
+    summary: await encReq(discussion.summary),
+    topics: await encList(discussion.topics),
+    follow_ups: await encList(discussion.followUps),
     mood: discussion.mood,
   };
 
@@ -452,10 +527,10 @@ export async function updateDiscussion(
 ) {
   const update: TablesUpdate<"11s_discussions"> = {
     occurred_at: input.date,
-    title: input.title,
-    summary: input.summary,
-    topics: input.topics,
-    follow_ups: input.followUps,
+    title: await encReq(input.title),
+    summary: await encReq(input.summary),
+    topics: await encList(input.topics),
+    follow_ups: await encList(input.followUps),
     mood: input.mood,
   };
 
@@ -495,18 +570,18 @@ export async function replacePrepIdeas(
   throwIfError(deleteResult.error);
 
   if (response.ideas.length > 0) {
-    const rows: TablesInsert<"11s_prep_ideas">[] = response.ideas.map(
-      (idea, index) => ({
+    const rows: TablesInsert<"11s_prep_ideas">[] = await Promise.all(
+      response.ideas.map(async (idea, index) => ({
         id: idea.id,
         user_id: userId,
         person_id: personId,
         category: idea.category,
-        title: idea.title,
-        rationale: idea.rationale,
-        prompt: idea.prompt,
+        title: await encReq(idea.title),
+        rationale: await encReq(idea.rationale),
+        prompt: await encReq(idea.prompt),
         kind: idea.kind ?? "support",
         sort_order: index,
-      }),
+      })),
     );
     const insertResult = await client.from("11s_prep_ideas").insert(rows);
     throwIfError(insertResult.error);
@@ -531,18 +606,18 @@ export async function replaceGeneralPrepIdeas(
   throwIfError(deleteResult.error);
 
   if (response.ideas.length > 0) {
-    const rows: TablesInsert<"11s_prep_ideas">[] = response.ideas.map(
-      (idea, index) => ({
+    const rows: TablesInsert<"11s_prep_ideas">[] = await Promise.all(
+      response.ideas.map(async (idea, index) => ({
         id: idea.id,
         user_id: userId,
         person_id: null,
         category: idea.category,
-        title: idea.title,
-        rationale: idea.rationale,
-        prompt: idea.prompt,
+        title: await encReq(idea.title),
+        rationale: await encReq(idea.rationale),
+        prompt: await encReq(idea.prompt),
         kind: idea.kind ?? "support",
         sort_order: index,
-      }),
+      })),
     );
     const insertResult = await client.from("11s_prep_ideas").insert(rows);
     throwIfError(insertResult.error);
@@ -550,7 +625,7 @@ export async function replaceGeneralPrepIdeas(
 
   const preferenceResult = await client.from("11s_preferences").upsert({
     user_id: userId,
-    general_prep_opening: response.opening,
+    general_prep_opening: await enc(response.opening),
     general_prep_source: response.source,
     updated_at: new Date().toISOString(),
   });
@@ -583,7 +658,7 @@ export async function createTalkingPoint(
     id: point.id,
     user_id: userId,
     person_id: personId,
-    body: point.body,
+    body: await encReq(point.body),
     source: point.source,
     sort_order: sortOrder,
   };
@@ -608,7 +683,7 @@ export async function saveContextBank(
 ) {
   const result = await client.from("11s_preferences").upsert({
     user_id: userId,
-    context_bank: contextBank,
+    context_bank: await encReq(contextBank),
     updated_at: new Date().toISOString(),
   });
   throwIfError(result.error);
@@ -626,10 +701,10 @@ export async function saveCareerProfile(
 ) {
   const result = await client.from("11s_preferences").upsert({
     user_id: userId,
-    career_direction: profile.direction,
-    career_target_role: profile.targetRole,
-    career_timeline: profile.timeline,
-    brag_doc: profile.bragDoc,
+    career_direction: await encReq(profile.direction),
+    career_target_role: await encReq(profile.targetRole),
+    career_timeline: await encReq(profile.timeline),
+    brag_doc: await encReq(profile.bragDoc),
     updated_at: new Date().toISOString(),
   });
   throwIfError(result.error);
@@ -650,7 +725,7 @@ export async function createCareerNeed(
   const row: TablesInsert<"11s_career_needs"> = {
     id: need.id,
     user_id: userId,
-    body: need.body,
+    body: await encReq(need.body),
     status: need.status,
     created_at: need.createdAt,
   };

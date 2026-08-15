@@ -1,6 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { claimReferral, REFERRAL_COOKIE } from "@/lib/referrals";
+import {
+  readSignupLocation,
+  readSignupReferralCode,
+} from "@/lib/signup-notify-request";
+import { maybeNotifySignup } from "@/lib/signup-notify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -32,15 +37,30 @@ export async function GET(request: NextRequest) {
 
       const referralCode = request.cookies.get(REFERRAL_COOKIE)?.value;
       const { data } = await supabase.auth.getClaims();
-      if (referralCode && data?.claims?.sub) {
+      if (data?.claims?.sub) {
+        const admin = createAdminClient();
+        if (referralCode) {
+          try {
+            await claimReferral(admin, data.claims.sub, referralCode);
+          } catch (claimError) {
+            console.error("Referral attribution failed", claimError);
+          }
+        }
+        // New accounts (email confirmation / Google OAuth) notify ops here,
+        // server-side, so it does not depend on a browser call afterwards.
+        // The DB guard makes repeat sign-ins and parallel flows no-op.
         try {
-          await claimReferral(
-            createAdminClient(),
+          const result = await maybeNotifySignup(
+            admin,
             data.claims.sub,
-            referralCode,
+            readSignupLocation(request),
+            referralCode ?? readSignupReferralCode(request),
           );
-        } catch (claimError) {
-          console.error("Referral attribution failed", claimError);
+          if (result !== "sent" && result !== "already-notified" && result !== "not-new") {
+            console.warn("Signup notification skipped:", result);
+          }
+        } catch (notifyError) {
+          console.error("Signup notification failed", notifyError);
         }
       }
       response.cookies.delete(REFERRAL_COOKIE);

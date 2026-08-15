@@ -40,6 +40,8 @@ export type Dictionary = {
     tryAgain: string;
     moreInfo: string;
     career: string;
+    sensitiveField: string;
+    sensitiveHint: string;
   };
   relationship: {
     manager: string;

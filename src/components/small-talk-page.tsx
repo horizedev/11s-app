@@ -16,6 +16,7 @@ import { CategoryPill } from "@/components/ui-kit";
 import { Hint } from "@/components/hint";
 import { RotatingConversationSkill } from "@/components/rotating-conversation-skill";
 import { SaveStatus } from "@/components/save-status";
+import { SecureBadge } from "@/components/secure-badge";
 import { useLocale } from "@/lib/i18n";
 import { NEWS_AREAS, type NewsArea } from "@/lib/news";
 import {
@@ -158,6 +159,7 @@ export function SmallTalkPage({
                     strokeWidth={1.7}
                   />
                   {t.overview.contextBankTitle}
+                  <SecureBadge />
                   <Hint label={t.common.moreInfo}>
                     {t.overview.contextBankBody}
                   </Hint>
