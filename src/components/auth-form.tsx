@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { LanguageToggle } from "@/components/language-toggle";
@@ -42,8 +42,11 @@ const copy = {
     submitSignIn: "Open workspace",
     submitSignUp: "Create my workspace",
     continueWithGoogle: "Continue with Google",
+    googleOAuthTitle: "Before you continue with Google",
     googleOAuthNotice: (host: string) =>
       `Google may say “Choose an account to continue to ${host}.” That is 11s’s legitimate, secure sign-in service—it's safe to continue.`,
+    googleOAuthCancel: "Cancel",
+    googleOAuthContinue: "Continue to Google",
     orEmail: "or continue with email",
     switchToSignUp: "New to 11s? Create an account",
     switchToSignIn: "Already have an account? Sign in",
@@ -73,8 +76,11 @@ const copy = {
     submitSignIn: "開啟工作區",
     submitSignUp: "建立我的工作區",
     continueWithGoogle: "使用 Google 繼續",
+    googleOAuthTitle: "使用 Google 繼續前",
     googleOAuthNotice: (host: string) =>
       `Google 可能會顯示「選擇帳戶以繼續前往 ${host}」。這是 11s 合法且安全的登入服務，請放心繼續。`,
+    googleOAuthCancel: "取消",
+    googleOAuthContinue: "繼續前往 Google",
     orEmail: "或使用電子郵件繼續",
     switchToSignUp: "第一次使用 11s？建立帳號",
     switchToSignIn: "已經有帳號了？登入",
@@ -139,8 +145,26 @@ export function AuthForm({
   );
   const [message, setMessage] = useState("");
   const [oauthPending, setOauthPending] = useState(false);
+  const [googleOAuthNoticeOpen, setGoogleOAuthNoticeOpen] = useState(false);
 
-  async function handleGoogleSignIn() {
+  useEffect(() => {
+    if (!googleOAuthNoticeOpen || oauthPending) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setGoogleOAuthNoticeOpen(false);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [googleOAuthNoticeOpen, oauthPending]);
+
+  function requestGoogleSignIn() {
+    setError("");
+    setMessage("");
+    setGoogleOAuthNoticeOpen(true);
+  }
+
+  async function continueWithGoogle() {
     setOauthPending(true);
     setError("");
     setMessage("");
@@ -177,6 +201,7 @@ export function AuthForm({
           ? authError.message
           : "Google sign-in failed. Please try again.",
       );
+      setGoogleOAuthNoticeOpen(false);
       setOauthPending(false);
     }
   }
@@ -341,7 +366,7 @@ export function AuthForm({
                 <div className="mt-7 space-y-4">
                   <button
                     type="button"
-                    onClick={handleGoogleSignIn}
+                    onClick={requestGoogleSignIn}
                     disabled={pending || oauthPending}
                     className="inline-flex h-11 w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface-raised text-sm font-semibold text-foreground shadow-sm transition-[background-color,border-color,box-shadow] hover:border-border-strong hover:bg-surface disabled:opacity-60"
                   >
@@ -352,13 +377,6 @@ export function AuthForm({
                     )}
                     {t.continueWithGoogle}
                   </button>
-                  <p className="flex items-start gap-2 rounded-xl border border-success/20 bg-success-soft/50 px-3 py-2.5 text-[11px] leading-4 text-muted">
-                    <ShieldCheck
-                      aria-hidden="true"
-                      className="mt-0.5 size-3.5 shrink-0 text-success"
-                    />
-                    <span>{t.googleOAuthNotice(GOOGLE_OAUTH_HOST)}</span>
-                  </p>
                   <div className="flex items-center gap-3">
                     <span className="h-px flex-1 bg-border" />
                     <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-subtle">
@@ -482,6 +500,61 @@ export function AuthForm({
           </section>
         </div>
       </main>
+
+      {googleOAuthNoticeOpen ? (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center p-5"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="google-oauth-notice-title"
+        >
+          <button
+            type="button"
+            aria-label={t.googleOAuthCancel}
+            onClick={() => setGoogleOAuthNoticeOpen(false)}
+            disabled={oauthPending}
+            className="absolute inset-0 cursor-default bg-stone-950/45 backdrop-blur-sm"
+          />
+          <section className="relative z-10 w-full max-w-md rounded-[24px] border border-border bg-surface-raised p-6 shadow-[0_28px_90px_rgb(var(--shadow-color)/0.2)] sm:p-7">
+            <span className="grid size-11 place-items-center rounded-2xl bg-success-soft text-success">
+              <ShieldCheck aria-hidden="true" className="size-5" />
+            </span>
+            <h2
+              id="google-oauth-notice-title"
+              className="mt-4 text-lg font-semibold tracking-[-0.025em] text-foreground"
+            >
+              {t.googleOAuthTitle}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-muted">
+              {t.googleOAuthNotice(GOOGLE_OAUTH_HOST)}
+            </p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setGoogleOAuthNoticeOpen(false)}
+                disabled={oauthPending}
+                autoFocus
+                className="inline-flex h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted transition-colors hover:bg-surface-muted hover:text-foreground disabled:opacity-60"
+              >
+                {t.googleOAuthCancel}
+              </button>
+              <button
+                type="button"
+                onClick={() => void continueWithGoogle()}
+                disabled={oauthPending}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-accent-foreground shadow-[0_8px_22px_rgb(var(--shadow-color)/0.12)] transition-[background-color,box-shadow] hover:bg-accent-hover hover:shadow-[0_10px_26px_rgb(var(--shadow-color)/0.16)] disabled:opacity-60"
+              >
+                {oauthPending ? (
+                  <LoaderCircle className="size-4 animate-spin" />
+                ) : (
+                  <GoogleMark />
+                )}
+                {t.googleOAuthContinue}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
