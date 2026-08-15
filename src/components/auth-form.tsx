@@ -1,6 +1,12 @@
 "use client";
 
-import { ArrowLeft, LoaderCircle, LockKeyhole, Mail } from "lucide-react";
+import {
+  ArrowLeft,
+  LoaderCircle,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
@@ -12,6 +18,17 @@ import { useLocale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/client";
 
 type Mode = "sign-in" | "sign-up" | "forgot";
+
+const GOOGLE_OAUTH_HOST = (() => {
+  try {
+    return new URL(
+      process.env.NEXT_PUBLIC_SUPABASE_URL ??
+        "https://vqxzxrpzjfvrkvsgshtd.supabase.co",
+    ).host;
+  } catch {
+    return "vqxzxrpzjfvrkvsgshtd.supabase.co";
+  }
+})();
 
 const copy = {
   en: {
@@ -25,6 +42,8 @@ const copy = {
     submitSignIn: "Open workspace",
     submitSignUp: "Create my workspace",
     continueWithGoogle: "Continue with Google",
+    googleOAuthNotice: (host: string) =>
+      `Google may say “Choose an account to continue to ${host}.” That is 11s’s legitimate, secure sign-in service—it's safe to continue.`,
     orEmail: "or continue with email",
     switchToSignUp: "New to 11s? Create an account",
     switchToSignIn: "Already have an account? Sign in",
@@ -54,6 +73,8 @@ const copy = {
     submitSignIn: "開啟工作區",
     submitSignUp: "建立我的工作區",
     continueWithGoogle: "使用 Google 繼續",
+    googleOAuthNotice: (host: string) =>
+      `Google 可能會顯示「選擇帳戶以繼續前往 ${host}」。這是 11s 合法且安全的登入服務，請放心繼續。`,
     orEmail: "或使用電子郵件繼續",
     switchToSignUp: "第一次使用 11s？建立帳號",
     switchToSignIn: "已經有帳號了？登入",
@@ -331,6 +352,13 @@ export function AuthForm({
                     )}
                     {t.continueWithGoogle}
                   </button>
+                  <p className="flex items-start gap-2 rounded-xl border border-success/20 bg-success-soft/50 px-3 py-2.5 text-[11px] leading-4 text-muted">
+                    <ShieldCheck
+                      aria-hidden="true"
+                      className="mt-0.5 size-3.5 shrink-0 text-success"
+                    />
+                    <span>{t.googleOAuthNotice(GOOGLE_OAUTH_HOST)}</span>
+                  </p>
                   <div className="flex items-center gap-3">
                     <span className="h-px flex-1 bg-border" />
                     <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-subtle">
