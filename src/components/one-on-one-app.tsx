@@ -85,7 +85,11 @@ const COLORS = [
 ];
 
 const NEWS_AREAS_STORAGE_KEY = "11s.smallTalk.newsAreas.v1";
-const DEFAULT_NEWS_AREAS: NewsArea[] = ["technology", "culture"];
+const DEFAULT_NEWS_AREAS: NewsArea[] = [
+  "technology",
+  "business",
+  "culture",
+];
 const EMPTY_CAREER: CareerProfile = {
   direction: "",
   targetRole: "",

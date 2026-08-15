@@ -13,6 +13,7 @@ export interface NewsHeadline {
   area: NewsArea;
   title: string;
   source: string;
+  publishedAt: string | null;
 }
 
 type NewsFeed = {
@@ -95,21 +96,36 @@ function decodeXmlEntities(value: string) {
     .trim();
 }
 
-function extractTitles(xml: string, limit: number) {
-  const titles: string[] = [];
+function extractHeadlines(xml: string, limit: number) {
+  const headlines: Array<Pick<NewsHeadline, "title" | "publishedAt">> = [];
   const itemPattern = /<item\b[\s\S]*?<\/item>/gi;
   const titlePattern = /<title[^>]*>([\s\S]*?)<\/title>/i;
+  const publishedPattern = /<(?:pubDate|published)[^>]*>([\s\S]*?)<\/(?:pubDate|published)>/i;
 
   for (const match of xml.matchAll(itemPattern)) {
     const titleMatch = match[0].match(titlePattern);
     if (!titleMatch?.[1]) continue;
     const title = decodeXmlEntities(titleMatch[1]).replace(/\s+/g, " ");
-    if (!title || titles.includes(title)) continue;
-    titles.push(title.slice(0, 160));
-    if (titles.length >= limit) break;
+    if (!title || headlines.some((headline) => headline.title === title)) {
+      continue;
+    }
+
+    const publishedMatch = match[0].match(publishedPattern);
+    const publishedRaw = publishedMatch?.[1]
+      ? decodeXmlEntities(publishedMatch[1])
+      : "";
+    const publishedDate = publishedRaw ? new Date(publishedRaw) : null;
+    headlines.push({
+      title: title.slice(0, 160),
+      publishedAt:
+        publishedDate && !Number.isNaN(publishedDate.getTime())
+          ? publishedDate.toISOString()
+          : null,
+    });
+    if (headlines.length >= limit) break;
   }
 
-  return titles;
+  return headlines;
 }
 
 export function isNewsArea(value: string): value is NewsArea {
@@ -126,7 +142,9 @@ async function fetchFeedHeadlines(
     const response = await fetch(feed.url, {
       signal,
       headers: { Accept: "application/rss+xml, application/xml, text/xml" },
-      next: { revalidate: 1800 },
+      // Fresh headlines matter more than an HTTP cache for an explicit
+      // generate action. Feed providers still apply their own edge caching.
+      cache: "no-store",
     });
 
     if (!response.ok) {
@@ -137,10 +155,11 @@ async function fetchFeedHeadlines(
     }
 
     const xml = await response.text();
-    return extractTitles(xml, limit).map((title) => ({
+    return extractHeadlines(xml, limit).map((headline) => ({
       area,
-      title,
+      title: headline.title,
       source: feed.source,
+      publishedAt: headline.publishedAt,
     }));
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") throw error;
@@ -167,20 +186,23 @@ export async function fetchNewsHeadlines(
       const headlines: NewsHeadline[] = [];
       const seen = new Set<string>();
 
-      for (let index = 0; headlines.length < perArea; index += 1) {
-        let foundHeadline = false;
-        for (const set of headlineSets) {
-          const headline = set[index];
-          if (!headline || seen.has(headline.title)) continue;
-          seen.add(headline.title);
-          headlines.push(headline);
-          foundHeadline = true;
-          if (headlines.length >= perArea) break;
-        }
-        if (!foundHeadline) break;
+      for (const headline of headlineSets.flat()) {
+        const dedupeKey = headline.title.toLocaleLowerCase();
+        if (seen.has(dedupeKey)) continue;
+        seen.add(dedupeKey);
+        headlines.push(headline);
       }
 
-      return headlines;
+      return headlines
+        .toSorted((a, b) => {
+          if (!a.publishedAt && !b.publishedAt) return 0;
+          if (!a.publishedAt) return 1;
+          if (!b.publishedAt) return -1;
+          const aTime = new Date(a.publishedAt).getTime();
+          const bTime = new Date(b.publishedAt).getTime();
+          return bTime - aTime;
+        })
+        .slice(0, perArea);
     }),
   );
 

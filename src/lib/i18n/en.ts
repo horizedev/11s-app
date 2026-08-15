@@ -356,14 +356,14 @@ export const en: Dictionary = {
   },
   smallTalk: {
     title: "Small talk that stays useful.",
-    body: "Ideas from your context bank, plus optional news areas for fresher angles.",
+    body: "Fresh headlines mixed with real notes from your context bank—so you have something meaningful to say and ask.",
     newsTitle: "Recent news areas",
     newsBody:
-      "Pick a few areas. 11s pulls fresh headlines and weaves them into natural talking points.",
+      "Pick a few areas. Each generation pulls the latest available headlines and combines them with your context-bank notes into natural conversation bridges.",
     newsActive: (count) =>
       count === 1 ? "1 news area selected" : `${count} news areas selected`,
     emptyWithNews:
-      "Generate ideas from your context, evergreen starters, and any news areas you select above.",
+      "Generate timely conversation bridges from your context-bank notes and the latest headlines in your selected areas.",
     newsAreas: {
       technology: "Technology",
       business: "Business",

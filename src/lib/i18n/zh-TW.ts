@@ -326,11 +326,11 @@ export const zhTW: Dictionary = {
   },
   smallTalk: {
     title: "閒聊，也能聊得下去。",
-    body: "從你的脈絡庫產生靈感，也可以勾幾個新聞領域增加新鮮感。",
+    body: "把最新新聞和你的脈絡庫筆記混在一起，讓你有真正值得分享和提問的開場。",
     newsTitle: "近期新聞領域",
-    newsBody: "勾幾個感興趣的領域，11s 會把近期標題轉成好聊的切入點。",
+    newsBody: "勾選幾個領域。每次產生時，11s 都會抓取最新可用標題，並和你的脈絡庫筆記組合成自然的對話橋樑。",
     newsActive: (count) => `已選 ${count} 個新聞領域`,
-    emptyWithNews: "從你的脈絡、耐用開場，以及上方選取的新聞領域一起產生靈感。",
+    emptyWithNews: "從你的脈絡庫筆記和所選領域的最新新聞，產生及時又自然的對話橋樑。",
     newsAreas: {
       technology: "科技",
       business: "商業",
