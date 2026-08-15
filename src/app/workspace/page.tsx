@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { OneOnOneApp } from "@/components/one-on-one-app";
 import { ReferralClaim } from "@/components/referral-claim";
+import { SignupNotify } from "@/components/signup-notify";
 import { createClient } from "@/lib/supabase/server";
 import {
   loadWorkspace,
@@ -44,6 +45,7 @@ export default async function WorkspacePage({
   return (
     <>
       <ReferralClaim />
+      <SignupNotify />
       <OneOnOneApp
         userId={data.claims.sub}
         userEmail={

@@ -32,7 +32,7 @@ export default async function AccountRoute() {
     supabase
       .from("11s_preferences")
       .select(
-        "plan, subscription_status, current_period_end, stripe_customer_id, referral_redeemed_count",
+        "plan, subscription_status, current_period_end, stripe_customer_id, referral_redeemed_count, is_admin",
       )
       .eq("user_id", data.claims.sub)
       .maybeSingle(),
@@ -80,6 +80,7 @@ export default async function AccountRoute() {
       userEmail={
         typeof data.claims.email === "string" ? data.claims.email : undefined
       }
+      isAdmin={preferences?.is_admin === true}
     />
   );
 }

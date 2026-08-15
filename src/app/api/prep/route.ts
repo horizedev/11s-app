@@ -2,7 +2,7 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 
 import { DEEPSEEK_MODEL, getDeepSeek } from "@/lib/ai/deepseek";
-import { FREE_PREPS_PER_30_DAYS, planFromPreferences, prepWindowStartIso } from "@/lib/billing";
+import { dailyPrepLimit, planFromPreferences, prepWindowStartIso } from "@/lib/billing";
 import { en } from "@/lib/i18n/en";
 import type { Dictionary, Locale } from "@/lib/i18n/types";
 import { zhTW } from "@/lib/i18n/zh-TW";
@@ -1065,14 +1065,24 @@ function languageInstruction(locale: Locale) {
     : "Write every opening, title, rationale, prompt, why, and suggestedAsk in English.";
 }
 
+type TokenUsage = {
+  inputTokens?: number | null;
+  outputTokens?: number | null;
+  totalTokens?: number | null;
+};
+
 async function recordPrepUsage(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   personId: string | null,
+  usage?: TokenUsage,
 ) {
   const { error } = await supabase.from("11s_prep_usage").insert({
     user_id: userId,
     person_id: personId,
+    input_tokens: usage?.inputTokens ?? null,
+    output_tokens: usage?.outputTokens ?? null,
+    total_tokens: usage?.totalTokens ?? null,
   });
   if (error) console.error("Could not record preparation usage", error);
 }
@@ -1171,20 +1181,23 @@ export async function POST(request: Request) {
     );
   }
 
-  if (plan === "free" && countsAgainstQuota) {
+  if (countsAgainstQuota) {
     const { count } = await supabase
       .from("11s_prep_usage")
       .select("id", { count: "exact", head: true })
       .gte("created_at", prepWindowStartIso());
 
-    if ((count ?? 0) >= FREE_PREPS_PER_30_DAYS) {
-      return Response.json({ error: "upgrade_required" }, { status: 402 });
+    if ((count ?? 0) >= dailyPrepLimit(plan)) {
+      return Response.json(
+        { error: plan === "pro" ? "daily_limit" : "upgrade_required" },
+        { status: plan === "pro" ? 429 : 402 },
+      );
     }
   }
 
   try {
     if (body.mode === "who-to-ask") {
-      const { output } = await generateText({
+      const { output, usage } = await generateText({
         model: deepseek(DEEPSEEK_MODEL),
         maxOutputTokens: 900,
         providerOptions: {
@@ -1217,9 +1230,7 @@ Full relationship map, including every profile and every recorded conversation:
 ${JSON.stringify(body.people, null, 2)}`,
       });
 
-      if (plan === "free") {
-        await recordPrepUsage(supabase, authData.claims.sub, null);
-      }
+      await recordPrepUsage(supabase, authData.claims.sub, null, usage);
 
       const peopleById = new Map(
         body.people.map((person) => [person.id, person]),
@@ -1302,7 +1313,7 @@ ${JSON.stringify(body.existing, null, 2)}`,
     }
 
     if (body.mode === "general") {
-      const { output } = await generateText({
+      const { output, usage } = await generateText({
         model: deepseek(DEEPSEEK_MODEL),
         maxOutputTokens: 1_200,
         providerOptions: {
@@ -1351,9 +1362,7 @@ ${JSON.stringify(
 )}`,
       });
 
-      if (plan === "free") {
-        await recordPrepUsage(supabase, authData.claims.sub, null);
-      }
+      await recordPrepUsage(supabase, authData.claims.sub, null, usage);
 
       return Response.json({
         opening: output.opening,
@@ -1366,7 +1375,7 @@ ${JSON.stringify(
     }
 
     const intent = body.intent;
-    const { output } = await generateText({
+    const { output, usage } = await generateText({
       model: deepseek(DEEPSEEK_MODEL),
       maxOutputTokens: 1_400,
       providerOptions: {
@@ -1451,9 +1460,7 @@ ${JSON.stringify(
 )}`,
     });
 
-    if (plan === "free") {
-      await recordPrepUsage(supabase, authData.claims.sub, body.personId ?? null);
-    }
+    await recordPrepUsage(supabase, authData.claims.sub, body.personId ?? null, usage);
 
     return Response.json({
       opening: output.opening,

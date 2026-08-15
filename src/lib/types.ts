@@ -17,6 +17,14 @@ export type PrepCategory =
 
 export type PrepIdeaKind = "lead" | "support" | "stall";
 
+export type TalkingPointSource = "manual" | "ai";
+
+export interface TalkingPoint {
+  id: string;
+  body: string;
+  source: TalkingPointSource;
+}
+
 export type MeetingIntent =
   | "career"
   | "catch-up"
@@ -66,6 +74,8 @@ export interface Person {
   color: string;
   discussions: Discussion[];
   prepIdeas: PrepIdea[];
+  /** Curated final talking points: promoted AI ideas and manual entries. */
+  talkingPoints: TalkingPoint[];
 }
 
 export type PrepQuota = {

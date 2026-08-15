@@ -41,6 +41,7 @@ import type {
   PrepIdea,
   PrepRefineMode,
   PrepResponse,
+  TalkingPoint,
 } from "@/lib/types";
 import { MEETING_INTENTS } from "@/lib/types";
 import {
@@ -66,7 +67,9 @@ interface PersonDetailProps {
   onRestoreLastNotes: () => void;
   onGeneratePrep: () => void;
   onRefinePrep: (mode: PrepRefineMode) => void;
-  onAddIdeaToNotes: (idea: PrepIdea) => void;
+  onAddIdeaToTalkingPoints: (idea: PrepIdea) => void;
+  onAddTalkingPoint: (body: string) => void;
+  onDeleteTalkingPoint: (pointId: string) => void;
   onDismissIdea: (ideaId: string) => void;
   onLogMeeting: () => void;
   onEditMeeting: (discussionId: string) => void;
@@ -90,7 +93,9 @@ export function PersonDetail({
   onRestoreLastNotes,
   onGeneratePrep,
   onRefinePrep,
-  onAddIdeaToNotes,
+  onAddIdeaToTalkingPoints,
+  onAddTalkingPoint,
+  onDeleteTalkingPoint,
   onDismissIdea,
   onLogMeeting,
   onEditMeeting,
@@ -129,7 +134,10 @@ export function PersonDetail({
   }, [person.prepIdeas]);
   const displaySupports = supports;
   const hasAgendaContent = Boolean(
-    person.notes.trim() || lead || displaySupports.length,
+    person.talkingPoints.length ||
+      person.notes.trim() ||
+      lead ||
+      displaySupports.length,
   );
 
   useEffect(
@@ -154,14 +162,23 @@ export function PersonDetail({
   }
 
   function copyAgenda() {
-    const lines = [
-      ...person.notes
-        .split("\n")
-        .map((line) => line.replace(/^[-•]\s*/, "").trim())
-        .filter(Boolean),
-      ...(lead ? [lead.prompt] : []),
-      ...displaySupports.slice(0, 3).map((idea) => idea.prompt),
-    ].slice(0, 4);
+    // Talking points are the curated agenda; fall back to notes + ideas when
+    // the user has not curated anything yet.
+    const lines = (
+      person.talkingPoints.length > 0
+        ? person.talkingPoints.map((point) => point.body)
+        : [
+            ...person.notes
+              .split("\n")
+              .map((line) => line.replace(/^[-•]\s*/, "").trim())
+              .filter(Boolean),
+            ...(lead ? [lead.prompt] : []),
+            ...displaySupports.slice(0, 3).map((idea) => idea.prompt),
+          ]
+    )
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .slice(0, 10);
     if (lines.length === 0) return;
     void navigator.clipboard.writeText(lines.map((line) => `• ${line}`).join("\n"));
     onAgendaCopied();
@@ -319,6 +336,7 @@ export function PersonDetail({
             lead={lead}
             supports={displaySupports.slice(0, 3)}
             stalls={stalls}
+            talkingPoints={person.talkingPoints}
             onExit={() => setGlanceMode(false)}
           />
         ) : null}
@@ -473,7 +491,7 @@ export function PersonDetail({
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2">
+              <div className="grid lg:grid-cols-3">
                 <div className="flex min-h-[28rem] flex-col border-b border-border lg:border-b-0 lg:border-r">
                   <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
                     <div className="min-w-0">
@@ -486,12 +504,15 @@ export function PersonDetail({
                             className="size-3.5 text-[#b56547]"
                             strokeWidth={1.7}
                           />
-                          {t.person.notesForNext}
+                          {t.person.brainstormNotes}
                         </label>
                         <Hint label={t.common.moreInfo}>
                           {t.person.notesHint}
                         </Hint>
                       </div>
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                        {t.person.stepBrainstorm}
+                      </p>
                     </div>
                     <SaveStatus
                       isSaving={!saved}
@@ -516,7 +537,7 @@ export function PersonDetail({
 
                     <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-[10px] text-muted-subtle">
-                        {t.person.talkingPoints(countNoteLines(person.notes))}
+                        {t.person.noteLines(countNoteLines(person.notes))}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         <button
@@ -597,7 +618,7 @@ export function PersonDetail({
                   </div>
                 </div>
 
-                <div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised">
+                <div className="flex min-h-[28rem] flex-col border-b border-border bg-gradient-to-br from-violet-50/40 via-white to-white dark:from-secondary-soft/35 dark:via-surface-raised dark:to-surface-raised lg:border-b-0 lg:border-r">
                   <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-3.5 sm:px-6">
                     <div>
                       <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-secondary">
@@ -610,6 +631,9 @@ export function PersonDetail({
                           ? ` · ${person.prepIdeas.length}`
                           : ""}
                       </h3>
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                        {t.person.stepIdeas}
+                      </p>
                     </div>
                     {prepMeta ? (
                       <span className="inline-flex items-center gap-1.5 rounded-full border border-secondary/20 bg-surface/80 px-2.5 py-1 text-[10px] font-semibold text-secondary">
@@ -676,7 +700,7 @@ export function PersonDetail({
                             <IdeaCard
                               idea={lead}
                               emphasis
-                              onAdd={() => onAddIdeaToNotes(lead)}
+                              onAdd={() => onAddIdeaToTalkingPoints(lead)}
                               onDismiss={() => onDismissIdea(lead.id)}
                             />
                           </div>
@@ -692,7 +716,7 @@ export function PersonDetail({
                                 <IdeaCard
                                   key={idea.id}
                                   idea={idea}
-                                  onAdd={() => onAddIdeaToNotes(idea)}
+                                  onAdd={() => onAddIdeaToTalkingPoints(idea)}
                                   onDismiss={() => onDismissIdea(idea.id)}
                                 />
                               ))}
@@ -720,10 +744,10 @@ export function PersonDetail({
                                   <div className="mt-2 flex flex-wrap gap-2">
                                     <button
                                       type="button"
-                                      onClick={() => onAddIdeaToNotes(idea)}
+                                      onClick={() => onAddIdeaToTalkingPoints(idea)}
                                       className="text-[10px] font-semibold text-muted transition-colors hover:text-foreground"
                                     >
-                                      {t.person.addToNotes}
+                                      {t.person.addToTalkingPoints}
                                     </button>
                                     <button
                                       type="button"
@@ -767,6 +791,12 @@ export function PersonDetail({
                     )}
                   </div>
                 </div>
+
+                <TalkingPointsColumn
+                  person={person}
+                  onAdd={onAddTalkingPoint}
+                  onDelete={onDeleteTalkingPoint}
+                />
               </div>
             </section>
 
@@ -881,10 +911,129 @@ function IdeaCard({
           className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 self-start rounded-lg border border-border bg-surface-raised px-3 text-[11px] font-semibold text-muted shadow-sm transition-colors hover:border-border-strong hover:text-foreground"
         >
           <Plus className="size-3" />
-          {t.person.addToNotes}
+          {t.person.addToTalkingPoints}
         </button>
       </div>
     </article>
+  );
+}
+
+function TalkingPointsColumn({
+  person,
+  onAdd,
+  onDelete,
+}: {
+  person: Person;
+  onAdd: (body: string) => void;
+  onDelete: (pointId: string) => void;
+}) {
+  const { t } = useLocale();
+  const [draft, setDraft] = useState("");
+
+  function submit() {
+    const body = draft.trim();
+    if (!body) return;
+    onAdd(body);
+    setDraft("");
+  }
+
+  return (
+    <div className="flex min-h-[28rem] flex-col bg-gradient-to-br from-[#fff9f5] via-white to-white dark:from-accent-soft/40 dark:via-surface-raised dark:to-surface-raised">
+      <div className="border-b border-border px-5 py-3.5 sm:px-6">
+        <div className="flex items-center gap-1.5">
+          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[#b56547]">
+            <MessageSquareText className="size-3" />
+            {t.person.talkingPointsTitle}
+          </p>
+          <Hint label={t.common.moreInfo}>{t.person.talkingPointsHint}</Hint>
+        </div>
+        <h3 className="mt-1 text-xs font-semibold text-foreground">
+          {t.person.talkingPointsList(person.talkingPoints.length)}
+        </h3>
+        <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+          {t.person.stepTalkingPoints}
+        </p>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-5 py-4 sm:px-6">
+        {person.talkingPoints.length > 0 ? (
+          <ol className="space-y-2">
+            {person.talkingPoints.map((point, index) => (
+              <li
+                key={point.id}
+                className="group flex items-start gap-2.5 rounded-xl border border-border bg-surface-raised/95 px-3.5 py-3"
+              >
+                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent-soft text-[10px] font-bold text-accent">
+                  {index + 1}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium leading-5 text-foreground">
+                    {point.body}
+                  </p>
+                  <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-subtle">
+                    {point.source === "ai"
+                      ? t.person.talkingPointFromAi
+                      : t.person.talkingPointManual}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onDelete(point.id)}
+                  className="grid size-7 shrink-0 place-items-center rounded-lg text-muted-subtle opacity-100 transition-[background-color,color,opacity] hover:bg-danger-soft hover:text-danger focus-visible:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                  aria-label={t.person.deleteTalkingPoint(point.body)}
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="flex h-full min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/70 px-6 py-8 text-center">
+            <span className="grid size-10 place-items-center rounded-2xl bg-accent-soft text-accent">
+              <MessageSquareText className="size-4" />
+            </span>
+            <p className="mt-3 max-w-xs text-xs leading-5 text-muted-subtle">
+              {t.person.talkingPointsEmpty}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="border-t border-border px-5 py-3.5 sm:px-6">
+        <label
+          htmlFor={`talking-point-${person.id}`}
+          className="sr-only"
+        >
+          {t.person.addTalkingPoint}
+        </label>
+        <div className="flex items-center gap-2">
+          <input
+            id={`talking-point-${person.id}`}
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                submit();
+              }
+            }}
+            maxLength={300}
+            autoComplete="off"
+            placeholder={t.person.addTalkingPointPlaceholder}
+            className="h-10 min-w-0 flex-1 rounded-xl border border-border bg-surface px-3 text-xs text-foreground outline-none transition-[border-color,background-color,box-shadow] focus:border-border-strong focus:bg-surface-raised focus:ring-4 focus:ring-focus/10"
+          />
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!draft.trim()}
+            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl bg-accent px-3.5 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent-hover disabled:opacity-50"
+          >
+            <Plus className="size-3.5" />
+            {t.person.addTalkingPoint}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -894,6 +1043,7 @@ function GlanceView({
   lead,
   supports,
   stalls,
+  talkingPoints,
   onExit,
 }: {
   person: Person;
@@ -901,10 +1051,15 @@ function GlanceView({
   lead?: PrepIdea;
   supports: PrepIdea[];
   stalls: PrepIdea[];
+  talkingPoints: TalkingPoint[];
   onExit: () => void;
 }) {
   const { t } = useLocale();
-  const empty = !lead && supports.length === 0 && stalls.length === 0;
+  const empty =
+    !lead &&
+    supports.length === 0 &&
+    stalls.length === 0 &&
+    talkingPoints.length === 0;
 
   return (
     <section
@@ -935,6 +1090,24 @@ function GlanceView({
         <p className="mt-8 text-sm text-stone-400">{t.person.glanceEmpty}</p>
       ) : (
         <div className="mt-8 space-y-6">
+          {talkingPoints.length > 0 ? (
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#d7a58c]">
+                {t.person.talkingPointsTitle}
+              </p>
+              <ol className="mt-3 space-y-2.5">
+                {talkingPoints.map((point, index) => (
+                  <li
+                    key={point.id}
+                    className="flex gap-3 text-base font-medium leading-7 text-white"
+                  >
+                    <span className="text-stone-400">{index + 1}.</span>
+                    <span>{point.body}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ) : null}
           {opening ? (
             <p className="text-sm leading-6 text-stone-300">{opening}</p>
           ) : null}

@@ -622,6 +622,9 @@ export function LandingPage() {
             <Link href="/pricing" className="transition-colors hover:text-foreground">
               {t.landing.footerPricing}
             </Link>
+            <Link href="/faq" className="transition-colors hover:text-foreground">
+              {t.landing.footerFaq}
+            </Link>
             <Link href="/terms" className="transition-colors hover:text-foreground">
               {t.landing.footerTerms}
             </Link>

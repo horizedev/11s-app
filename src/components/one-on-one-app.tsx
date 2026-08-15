@@ -31,7 +31,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { useLocale } from "@/lib/i18n";
 import { pickDefaultEmoji } from "@/lib/avatars";
 import { createClient } from "@/lib/supabase/client";
-import type { Plan } from "@/lib/billing";
+import { dailyPrepLimit, type Plan } from "@/lib/billing";
 import type { NewsArea } from "@/lib/news";
 import type {
   CareerNeedStatus,
@@ -52,8 +52,10 @@ import {
   createCareerNeed,
   createDiscussion,
   createPerson,
+  createTalkingPoint,
   deleteCareerNeed,
   deletePerson,
+  deleteTalkingPoint,
   dismissPrepIdea,
   grantPrepCreditForLogging,
   loadPrepQuota,
@@ -176,7 +178,11 @@ export function OneOnOneApp({
   const [newsAreas, setNewsAreas] = useState<NewsArea[]>(DEFAULT_NEWS_AREAS);
   const [plan, setPlan] = useState<Plan>(() => initialSnapshot?.plan ?? "free");
   const [prepQuota, setPrepQuota] = useState<PrepQuota>(
-    () => initialSnapshot?.prepQuota ?? { used: 0, limit: 10 },
+    () =>
+      initialSnapshot?.prepQuota ?? {
+        used: 0,
+        limit: dailyPrepLimit(initialSnapshot?.plan ?? "free"),
+      },
   );
   const [career, setCareer] = useState<CareerProfile>(
     () => initialSnapshot?.career ?? EMPTY_CAREER,
@@ -431,8 +437,13 @@ export function OneOnOneApp({
         }),
       });
 
-      if (response.status === 402) {
-        showToast(t.toast.upgradePrep, "/pricing");
+      if (response.status === 402 || response.status === 429) {
+        showToast(
+          response.status === 429
+            ? t.toast.dailyLimitReached
+            : t.toast.upgradePrep,
+          "/pricing",
+        );
         return;
       }
 
@@ -489,8 +500,13 @@ export function OneOnOneApp({
         }),
       });
 
-      if (response.status === 402) {
-        showToast(t.toast.upgradePrep, "/pricing");
+      if (response.status === 402 || response.status === 429) {
+        showToast(
+          response.status === 429
+            ? t.toast.dailyLimitReached
+            : t.toast.upgradePrep,
+          "/pricing",
+        );
         return;
       }
 
@@ -541,8 +557,13 @@ export function OneOnOneApp({
         }),
       });
 
-      if (response.status === 402) {
-        showToast(t.toast.upgradePrep, "/pricing");
+      if (response.status === 402 || response.status === 429) {
+        showToast(
+          response.status === 429
+            ? t.toast.dailyLimitReached
+            : t.toast.upgradePrep,
+          "/pricing",
+        );
         return;
       }
 
@@ -631,28 +652,74 @@ export function OneOnOneApp({
     };
   }
 
-  async function addIdeaToNotes(person: Person, idea: PrepIdea) {
+  async function addIdeaToTalkingPoints(person: Person, idea: PrepIdea) {
     const note = `${idea.title} — ${idea.prompt}`;
-    const existing = person.notes
-      .split("\n")
-      .map((line) => line.trim().toLowerCase());
+    const existing = person.talkingPoints.map((point) =>
+      point.body.trim().toLowerCase(),
+    );
 
     if (existing.includes(note.toLowerCase())) {
-      showToast(t.toast.alreadyInNotes);
+      showToast(t.toast.alreadyInTalkingPoints);
       return;
     }
 
-    const notes = person.notes.trim()
-      ? `${person.notes.trim()}\n${note}`
-      : note;
-    cancelPendingNotesSave(person.id);
-    updatePerson(person.id, { notes });
+    try {
+      const point = await createTalkingPoint(
+        supabase,
+        userId,
+        person.id,
+        note,
+        "ai",
+        person.talkingPoints.length,
+      );
+      updatePerson(person.id, (current) => ({
+        talkingPoints: [...current.talkingPoints, point],
+      }));
+      showToast(t.toast.addedToTalkingPoints);
+    } catch {
+      showToast(t.toast.saveFailed);
+    }
+  }
+
+  async function addManualTalkingPoint(person: Person, body: string) {
+    const trimmed = body.trim();
+    if (!trimmed) return;
+
+    const existing = person.talkingPoints.map((point) =>
+      point.body.trim().toLowerCase(),
+    );
+    if (existing.includes(trimmed.toLowerCase())) {
+      showToast(t.toast.alreadyInTalkingPoints);
+      return;
+    }
 
     try {
-      await savePersonFields(supabase, person.id, { notes });
-      showToast(t.toast.addedToNotes);
+      const point = await createTalkingPoint(
+        supabase,
+        userId,
+        person.id,
+        trimmed,
+        "manual",
+        person.talkingPoints.length,
+      );
+      updatePerson(person.id, (current) => ({
+        talkingPoints: [...current.talkingPoints, point],
+      }));
+      showToast(t.toast.addedToTalkingPoints);
     } catch {
-      updatePerson(person.id, { notes: person.notes });
+      showToast(t.toast.saveFailed);
+    }
+  }
+
+  async function removeTalkingPoint(person: Person, pointId: string) {
+    try {
+      await deleteTalkingPoint(supabase, pointId);
+      updatePerson(person.id, (current) => ({
+        talkingPoints: current.talkingPoints.filter(
+          (point) => point.id !== pointId,
+        ),
+      }));
+    } catch {
       showToast(t.toast.saveFailed);
     }
   }
@@ -813,8 +880,13 @@ export function OneOnOneApp({
         }),
       });
 
-      if (response.status === 402) {
-        showToast(t.toast.upgradePrep, "/pricing");
+      if (response.status === 402 || response.status === 429) {
+        showToast(
+          response.status === 429
+            ? t.toast.dailyLimitReached
+            : t.toast.upgradePrep,
+          "/pricing",
+        );
         return;
       }
 
@@ -928,8 +1000,14 @@ export function OneOnOneApp({
             onRestoreLastNotes={() => void restoreLastNotes(selectedPerson)}
             onGeneratePrep={() => generatePrep(selectedPerson)}
             onRefinePrep={(mode) => void refinePrep(selectedPerson, mode)}
-            onAddIdeaToNotes={(idea) =>
-              void addIdeaToNotes(selectedPerson, idea)
+            onAddIdeaToTalkingPoints={(idea) =>
+              void addIdeaToTalkingPoints(selectedPerson, idea)
+            }
+            onAddTalkingPoint={(body) =>
+              void addManualTalkingPoint(selectedPerson, body)
+            }
+            onDeleteTalkingPoint={(pointId) =>
+              void removeTalkingPoint(selectedPerson, pointId)
             }
             onDismissIdea={(ideaId) =>
               void removePrepIdea(selectedPerson, ideaId)

@@ -207,6 +207,10 @@ export function AuthForm({
       if (signUpError) throw signUpError;
 
       if (data.session) {
+        // Instant-session sign-up (email confirmation disabled). OAuth and
+        // confirmation-link flows are covered by <SignupNotify /> in the
+        // workspace; the route itself is idempotent.
+        void fetch("/api/notify/signup", { method: "POST" }).catch(() => {});
         router.replace(nextPath);
         router.refresh();
       } else {

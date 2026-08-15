@@ -1,7 +1,8 @@
 import type Stripe from "stripe";
 
-import { getStripe } from "@/lib/stripe";
+import { intervalFromPriceId, getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifySubscription } from "@/lib/telegram";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 
@@ -18,6 +19,59 @@ function readPeriodEnd(subscription: Stripe.Subscription): string | null {
   ).current_period_end;
   const seconds = fromItem ?? legacy;
   return seconds ? new Date(seconds * 1000).toISOString() : null;
+}
+
+function readInterval(subscription: Stripe.Subscription): string | null {
+  const priceId = subscription.items?.data?.[0]?.price?.id;
+  return priceId ? intervalFromPriceId(priceId) : null;
+}
+
+function readAmount(subscription: Stripe.Subscription): string | null {
+  const price = subscription.items?.data?.[0]?.price;
+  if (!price || price.unit_amount == null || !price.currency) return null;
+  const amount = (price.unit_amount / 100).toFixed(2).replace(/\.00$/, "");
+  return `${amount} ${price.currency.toUpperCase()}`;
+}
+
+async function notifySubscriptionEvent(
+  admin: AdminClient,
+  eventType: string,
+  subscription: Stripe.Subscription,
+  fallbackUserId?: string | null,
+) {
+  try {
+    const userId = subscription.metadata?.user_id ?? fallbackUserId ?? null;
+    let email: string | null = null;
+    if (userId) {
+      const { data } = await admin.auth.admin.getUserById(userId);
+      email = data.user?.email ?? null;
+    }
+    if (!email) {
+      const customer = subscription.customer;
+      const customerId =
+        typeof customer === "string" ? customer : customer?.id;
+      if (customerId) {
+        const stripe = getStripe();
+        const record = stripe
+          ? await stripe.customers.retrieve(customerId).catch(() => null)
+          : null;
+        if (record && !record.deleted) email = record.email;
+      }
+    }
+
+    const status = subscription.status;
+    await notifySubscription({
+      event: eventType,
+      email,
+      plan: ACTIVE_STATUSES.has(status) ? "pro" : "free",
+      status,
+      interval: readInterval(subscription),
+      amount: readAmount(subscription),
+      currentPeriodEnd: readPeriodEnd(subscription),
+    });
+  } catch (notifyError) {
+    console.error("Subscription notification failed", notifyError);
+  }
 }
 
 async function applySubscription(
@@ -94,16 +148,21 @@ export async function POST(request: Request) {
         const subscription =
           await stripe.subscriptions.retrieve(subscriptionId);
         await applySubscription(admin, subscription, session.client_reference_id);
+        await notifySubscriptionEvent(
+          admin,
+          event.type,
+          subscription,
+          session.client_reference_id,
+        );
         break;
       }
 
       case "customer.subscription.created":
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        await applySubscription(
-          admin,
-          event.data.object as Stripe.Subscription,
-        );
+        const subscription = event.data.object as Stripe.Subscription;
+        await applySubscription(admin, subscription);
+        await notifySubscriptionEvent(admin, event.type, subscription);
         break;
       }
 

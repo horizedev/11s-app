@@ -17,9 +17,21 @@ export function getStripe(): Stripe | null {
 }
 
 export function getPriceId(interval: BillingInterval): string | null {
-  return interval === "year"
-    ? (process.env.STRIPE_PRO_YEARLY_PRICE_ID ?? null)
-    : (process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?? null);
+  switch (interval) {
+    case "year":
+      return process.env.STRIPE_PRO_YEARLY_PRICE_ID ?? null;
+    case "quarter":
+      return process.env.STRIPE_PRO_QUARTERLY_PRICE_ID ?? null;
+    default:
+      return process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?? null;
+  }
+}
+
+export function intervalFromPriceId(priceId: string): BillingInterval | null {
+  if (priceId === process.env.STRIPE_PRO_MONTHLY_PRICE_ID) return "month";
+  if (priceId === process.env.STRIPE_PRO_QUARTERLY_PRICE_ID) return "quarter";
+  if (priceId === process.env.STRIPE_PRO_YEARLY_PRICE_ID) return "year";
+  return null;
 }
 
 export function getAppUrl(origin: string): string {

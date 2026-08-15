@@ -1,5 +1,5 @@
 export type Plan = "free" | "pro";
-export type BillingInterval = "month" | "year";
+export type BillingInterval = "month" | "quarter" | "year";
 export type SubscriptionStatus =
   | "none"
   | "active"
@@ -8,7 +8,13 @@ export type SubscriptionStatus =
   | "canceled";
 
 export const FREE_PEOPLE_LIMIT = 20;
-export const FREE_PREPS_PER_30_DAYS = 10;
+/** AI preparation credits renew every day at midnight UTC. */
+export const FREE_PREPS_PER_DAY = 3;
+export const PRO_PREPS_PER_DAY = 100;
+
+export function dailyPrepLimit(plan: Plan): number {
+  return plan === "pro" ? PRO_PREPS_PER_DAY : FREE_PREPS_PER_DAY;
+}
 
 /** Successful referrals needed to redeem one free month of Pro. */
 export const REFERRAL_QUOTA_PER_CREDIT = 3;
@@ -68,6 +74,9 @@ export function subscriptionStatusFromPreferences(
   return "none";
 }
 
+/** Start of the current UTC day; daily AI credits reset at this boundary. */
 export function prepWindowStartIso(now = Date.now()) {
-  return new Date(now - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const start = new Date(now);
+  start.setUTCHours(0, 0, 0, 0);
+  return start.toISOString();
 }

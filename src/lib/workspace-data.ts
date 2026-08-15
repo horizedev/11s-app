@@ -7,8 +7,8 @@ import type {
   TablesUpdate,
 } from "@/lib/database.types";
 import {
+  dailyPrepLimit,
   FREE_PEOPLE_LIMIT,
-  FREE_PREPS_PER_30_DAYS,
   planFromPreferences,
   prepWindowStartIso,
   type Plan,
@@ -33,12 +33,15 @@ import type {
   PrepQuota,
   PrepResponse,
   Relationship,
+  TalkingPoint,
+  TalkingPointSource,
 } from "@/lib/types";
 
 type Client = SupabaseClient<Database>;
 type PersonRow = Tables<"11s_people">;
 type DiscussionRow = Tables<"11s_discussions">;
 type PrepIdeaRow = Tables<"11s_prep_ideas">;
+type TalkingPointRow = Tables<"11s_talking_points">;
 type CareerNeedRow = Tables<"11s_career_needs">;
 
 export type PrepMetaByPerson = Record<
@@ -124,10 +127,19 @@ function toCareerNeed(row: CareerNeedRow): CareerNeed {
   };
 }
 
+function toTalkingPoint(row: TalkingPointRow): TalkingPoint {
+  return {
+    id: row.id,
+    body: row.body,
+    source: (row.source as TalkingPointSource) || "manual",
+  };
+}
+
 function toPerson(
   row: PersonRow,
   discussions: Discussion[],
   prepIdeas: PrepIdea[],
+  talkingPoints: TalkingPoint[],
 ): Person {
   return {
     id: row.id,
@@ -144,6 +156,7 @@ function toPerson(
     color: row.color,
     discussions,
     prepIdeas,
+    talkingPoints,
   };
 }
 
@@ -155,10 +168,6 @@ export async function loadPrepQuota(
   client: Client,
   plan: Plan,
 ): Promise<PrepQuota> {
-  if (plan === "pro") {
-    return { used: 0, limit: null };
-  }
-
   const { count, error } = await client
     .from("11s_prep_usage")
     .select("id", { count: "exact", head: true })
@@ -167,7 +176,7 @@ export async function loadPrepQuota(
 
   return {
     used: count ?? 0,
-    limit: FREE_PREPS_PER_30_DAYS,
+    limit: dailyPrepLimit(plan),
   };
 }
 
@@ -176,6 +185,7 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
     peopleResult,
     discussionsResult,
     ideasResult,
+    talkingPointsResult,
     preferenceResult,
     careerNeedsResult,
   ] = await Promise.all([
@@ -194,6 +204,11 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
       .order("sort_order", { ascending: true })
       .order("created_at", { ascending: true }),
     client
+      .from("11s_talking_points")
+      .select("*")
+      .order("sort_order", { ascending: true })
+      .order("created_at", { ascending: true }),
+    client
       .from("11s_preferences")
       .select(
         "locale, plan, subscription_status, stripe_customer_id, current_period_end, context_bank, general_prep_opening, general_prep_source, brag_doc, career_direction, career_target_role, career_timeline",
@@ -208,6 +223,7 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
   throwIfError(peopleResult.error);
   throwIfError(discussionsResult.error);
   throwIfError(ideasResult.error);
+  throwIfError(talkingPointsResult.error);
   throwIfError(preferenceResult.error);
   throwIfError(careerNeedsResult.error);
 
@@ -230,6 +246,13 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
     ideasByPerson.set(row.person_id, current);
   }
 
+  const talkingPointsByPerson = new Map<string, TalkingPoint[]>();
+  for (const row of talkingPointsResult.data ?? []) {
+    const current = talkingPointsByPerson.get(row.person_id) ?? [];
+    current.push(toTalkingPoint(row));
+    talkingPointsByPerson.set(row.person_id, current);
+  }
+
   const prepMeta: PrepMetaByPerson = {};
   const people = (peopleResult.data ?? []).map((row) => {
     if (row.prep_opening && row.prep_source) {
@@ -243,6 +266,7 @@ export async function loadWorkspace(client: Client): Promise<WorkspaceSnapshot> 
       row,
       discussionsByPerson.get(row.id) ?? [],
       ideasByPerson.get(row.id) ?? [],
+      talkingPointsByPerson.get(row.id) ?? [],
     );
   });
 
@@ -319,6 +343,7 @@ export async function createPerson(
     color,
     discussions: [],
     prepIdeas: [],
+    talkingPoints: [],
   };
 
   const row: TablesInsert<"11s_people"> = {
@@ -537,6 +562,42 @@ export async function dismissPrepIdea(client: Client, ideaId: string) {
     .from("11s_prep_ideas")
     .delete()
     .eq("id", ideaId);
+  throwIfError(result.error);
+}
+
+export async function createTalkingPoint(
+  client: Client,
+  userId: string,
+  personId: string,
+  body: string,
+  source: TalkingPointSource,
+  sortOrder: number,
+): Promise<TalkingPoint> {
+  const point: TalkingPoint = {
+    id: crypto.randomUUID(),
+    body,
+    source,
+  };
+
+  const row: TablesInsert<"11s_talking_points"> = {
+    id: point.id,
+    user_id: userId,
+    person_id: personId,
+    body: point.body,
+    source: point.source,
+    sort_order: sortOrder,
+  };
+
+  const result = await client.from("11s_talking_points").insert(row);
+  throwIfError(result.error);
+  return point;
+}
+
+export async function deleteTalkingPoint(client: Client, pointId: string) {
+  const result = await client
+    .from("11s_talking_points")
+    .delete()
+    .eq("id", pointId);
   throwIfError(result.error);
 }
 

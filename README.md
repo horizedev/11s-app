@@ -85,19 +85,30 @@ in the UI.
 
 Plans:
 
-- **Free** — up to 20 people and 10 AI preparations per 30 days.
-- **Pro** — unlimited people and unlimited AI preparation.
+- **Free** — up to 20 people and 3 AI credits per day, renewed daily.
+- **Pro** — unlimited people and 100 AI credits per day, renewed daily
+  (US$5/month, US$13/3 months, US$50/year).
 
 Server-side env vars (see `.env.example`):
 
 - `STRIPE_SECRET_KEY` — secret key from the Stripe sandbox.
 - `STRIPE_WEBHOOK_SECRET` — signing secret for the webhook endpoint.
-- `STRIPE_PRO_MONTHLY_PRICE_ID` / `STRIPE_PRO_YEARLY_PRICE_ID` — the Pro
-  recurring prices.
-- `SUPABASE_SECRET_KEY` — service-role key used only by the webhook route to
-  update plan state (never exposed to the browser).
+- `STRIPE_PRO_MONTHLY_PRICE_ID` / `STRIPE_PRO_QUARTERLY_PRICE_ID` /
+  `STRIPE_PRO_YEARLY_PRICE_ID` — the Pro recurring prices.
+- `SUPABASE_SECRET_KEY` — service-role key used only by server routes
+  (billing webhook, account export/delete, admin stats, signup
+  notifications); never exposed to the browser.
+- `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` — optional operator alerts for
+  new signups and subscription events.
 - `NEXT_PUBLIC_APP_URL` — public base URL used for checkout redirect URLs
   (defaults to the request origin if unset).
+
+Admin statistics (`/admin`) are available to accounts flagged in the
+database:
+
+```sql
+update public."11s_preferences" set is_admin = true where user_id = '<user-id>';
+```
 
 Webhook endpoint to register in Stripe:
 

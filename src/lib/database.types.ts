@@ -134,9 +134,11 @@ export type Database = {
           current_period_end: string | null;
           general_prep_opening: string | null;
           general_prep_source: string | null;
+          is_admin: boolean;
           locale: string;
           plan: string;
           referral_redeemed_count: number;
+          signup_notified_at: string | null;
           stripe_customer_id: string | null;
           subscription_status: string;
           updated_at: string;
@@ -152,9 +154,11 @@ export type Database = {
           current_period_end?: string | null;
           general_prep_opening?: string | null;
           general_prep_source?: string | null;
+          is_admin?: boolean;
           locale?: string;
           plan?: string;
           referral_redeemed_count?: number;
+          signup_notified_at?: string | null;
           stripe_customer_id?: string | null;
           subscription_status?: string;
           updated_at?: string;
@@ -170,9 +174,11 @@ export type Database = {
           current_period_end?: string | null;
           general_prep_opening?: string | null;
           general_prep_source?: string | null;
+          is_admin?: boolean;
           locale?: string;
           plan?: string;
           referral_redeemed_count?: number;
+          signup_notified_at?: string | null;
           stripe_customer_id?: string | null;
           subscription_status?: string;
           updated_at?: string;
@@ -205,22 +211,69 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
+          input_tokens: number | null;
+          output_tokens: number | null;
           person_id: string | null;
+          total_tokens: number | null;
           user_id: string;
         };
         Insert: {
           created_at?: string;
           id?: string;
+          input_tokens?: number | null;
+          output_tokens?: number | null;
           person_id?: string | null;
+          total_tokens?: number | null;
           user_id?: string;
         };
         Update: {
           created_at?: string;
           id?: string;
+          input_tokens?: number | null;
+          output_tokens?: number | null;
           person_id?: string | null;
+          total_tokens?: number | null;
           user_id?: string;
         };
         Relationships: [];
+      };
+      "11s_talking_points": {
+        Row: {
+          body: string;
+          created_at: string;
+          id: string;
+          person_id: string;
+          sort_order: number;
+          source: string;
+          user_id: string;
+        };
+        Insert: {
+          body: string;
+          created_at?: string;
+          id?: string;
+          person_id: string;
+          sort_order?: number;
+          source?: string;
+          user_id?: string;
+        };
+        Update: {
+          body?: string;
+          created_at?: string;
+          id?: string;
+          person_id?: string;
+          sort_order?: number;
+          source?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "11s_talking_points_person_owner_fkey";
+            columns: ["person_id", "user_id"];
+            isOneToOne: false;
+            referencedRelation: "11s_people";
+            referencedColumns: ["id", "user_id"];
+          },
+        ];
       };
       "11s_prep_ideas": {
         Row: {

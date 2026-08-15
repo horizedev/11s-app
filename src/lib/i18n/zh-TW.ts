@@ -165,6 +165,7 @@ export const zhTW: Dictionary = {
     footerTerms: "服務條款",
     footerPrivacy: "隱私權政策",
     footerPricing: "方案與價格",
+    footerFaq: "常見問題",
     goToWorkspace: "前往工作區",
     previewConversations: "更好的一對一",
     previewPeople: "聯絡人",
@@ -359,13 +360,14 @@ export const zhTW: Dictionary = {
     savedNotes: (count) => `${count} 則已存筆記`,
     pastDiscussions: (count) => `${count} 次過往對話`,
     relationshipChip: "關係",
-    aiIdeation: "AI 建議",
+    aiIdeation: "靈感產生",
     aiIdeationHint: "根據你的筆記與過往對話，整理出值得聊的話題。",
     suggested: "建議話題",
     suggestedHint: "根據你們聊過的內容和你存的筆記。",
     aiGenerated: "AI 產生",
     starterIdeas: "入門建議",
     addToNotes: "加入筆記",
+    addToTalkingPoints: "加入談話重點",
     dismiss: (title) => `略過 ${title}`,
     blankTitle: "還沒有準備內容",
     blankBody: "AI 會從你的筆記和過往對話找靈感，也可以先為下次一對一記一則筆記。",
@@ -378,6 +380,22 @@ export const zhTW: Dictionary = {
     notesPlaceholder:
       "詢問專案上線狀況\n跟進對方的新職務\n分享回饋…",
     talkingPoints: (count) => `${count} 個話題`,
+    brainstormNotes: "腦力激盪筆記",
+    stepBrainstorm: "第 1 步 · 記下想法",
+    stepIdeas: "第 2 步 · 產生靈感",
+    stepTalkingPoints: "第 3 步 · 談話重點",
+    noteLines: (count) => `${count} 行筆記`,
+    talkingPointsTitle: "談話重點",
+    talkingPointsHint:
+      "你最終真正想說出口的重點清單。可以在下方自己新增，或從 AI 靈感中挑選加入。",
+    talkingPointsList: (count) => `已準備 ${count} 個重點`,
+    talkingPointsEmpty:
+      "還沒有談話重點。可以在下方自己新增，或先產生靈感再挑選加入。",
+    talkingPointFromAi: "來自 AI 靈感",
+    talkingPointManual: "自行新增",
+    addTalkingPoint: "新增",
+    addTalkingPointPlaceholder: "新增自己的談話重點…",
+    deleteTalkingPoint: (body) => `刪除談話重點：${body}`,
     privateBrowser: "僅限你的帳號",
     prepUses: "準備時會參考",
     prepUsesItems: [
@@ -407,10 +425,10 @@ export const zhTW: Dictionary = {
     chooseEmoji: "選擇表情符號",
     emojiHint: "挑一個容易認出這個人的表情或符號。",
     prepQuota: (remaining, limit) =>
-      `本月還剩 ${remaining} / ${limit} 次 AI 準備`,
+      `今日還剩 ${remaining} / ${limit} 點 AI 額度`,
     prepQuotaUnlimited: "AI 準備不限次數",
     prepWorkspaceTitle: "一起準備",
-    prepWorkspaceBody: "左邊寫下想聊的事，右邊讓 AI 幫你變成話題。",
+    prepWorkspaceBody: "先寫下想法，再產生靈感，最後挑出真正要說的談話重點。",
     intentLabel: "這次想怎麼聊",
     intentHint: "依你想要的對話氛圍，調整這次準備的方向。",
     intents: {
@@ -499,6 +517,8 @@ export const zhTW: Dictionary = {
     prepFailed: "暫時無法產生建議，請稍後再試。",
     alreadyInNotes: "這個話題已經在筆記裡了",
     addedToNotes: "已加入留給下次的筆記",
+    addedToTalkingPoints: "已加入談話重點",
+    alreadyInTalkingPoints: "這個重點已經在清單裡了",
     personAdded: (name) => `已新增 ${name}`,
     personUpdated: (name) => `已更新 ${name}`,
     personRemoved: (name) => `已移除 ${name}`,
@@ -506,7 +526,8 @@ export const zhTW: Dictionary = {
     conversationUpdated: "對話已更新",
     saveFailed: "無法儲存這項變更，請再試一次。",
     upgradePeople: "免費方案最多 20 位聯絡人。升級至 Pro 即可不限人數。",
-    upgradePrep: "這個月的免費 AI 準備次數用完了。升級至 Pro 即可不限次數。",
+    upgradePrep: "今日的免費 AI 額度用完了。升級至 Pro 即可每天享有 100 點。",
+    dailyLimitReached: "今日的 100 點 AI 額度已用完，額度會在 UTC 午夜重置。",
     upgraded: "歡迎加入 11s Pro——你的工作區已解除所有上限。",
     billingUnavailable: "付款功能尚未設定完成，請稍後再試。",
     notesCleared: "已清空留給下次的筆記",
@@ -577,19 +598,22 @@ export const zhTW: Dictionary = {
     eyebrow: "簡單明瞭的價格",
     title: "免費開始，",
     titleAccent: "需要時再無限升級。",
-    body: "免費開始。圈子變大或想要無限 AI 準備時，再升級就好。",
+    body: "免費開始。圈子變大或想要更多每日 AI 額度時，再升級就好。",
     monthly: "按月付費",
+    quarterly: "三個月",
     yearly: "按年付費",
-    yearlyBadge: "省兩個月",
+    yearlyBadge: "最划算",
+    quarterlyBadge: "省 13%",
     perMonth: "每月",
+    perQuarter: "每三個月",
     perYear: "每年",
     freeName: "免費版",
     freePrice: "US$0",
     freeBody: "適合幾段最重要的對話。",
     freeFeatures: [
       "最多 20 位聯絡人",
+      "每日 3 點 AI 額度，每天重置",
       "筆記與對話紀錄不限數量",
-      "每 30 天 10 次 AI 準備",
       "跨裝置安全同步",
     ],
     freeCta: "免費開始",
@@ -597,7 +621,7 @@ export const zhTW: Dictionary = {
     proBody: "給每一位你在乎的人。",
     proFeatures: [
       "不限人數",
-      "AI 準備不限次數",
+      "每日 100 點 AI 額度，每天重置",
       "包含免費版所有功能",
       "優先支援",
     ],
@@ -631,7 +655,7 @@ export const zhTW: Dictionary = {
     prepUsage: (used, limit) =>
       limit == null
         ? "AI 準備不限次數"
-        : `近 30 天已使用 ${used} / ${limit} 次 AI 準備`,
+        : `今日已使用 ${used} / ${limit} 點 AI 額度`,
     unlimited: "不限",
     upgradeCta: "升級至 Pro",
     manageCta: "管理訂閱",
@@ -643,6 +667,22 @@ export const zhTW: Dictionary = {
     contactLabel: "問題或資料要求",
     aboutEyebrow: "運作方式",
     aboutTitle: "AI 準備與你的資料",
+    dataEyebrow: "你的資料",
+    exportTitle: "匯出你的資料",
+    exportBody:
+      "將帳號內所有資料——聯絡人、筆記、對話紀錄、談話重點與偏好設定——下載為單一 JSON 檔案。",
+    exportCta: "下載 JSON 匯出",
+    exportFailed: "匯出失敗，請稍後再試。",
+    dangerEyebrow: "危險區域",
+    deleteTitle: "刪除你的帳號",
+    deleteBody:
+      "這會永久刪除你的帳號與所有相關資料——聯絡人、筆記、對話紀錄、談話重點、準備紀錄與訂閱。此操作無法復原。",
+    deleteCta: "刪除帳號",
+    deleteConfirmLabel: "輸入 DELETE 確認",
+    deleteConfirmHint: "此操作為永久性。建議先匯出你的資料。",
+    deleting: "正在刪除你的帳號…",
+    deleteFailed: "暫時無法刪除帳號，請稍後再試或聯絡支援。",
+    adminCta: "開啟管理統計",
     referral: {
       eyebrow: "推薦計畫",
       title: "分享 11s,免費用 Pro",
@@ -663,5 +703,110 @@ export const zhTW: Dictionary = {
       redeemSuccess: "免費一個月已套用至你的帳號。",
       redeemFailed: "暫時無法兌換,請稍後再試。",
     },
+  },
+  admin: {
+    eyebrow: "管理",
+    title: "統計數據",
+    body: "所有 11s 帳號的即時工作區指標。",
+    backToWorkspace: "回到工作區",
+    users: "總用戶數",
+    usersHint: "已註冊帳號",
+    subscriptions: "有效訂閱",
+    subscriptionsHint: "付費或推薦 Pro，使用中或試用中",
+    activeToday: "今日活躍",
+    activeTodayHint: "UTC 午夜以來有活動的用戶",
+    activeMonth: "30 天活躍用戶",
+    activeMonthHint: "近 30 天有活動的用戶",
+    peopleTotal: "聯絡人總數",
+    peoplePerUser: "平均每用戶",
+    peopleMax: "單一帳號最多",
+    creditsTitle: "AI 額度消耗",
+    creditsToday: "今日額度",
+    creditsMonth: "本月額度",
+    creditsTotal: "累計額度",
+    tokensTitle: "Token 消耗量",
+    tokensToday: "今日 token",
+    tokensMonth: "本月 token",
+    tokensTotal: "累計 token",
+    perUserTitle: "各用戶用量",
+    perUserBody: "每個帳號的聯絡人數、AI 額度與 token 消耗量。",
+    colUser: "用戶",
+    colPeople: "聯絡人",
+    colCreditsToday: "今日額度",
+    colCreditsMonth: "本月額度",
+    colCreditsTotal: "累計額度",
+    colTokensTotal: "累計 token",
+    emptyUsers: "尚無用戶活動。",
+    unknownUser: "未知用戶",
+  },
+  faq: {
+    eyebrow: "常見問題",
+    title: "常見問題",
+    body: "開始使用 11s 之前，你可能想知道的事。",
+    items: [
+      {
+        question: "11s 是什麼？",
+        answer:
+          "11s 是你一對一對話的私人工作區。為你在乎的人記下筆記、記住每次對話，並為下一次對話準備談話重點——可以自己整理，也可以讓 AI 幫忙。",
+      },
+      {
+        question: "我的資料安全嗎？",
+        answer:
+          "是的。你的聯絡人、筆記與紀錄只有你登入的帳號看得見，傳輸全程加密，也絕不會用來訓練 AI 模型。你可以隨時在帳號頁匯出或永久刪除所有資料。",
+      },
+      {
+        question: "免費版可以做什麼？",
+        answer:
+          "免費版最多可加入 20 位聯絡人，筆記與對話紀錄不限數量，每日 3 點 AI 額度。額度每天 UTC 午夜重置，每天都是新的開始。",
+      },
+      {
+        question: "Pro 多了什麼？",
+        answer:
+          "Pro 完全取消人數上限，每日 AI 額度提高到 100 點，每天重置。價格為每月 US$5、每三個月 US$13，或每年 US$50。",
+      },
+      {
+        question: "什麼是 AI 額度？",
+        answer:
+          "每次產生新的談話重點會消耗 1 點——不論是針對某位聯絡人、閒話家常，或「該找誰聊」建議。調整現有靈感不消耗額度；免費版每記錄一次完成的會議，可獲得 1 點回饋。",
+      },
+      {
+        question: "談話重點怎麼運作？",
+        answer:
+          "準備分三步：先寫下腦力激盪筆記，再根據完整脈絡產生 AI 靈感，最後挑出你真正要說的談話重點。你也可以完全手動新增重點。",
+      },
+      {
+        question: "推薦計畫如何運作？",
+        answer:
+          "在帳號頁分享你的推薦連結。每有一位新用戶透過連結註冊，你就獲得 1 點；集滿 3 點可兌換 1 個月免費 Pro，次數不限。",
+      },
+      {
+        question: "我可以匯出資料嗎？",
+        answer:
+          "可以。開啟帳號頁並選擇「下載 JSON 匯出」，即可取得帳號內所有聯絡人、筆記、對話紀錄、談話重點與偏好設定，打包成單一 JSON 檔案。",
+      },
+      {
+        question: "如何刪除我的帳號？",
+        answer:
+          "在帳號頁開啟危險區域並確認刪除。你的帳號與所有相關資料——聯絡人、筆記、對話紀錄、談話重點與訂閱——都會被永久刪除。有效中的付費訂閱會自動取消。",
+      },
+      {
+        question: "11s 支援哪些語言？",
+        answer:
+          "工作區提供英文與繁體中文介面，AI 準備會以你選擇的語言撰寫。",
+      },
+      {
+        question: "準備功能使用哪個 AI 模型？",
+        answer:
+          "準備功能由安全的託管 AI 模型執行，只會接收該次請求所需的脈絡。你的內容絕不會用來訓練模型。",
+      },
+      {
+        question: "可以取消訂閱嗎？",
+        answer:
+          "隨時都可以，從帳號頁連結的付款入口取消即可。Pro 會用到目前計費週期結束；回到免費版後，你的資料也會完整保留。",
+      },
+    ],
+    contactTitle: "還有其他問題？",
+    contactBody: "寫信給我們，我們會盡快回覆。",
+    contactCta: "聯絡支援",
   },
 };

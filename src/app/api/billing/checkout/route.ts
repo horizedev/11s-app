@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 
 const bodySchema = z.object({
-  interval: z.enum(["month", "year"]),
+  interval: z.enum(["month", "quarter", "year"]),
 });
 
 export async function POST(request: Request) {

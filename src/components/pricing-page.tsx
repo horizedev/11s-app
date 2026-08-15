@@ -31,6 +31,8 @@ export function PricingPage({
   const [interval, setInterval] = useState<BillingInterval>("year");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const priceAmount =
+    interval === "month" ? 5 : interval === "quarter" ? 13 : 50;
   const proPrice = new Intl.NumberFormat(
     locale === "zh-TW" ? "zh-TW" : "en-US",
     {
@@ -38,7 +40,13 @@ export function PricingPage({
       currency: "USD",
       maximumFractionDigits: 0,
     },
-  ).format(interval === "month" ? 8 : 80);
+  ).format(priceAmount);
+  const perLabel =
+    interval === "month"
+      ? t.pricing.perMonth
+      : interval === "quarter"
+        ? t.pricing.perQuarter
+        : t.pricing.perYear;
 
   async function openPortal() {
     setPending(true);
@@ -182,7 +190,7 @@ export function PricingPage({
             role="group"
             aria-label={t.pricing.title}
           >
-            {(["month", "year"] as const).map((option) => (
+            {(["month", "quarter", "year"] as const).map((option) => (
               <button
                 key={option}
                 type="button"
@@ -195,17 +203,23 @@ export function PricingPage({
                     : "text-muted hover:text-foreground",
                 )}
               >
-                {option === "month" ? t.pricing.monthly : t.pricing.yearly}
-                {option === "year" ? (
+                {option === "month"
+                  ? t.pricing.monthly
+                  : option === "quarter"
+                    ? t.pricing.quarterly
+                    : t.pricing.yearly}
+                {option !== "month" ? (
                   <span
                     className={cn(
                       "rounded-full px-1.5 py-0.5 text-[9px] font-semibold",
-                      interval === "year"
+                      interval === option
                         ? "bg-emerald-400/20 text-emerald-200"
                         : "bg-emerald-50 text-emerald-700",
                     )}
                   >
-                    {t.pricing.yearlyBadge}
+                    {option === "quarter"
+                      ? t.pricing.quarterlyBadge
+                      : t.pricing.yearlyBadge}
                   </span>
                 ) : null}
               </button>
@@ -280,11 +294,7 @@ export function PricingPage({
                 <span className="text-4xl font-semibold tracking-[-0.04em]">
                   {proPrice}
                 </span>
-                <span className="ml-2 text-xs text-stone-400">
-                  {interval === "month"
-                    ? t.pricing.perMonth
-                    : t.pricing.perYear}
-                </span>
+                <span className="ml-2 text-xs text-stone-400">{perLabel}</span>
               </p>
               <ul className="mt-6 space-y-3">
                 {t.pricing.proFeatures.map((feature) => (
@@ -314,6 +324,10 @@ export function PricingPage({
 
         <p className="mx-auto mt-10 max-w-xl text-center text-[11px] leading-5 text-muted">
           {t.pricing.footnote}{" "}
+          <Link href="/faq" className="underline underline-offset-2 transition hover:text-foreground">
+            {t.landing.footerFaq}
+          </Link>
+          {" · "}
           <Link href="/terms" className="underline underline-offset-2 transition hover:text-foreground">
             {t.landing.footerTerms}
           </Link>

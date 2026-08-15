@@ -177,6 +177,7 @@ export const en: Dictionary = {
     footerTerms: "Terms",
     footerPrivacy: "Privacy",
     footerPricing: "Pricing",
+    footerFaq: "FAQ",
     goToWorkspace: "Go to workspace",
     previewConversations: "Better 1:1s",
     previewPeople: "People",
@@ -392,7 +393,7 @@ export const en: Dictionary = {
     savedNotes: (count) => `${count} saved notes`,
     pastDiscussions: (count) => `${count} past discussions`,
     relationshipChip: "Relationship",
-    aiIdeation: "AI suggestions",
+    aiIdeation: "Idea generation",
     aiIdeationHint:
       "Ideas shaped by your notes and every saved conversation.",
     suggested: "Suggested talking points",
@@ -400,6 +401,7 @@ export const en: Dictionary = {
     aiGenerated: "AI generated",
     starterIdeas: "Starter suggestions",
     addToNotes: "Add to notes",
+    addToTalkingPoints: "Add to talking points",
     dismiss: (title) => `Dismiss ${title}`,
     blankTitle: "A blank page, for now",
     blankBody:
@@ -414,6 +416,24 @@ export const en: Dictionary = {
     notesPlaceholder:
       "Ask about the project launch\nFollow up on their new role\nShare feedback…",
     talkingPoints: (count) => `${count} talking points`,
+    brainstormNotes: "Brainstorming notes",
+    stepBrainstorm: "Step 1 · Brainstorm",
+    stepIdeas: "Step 2 · Generate ideas",
+    stepTalkingPoints: "Step 3 · Talking points",
+    noteLines: (count) =>
+      count === 1 ? "1 note line" : `${count} note lines`,
+    talkingPointsTitle: "Talking points",
+    talkingPointsHint:
+      "The final list you will actually say out loud. Write your own below, or promote ideas from the generator.",
+    talkingPointsList: (count) =>
+      count === 1 ? "1 point ready" : `${count} points ready`,
+    talkingPointsEmpty:
+      "No talking points yet. Add your own below, or generate ideas and promote the best ones.",
+    talkingPointFromAi: "From AI ideas",
+    talkingPointManual: "Added by you",
+    addTalkingPoint: "Add",
+    addTalkingPointPlaceholder: "Add your own talking point…",
+    deleteTalkingPoint: (body) => `Remove talking point: ${body}`,
     privateBrowser: "Private to your account",
     prepUses: "Preparation uses",
     prepUsesItems: [
@@ -443,11 +463,11 @@ export const en: Dictionary = {
     chooseEmoji: "Choose an emoji",
     emojiHint: "Pick a face or symbol that helps you recognize this person.",
     prepQuota: (remaining, limit) =>
-      `${remaining} of ${limit} AI preps left this month`,
+      `${remaining} of ${limit} AI credits left today`,
     prepQuotaUnlimited: "Unlimited AI preparation",
     prepWorkspaceTitle: "Prepare together",
     prepWorkspaceBody:
-      "Shape the agenda on the left. AI turns it into talking points on the right.",
+      "Brainstorm notes, generate ideas, then pin the talking points you will actually use.",
     intentLabel: "Meeting intent",
     intentHint: "Shape preparation around how you want this conversation to go.",
     intents: {
@@ -542,6 +562,8 @@ export const en: Dictionary = {
     prepFailed: "Could not refresh ideas. Try again in a moment.",
     alreadyInNotes: "That talking point is already in your notes",
     addedToNotes: "Added to notes for next time",
+    addedToTalkingPoints: "Added to talking points",
+    alreadyInTalkingPoints: "That talking point is already on your list",
     personAdded: (name) => `${name} was added`,
     personUpdated: (name) => `${name} was updated`,
     personRemoved: (name) => `${name} was removed`,
@@ -551,7 +573,9 @@ export const en: Dictionary = {
     upgradePeople:
       "The free plan includes up to 20 people. Upgrade to Pro for unlimited people.",
     upgradePrep:
-      "You've used this month's free AI preparations. Upgrade to Pro for unlimited preparation.",
+      "You've used today's free AI credits. Upgrade to Pro for 100 credits every day.",
+    dailyLimitReached:
+      "You've used all 100 AI credits for today. They renew at midnight UTC.",
     upgraded: "Welcome to 11s Pro — your workspace is now unlimited.",
     billingUnavailable: "Billing is not configured yet. Please try again later.",
     notesCleared: "Notes for next time were cleared",
@@ -624,19 +648,22 @@ export const en: Dictionary = {
     eyebrow: "Simple pricing",
     title: "Free to start,",
     titleAccent: "unlimited when you're ready.",
-    body: "Start free. Upgrade when your circle grows or you want unlimited AI preparation.",
+    body: "Start free. Upgrade when your circle grows or you want more daily AI credits.",
     monthly: "Monthly",
+    quarterly: "3 months",
     yearly: "Yearly",
-    yearlyBadge: "2 months free",
+    yearlyBadge: "Best value",
+    quarterlyBadge: "Save 13%",
     perMonth: "per month",
+    perQuarter: "per 3 months",
     perYear: "per year",
     freeName: "Free",
     freePrice: "US$0",
     freeBody: "For a few conversations that matter.",
     freeFeatures: [
       "Up to 20 people",
+      "3 AI credits per day, renewed daily",
       "Unlimited notes and discussion history",
-      "10 AI preparations every 30 days",
       "Secure sync across devices",
     ],
     freeCta: "Start for free",
@@ -644,7 +671,7 @@ export const en: Dictionary = {
     proBody: "For everyone you keep close.",
     proFeatures: [
       "Unlimited people",
-      "Unlimited AI preparation",
+      "100 AI credits per day, renewed daily",
       "Everything in Free",
       "Priority support",
     ],
@@ -679,7 +706,7 @@ export const en: Dictionary = {
     prepUsage: (used, limit) =>
       limit == null
         ? "Unlimited AI preparation"
-        : `${used} of ${limit} AI preparations used (last 30 days)`,
+        : `${used} of ${limit} AI credits used today`,
     unlimited: "Unlimited",
     upgradeCta: "Upgrade to Pro",
     manageCta: "Manage subscription",
@@ -691,6 +718,23 @@ export const en: Dictionary = {
     contactLabel: "Questions or data requests",
     aboutEyebrow: "How it works",
     aboutTitle: "AI prep & your data",
+    dataEyebrow: "Your data",
+    exportTitle: "Export your data",
+    exportBody:
+      "Download everything stored in your account — people, notes, discussions, talking points, and preferences — as a single JSON file.",
+    exportCta: "Download JSON export",
+    exportFailed: "Export failed. Please try again in a moment.",
+    dangerEyebrow: "Danger zone",
+    deleteTitle: "Delete your account",
+    deleteBody:
+      "This permanently deletes your account and all related data — people, notes, discussions, talking points, preparation history, and subscription. This cannot be undone.",
+    deleteCta: "Delete account",
+    deleteConfirmLabel: "Type DELETE to confirm",
+    deleteConfirmHint:
+      "This is permanent. Consider exporting your data first.",
+    deleting: "Deleting your account…",
+    deleteFailed: "Could not delete your account. Please try again or contact support.",
+    adminCta: "Open admin statistics",
     referral: {
       eyebrow: "Referrals",
       title: "Give 11s, get Pro",
@@ -717,5 +761,111 @@ export const en: Dictionary = {
       redeemSuccess: "Free month applied to your account.",
       redeemFailed: "Could not redeem right now. Please try again.",
     },
+  },
+  admin: {
+    eyebrow: "Admin",
+    title: "Statistics",
+    body: "Live workspace metrics across all 11s accounts.",
+    backToWorkspace: "Back to workspace",
+    users: "Total users",
+    usersHint: "Registered accounts",
+    subscriptions: "Active subscriptions",
+    subscriptionsHint: "Paid or referral Pro, active or trialing",
+    activeToday: "Active today",
+    activeTodayHint: "Users with activity since midnight UTC",
+    activeMonth: "Active users (30d)",
+    activeMonthHint: "Users with activity in the last 30 days",
+    peopleTotal: "People tracked",
+    peoplePerUser: "Avg per user",
+    peopleMax: "Most in one account",
+    creditsTitle: "AI credit consumption",
+    creditsToday: "Credits today",
+    creditsMonth: "Credits this month",
+    creditsTotal: "Credits all time",
+    tokensTitle: "Token consumption",
+    tokensToday: "Tokens today",
+    tokensMonth: "Tokens this month",
+    tokensTotal: "Tokens all time",
+    perUserTitle: "Per-user usage",
+    perUserBody:
+      "People tracked, AI credits, and token consumption for each account.",
+    colUser: "User",
+    colPeople: "People",
+    colCreditsToday: "Credits today",
+    colCreditsMonth: "Credits (month)",
+    colCreditsTotal: "Credits (total)",
+    colTokensTotal: "Tokens (total)",
+    emptyUsers: "No user activity yet.",
+    unknownUser: "Unknown user",
+  },
+  faq: {
+    eyebrow: "FAQ",
+    title: "Frequently asked questions",
+    body: "Everything you might want to know before starting with 11s.",
+    items: [
+      {
+        question: "What is 11s?",
+        answer:
+          "11s is a private workspace for your one-on-one conversations. Keep notes on the people you meet, remember every discussion, and prepare talking points for the next conversation — on your own or with AI help.",
+      },
+      {
+        question: "Is my data private?",
+        answer:
+          "Yes. Your people, notes, and history are visible only to your signed-in account, encrypted in transit, and never used to train AI models. You can export or permanently delete everything at any time from your account page.",
+      },
+      {
+        question: "What can I do on the Free plan?",
+        answer:
+          "Free includes up to 20 people, unlimited notes and discussion history, and 3 AI credits per day. Credits renew every day at midnight UTC, so you always start fresh.",
+      },
+      {
+        question: "What does Pro add?",
+        answer:
+          "Pro removes the people limit entirely and raises your allowance to 100 AI credits per day, renewed daily. It costs US$5 per month, US$13 per 3 months, or US$50 per year.",
+      },
+      {
+        question: "What is an AI credit?",
+        answer:
+          "One AI credit is spent each time you generate fresh talking points — for a person, for small talk, or for a who-to-ask suggestion. Refining existing ideas does not spend a credit, and logging a completed meeting earns one credit back on the Free plan.",
+      },
+      {
+        question: "How do talking points work?",
+        answer:
+          "Preparation happens in three steps: jot brainstorming notes, generate AI ideas from your full context, then pin the final talking points you actually plan to say. You can also add talking points entirely by hand.",
+      },
+      {
+        question: "How does the referral program work?",
+        answer:
+          "Share your referral link from the account page. Every new user who signs up through it earns you 1 quota; 3 quota redeem one free month of Pro, and you can redeem as many times as you like.",
+      },
+      {
+        question: "Can I export my data?",
+        answer:
+          "Yes. Open your account page and choose “Download JSON export” to get every people record, note, discussion, talking point, and preference stored in your account as a single JSON file.",
+      },
+      {
+        question: "How do I delete my account?",
+        answer:
+          "On the account page, open the danger zone and confirm deletion. Your account and all related data — people, notes, discussions, talking points, and subscription — are permanently deleted. Active paid subscriptions are cancelled automatically.",
+      },
+      {
+        question: "Which languages does 11s support?",
+        answer:
+          "The workspace is available in English and Traditional Chinese, and AI preparation writes in whichever language you have selected.",
+      },
+      {
+        question: "Which AI model powers preparation?",
+        answer:
+          "Preparation runs on a secure hosted AI model that receives only the context needed for your request. Your content is never used to train models.",
+      },
+      {
+        question: "Can I cancel my subscription?",
+        answer:
+          "Anytime, from the billing portal linked on your account page. You keep Pro until the end of the current billing period, and your data stays intact if you return to the Free plan.",
+      },
+    ],
+    contactTitle: "Still have questions?",
+    contactBody: "Write to us and we will get back to you.",
+    contactCta: "Email support",
   },
 };
