@@ -1,43 +1,58 @@
 "use client";
 
+import { Brain, MessageSquareText, NotebookPen, RotateCcw } from "lucide-react";
+
 import { useLocale } from "@/lib/i18n";
 
+// Icons mirror the step list on the left side of the "how it works" section.
 const NODES = [
   {
     en: "Capture",
     zh: "記下",
     cx: 86,
-    cy: 60,
+    cy: 78,
+    labelAbove: true,
     tint: "var(--accent-soft)",
+    iconColor: "var(--accent)",
+    Icon: NotebookPen,
   },
   {
     en: "Prepare",
     zh: "準備",
     cx: 234,
-    cy: 60,
+    cy: 78,
+    labelAbove: true,
     tint: "var(--secondary-soft)",
+    iconColor: "var(--secondary)",
+    Icon: Brain,
   },
   {
     en: "Meet",
     zh: "對話",
     cx: 234,
-    cy: 178,
+    cy: 190,
+    labelAbove: false,
     tint: "var(--success-soft)",
+    iconColor: "var(--success)",
+    Icon: MessageSquareText,
   },
   {
     en: "Continue",
     zh: "延續",
     cx: 86,
-    cy: 178,
+    cy: 190,
+    labelAbove: false,
     tint: "color-mix(in srgb, #4f78a0 18%, var(--surface))",
+    iconColor: "#4f78a0",
+    Icon: RotateCcw,
   },
 ] as const;
 
 const EDGES = [
-  "M120 60 H192",
-  "M234 94 V136",
-  "M200 178 H128",
-  "M86 144 V102",
+  "M120 78 H192",
+  "M234 112 V148",
+  "M200 190 H128",
+  "M86 156 V120",
 ] as const;
 
 export function ConversationLoop({ className }: { className?: string }) {
@@ -75,7 +90,7 @@ export function ConversationLoop({ className }: { className?: string }) {
             SVG presentation attributes and does not inherit custom properties
             into <marker> content, which previously left the arrowheads broken. */}
         <svg
-          viewBox="0 0 320 248"
+          viewBox="0 0 320 258"
           className="relative mx-auto h-auto w-full max-w-md text-muted-subtle"
           role="img"
         >
@@ -107,41 +122,45 @@ export function ConversationLoop({ className }: { className?: string }) {
             />
           ))}
 
-          {NODES.map((node, index) => (
-            <g key={node.en}>
-              <circle
-                cx={node.cx}
-                cy={node.cy}
-                r="34"
-                style={{
-                  fill: node.tint,
-                  stroke: "var(--surface-raised)",
-                  strokeWidth: 4,
-                }}
-              />
-              <text
-                x={node.cx}
-                y={node.cy + 1}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="15"
-                fontWeight="700"
-                style={{ fill: "var(--foreground)" }}
-              >
-                {index + 1}
-              </text>
-              <text
-                x={node.cx}
-                y={node.cy + 52}
-                textAnchor="middle"
-                fontSize="11"
-                fontWeight="600"
-                style={{ fill: "var(--foreground)" }}
-              >
-                {isZh ? node.zh : node.en}
-              </text>
-            </g>
-          ))}
+          {NODES.map((node) => {
+            const labelY = node.labelAbove ? node.cy - 48 : node.cy + 52;
+            return (
+              <g key={node.en}>
+                <circle
+                  cx={node.cx}
+                  cy={node.cy}
+                  r="34"
+                  style={{
+                    fill: node.tint,
+                    stroke: "var(--surface-raised)",
+                    strokeWidth: 4,
+                  }}
+                />
+                {/* Lucide icons are 24x24 with stroke="currentColor". */}
+                <g
+                  transform={`translate(${node.cx - 9}, ${node.cy - 9}) scale(0.75)`}
+                  style={{ color: node.iconColor }}
+                >
+                  <node.Icon
+                    width={24}
+                    height={24}
+                    strokeWidth={1.9}
+                    aria-hidden="true"
+                  />
+                </g>
+                <text
+                  x={node.cx}
+                  y={labelY}
+                  textAnchor="middle"
+                  fontSize="11"
+                  fontWeight="600"
+                  style={{ fill: "var(--foreground)" }}
+                >
+                  {isZh ? node.zh : node.en}
+                </text>
+              </g>
+            );
+          })}
         </svg>
       </div>
     </figure>
