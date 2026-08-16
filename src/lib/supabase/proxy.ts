@@ -16,7 +16,11 @@ import {
  */
 function redirectAuthCodeToCallback(request: NextRequest) {
   const url = request.nextUrl;
-  if (url.pathname === "/auth/callback") return null;
+  // Supabase's Site URL fallback can land confirmation links on `/` with a
+  // PKCE code. Only that root fallback needs forwarding. Handling arbitrary
+  // `?error=` values (especially `/login?error=…`) here creates a loop:
+  // callback → login → callback → login.
+  if (url.pathname !== "/") return null;
 
   const code = url.searchParams.get("code");
   const oauthError = url.searchParams.get("error");

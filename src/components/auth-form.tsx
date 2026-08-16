@@ -51,7 +51,7 @@ const copy = {
     switchToSignUp: "New to 11s? Create an account",
     switchToSignIn: "Already have an account? Sign in",
     checkEmail:
-      "Check your inbox to confirm your email, then return here to sign in.",
+      "Check your inbox to confirm your email. Open the link in this same browser and on this same device, then return here to sign in.",
     forgotPassword: "Forgot password?",
     resetTitle: "Reset your password",
     resetBody:
@@ -62,6 +62,8 @@ const copy = {
     backToSignIn: "Back to sign in",
     resetInvalid:
       "That reset link is invalid or has expired. Please request a new one.",
+    confirmationBrowserMismatch:
+      "Open the confirmation link in the same browser and on the same device where you created your account. Please sign up again to receive a new link.",
     secure: "Encrypted in transit and visible only to your account",
     back: "Back to 11s",
   },
@@ -84,7 +86,8 @@ const copy = {
     orEmail: "或使用電子郵件繼續",
     switchToSignUp: "第一次使用 11s？建立帳號",
     switchToSignIn: "已經有帳號了？登入",
-    checkEmail: "請到收件匣確認電子郵件，再回來登入。",
+    checkEmail:
+      "請到收件匣確認電子郵件。請在這台裝置的同一個瀏覽器開啟確認連結，再回來登入。",
     forgotPassword: "忘記密碼？",
     resetTitle: "重設密碼",
     resetBody: "輸入帳號的電子郵件，我們會寄重設連結給你。",
@@ -92,6 +95,8 @@ const copy = {
     resetSent: "如果這個電子郵件有對應的帳號，重設連結已寄出。連結有時效，請盡快查看收件匣。",
     backToSignIn: "返回登入",
     resetInvalid: "這個重設連結無效或已過期，請重新申請一次。",
+    confirmationBrowserMismatch:
+      "請在建立帳號時使用的同一個瀏覽器和裝置開啟確認連結。請重新註冊以取得新的確認信。",
     secure: "傳輸全程加密，內容僅限你的帳號存取",
     back: "返回 11s",
   },
@@ -141,7 +146,9 @@ export function AuthForm({
   const [error, setError] = useState(
     initialError === "reset-link-invalid"
       ? t.resetInvalid
-      : (initialError ?? ""),
+      : initialError === "confirmation-browser-mismatch"
+        ? t.confirmationBrowserMismatch
+        : (initialError ?? ""),
   );
   const [message, setMessage] = useState("");
   const [oauthPending, setOauthPending] = useState(false);

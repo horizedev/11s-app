@@ -69,7 +69,12 @@ export async function GET(request: NextRequest) {
     }
 
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", error.message);
+    const errorCode = error.message
+      .toLowerCase()
+      .includes("code verifier")
+      ? "confirmation-browser-mismatch"
+      : error.message;
+    loginUrl.searchParams.set("error", errorCode);
     return privateRedirect(loginUrl);
   }
 
